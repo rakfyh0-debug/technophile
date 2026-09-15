@@ -1171,3 +1171,364 @@ h1 {
     font-size: 18px;
   }
 }
+
+/* ============================================================
+   OPTIMISATIONS PORTRAIT TÉLÉPHONE (<= 768px en orientation portrait)
+   ============================================================ */
+
+/* Empêche tout débordement horizontal */
+html, body {
+  overflow-x: hidden;
+}
+
+/* Safe area : gère les encoches / barres iPhone */
+@supports (padding: env(safe-area-inset-top)) {
+  body {
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
+  }
+}
+
+@media (max-width: 768px) and (orientation: portrait) {
+
+  /* --- Base : typographie mobile --- */
+  body {
+    font-size: 15px;             /* plus lisible */
+    -webkit-text-size-adjust: 100%;
+    -webkit-tap-highlight-color: transparent;
+  }
+  h1 { font-size: 20px; margin-bottom: 8px; }
+
+  /* --- Rails : icônes plus grosses et scroll horizontal --- */
+  .rail {
+    padding: 8px 10px;
+    gap: 10px;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+  .rail::-webkit-scrollbar { display: none; }
+  .rail-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    flex-shrink: 0;
+  }
+  .rail-icon svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  /* --- Topbar : plus compacte --- */
+  .topbar {
+    padding: 10px 14px;
+  }
+  .logo-mark {
+    width: 24px;
+    height: 24px;
+    font-size: 12px;
+  }
+  .org-name { font-size: 14px; }
+  .badge {
+    font-size: 9px;
+    padding: 1px 6px;
+  }
+  .avatar {
+    width: 30px;
+    height: 30px;
+    font-size: 12px;
+  }
+
+  /* --- Cartes projets : plus grande zone tactile --- */
+  .proj-card {
+    padding: 12px 14px;
+    min-height: 44px;
+  }
+  .proj-card h4 { font-size: 14px; margin-bottom: 4px; }
+  .proj-card p { font-size: 12.5px; line-height: 1.4; }
+  .status-tag {
+    font-size: 10px;
+    padding: 3px 8px;
+  }
+
+  /* --- Toolbar : boutons plus gros, espacés --- */
+  .toolbar {
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+  .toolbar .select,
+  .toolbar .sort {
+    min-height: 40px;
+    font-size: 13px;
+    padding: 8px 12px;
+  }
+  .icon-btn {
+    width: 40px;
+    height: 40px;
+  }
+
+  /* --- Hexagone : liste verticale propre --- */
+  .hex-wrap {
+    padding: 0;
+    min-height: 0;
+  }
+  .globe-wrap {
+    display: none;                /* pas de globe sur portrait : trop lourd */
+  }
+  .hex-card {
+    position: static !important;
+    width: 100% !important;
+    margin-bottom: 10px;
+    padding: 14px;
+    text-align: left;
+  }
+  .hex-card h3 {
+    font-size: 14px;
+    margin-bottom: 6px;
+  }
+  .hex-card p {
+    font-size: 12.5px;
+    line-height: 1.4;
+  }
+
+  /* --- Panneau notifications : plus compact --- */
+  .notif-panel {
+    padding: 12px;
+    gap: 10px;
+  }
+  .notif-item strong { font-size: 13px; }
+  .notif-item p { font-size: 11.5px; }
+
+  /* --- Usage panel : compact --- */
+  .usage-panel {
+    padding: 16px 14px;
+  }
+  .usage-head h4 { font-size: 14px; }
+  .usage-head p { font-size: 11.5px; }
+  .usage-head .btn-outline {
+    width: 100%;
+    padding: 10px;
+    font-size: 13px;
+  }
+  .usage-row {
+    padding: 12px 0;
+    font-size: 13px;
+  }
+  .ring {
+    width: 12px;
+    height: 12px;
+  }
+
+  /* --- Applications (DB, projets, stats) --- */
+  .app-topbar {
+    padding: 0 14px;
+    height: auto;
+    min-height: 48px;
+  }
+  .breadcrumb {
+    font-size: 12px;
+    flex-wrap: wrap;
+  }
+  .app-center {
+    padding: 20px 14px 80px;
+  }
+
+  /* --- DB table --- */
+  .db-table {
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+    -webkit-overflow-scrolling: touch;
+  }
+  .db-table thead,
+  .db-table tbody,
+  .db-table tr {
+    display: table;
+    width: 100%;
+    table-layout: fixed;
+  }
+  .value-preview {
+    max-width: 160px;
+    font-size: 11px;
+  }
+  .db-actions button {
+    padding: 6px 12px;
+    font-size: 12px;
+    min-height: 36px;
+  }
+
+  /* --- Grille projets --- */
+  .proj-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  .proj-card-full {
+    padding: 16px;
+  }
+  .proj-card-full .del-btn {
+    padding: 8px 12px;
+    font-size: 13px;
+  }
+
+  /* --- Stats --- */
+  .kpi-row {
+    grid-template-columns: 1fr !important;
+    gap: 10px;
+    margin: 16px 0;
+  }
+  .kpi-card {
+    padding: 16px;
+  }
+  .kpi-card .num { font-size: 24px; }
+  .bar-row {
+    flex-wrap: wrap;
+  }
+  .bar-row .bar-label {
+    width: 100%;
+    margin-bottom: 4px;
+  }
+  .recent-row {
+    padding: 12px 0;
+    font-size: 13px;
+  }
+
+  /* --- Boutons (touch-friendly) --- */
+  .btn {
+    padding: 12px 18px;
+    font-size: 14px;
+    min-height: 44px;
+  }
+  .btn-full {
+    padding: 14px 18px;
+  }
+  .link-btn {
+    padding: 10px;
+    font-size: 14px;
+    min-height: 40px;
+  }
+
+  /* --- Formulaires : inputs lisibles (>=16px pour éviter zoom auto iOS) --- */
+  input[type="text"],
+  input[type="email"],
+  input[type="password"],
+  textarea,
+  select {
+    font-size: 16px !important;
+    padding: 12px 14px;
+    min-height: 44px;
+  }
+  textarea {
+    min-height: 100px;
+  }
+  label {
+    font-size: 13px;
+    margin-bottom: 8px;
+  }
+
+  /* --- Profil --- */
+  .user-avatar {
+    width: 64px;
+    height: 64px;
+    font-size: 26px;
+  }
+  .user-info h2 { font-size: 17px; }
+  .user-info p { font-size: 13px; }
+  .info-grid { gap: 14px; }
+  .security-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 14px 0;
+  }
+  .security-row button {
+    align-self: flex-start;
+  }
+  .detail-row {
+    font-size: 13px;
+    margin-bottom: 12px;
+  }
+
+  /* --- Settings --- */
+  .settings-row {
+    padding: 14px 0;
+  }
+  .settings-row-label p:first-child {
+    font-size: 14px;
+  }
+  .settings-row-label p:last-child {
+    font-size: 12px;
+  }
+
+  /* --- Auth --- */
+  .auth-card {
+    padding: 24px 18px;
+    margin: 12px;
+    border-radius: 12px;
+  }
+  .auth-logo {
+    width: 44px;
+    height: 44px;
+  }
+  .auth-title { font-size: 20px; }
+  .auth-subtitle { font-size: 13px; margin-bottom: 22px; }
+  .auth-footer { font-size: 12.5px; }
+  .section-title { font-size: 13px; }
+
+  /* --- Avatar modal : grille adaptée --- */
+  .modal {
+    max-width: 100%;
+    max-height: 90vh;
+    margin: 10px;
+    border-radius: 14px;
+  }
+  .modal-body {
+    grid-template-columns: repeat(auto-fill, minmax(48px, 1fr));
+    gap: 8px;
+    padding: 14px;
+  }
+  .avatar-option {
+    width: 44px;
+    height: 44px;
+    font-size: 20px;
+  }
+
+  /* --- Toast plus visible --- */
+  .toast {
+    bottom: 16px;
+    left: 12px;
+    right: 12px;
+    transform: translateY(20px);
+    font-size: 13.5px;
+    padding: 12px 16px;
+    text-align: center;
+  }
+  .toast.show {
+    transform: translateY(0);
+  }
+}
+
+/* ============================================================
+   MODE PAYSAGE MOBILE (<= 768px en orientation landscape)
+   ============================================================ */
+@media (max-width: 768px) and (orientation: landscape) {
+  /* Le rail reste vertical sur landscape (plus de place en hauteur) */
+  .rail {
+    flex-direction: column;
+    width: 48px;
+    height: auto;
+    min-height: 100vh;
+    border-right: 1px solid var(--border);
+    border-bottom: none;
+    padding: 10px 0;
+    gap: 14px;
+    overflow-x: visible;
+    overflow-y: auto;
+    position: static;
+  }
+  .rail-spacer { display: block; }
+  .globe-wrap { display: none; }
+  .hex-card {
+    position: static !important;
+    width: 100% !important;
+    margin-bottom: 10px;
+  }
+}
