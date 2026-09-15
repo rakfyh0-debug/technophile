@@ -182,14 +182,14 @@
             <div class="user-card">
               <div class="user-avatar" id="profile-avatar">R</div>
               <div class="user-info">
-                <h2 id="profile-username">rakyh0-debug</h2>
-                <p id="profile-email">rakyh0.debug@technophile.com</p>
+                <h2 id="profile-username"></h2>
+                <p id="profile-email"></p>
                 <div class="badges">
                   <span class="badge badge-gray">ADMINISTRATEUR</span>
                   <span class="badge badge-green">GRATUIT</span>
                 </div>
               </div>
-              <button class="btn btn-outline" style="margin-left:auto;font-size:12px;" onclick="showToast('Bientôt disponible')">Changer l'avatar</button>
+              <button class="btn btn-outline" style="margin-left:auto;font-size:12px;" id="change-avatar-btn">Changer l'avatar</button>
             </div>
           </div>
 
@@ -198,16 +198,19 @@
             <div class="info-grid">
               <div class="form-group">
                 <label>Nom d'utilisateur</label>
-                <input type="text" id="edit-username" value="rakyh0-debug">
+                <input type="text" id="edit-username">
               </div>
               <div class="form-group">
                 <label>Adresse email</label>
-                <input type="email" id="edit-email" value="rakyh0.debug@technophile.com">
+                <input type="email" id="edit-email">
               </div>
               <div class="form-group full">
                 <label>Bio</label>
-                <textarea id="edit-bio" rows="3">Passionné de Linux, cybersécurité et développement. Créateur de contenus techniques.</textarea>
+                <textarea id="edit-bio" rows="3"></textarea>
               </div>
+            </div>
+            <div style="display:flex;justify-content:flex-end;margin-top:16px;">
+              <button class="btn btn-primary" id="save-profile-btn">Enregistrer les modifications</button>
             </div>
           </div>
 
@@ -276,23 +279,232 @@
     };
   </script>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabase-config.js"></script>
 <script src="app.js"></script>
 <script src="partials.js"></script>
 <script>
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
+  let u = null;
+
+  // 1) Essayer Supabase en priorité
   try {
-    const u = JSON.parse(localStorage.getItem('technophile_user') || 'null');
-    if (!u) return;
-    const name  = document.getElementById('profile-username');
-    const email = document.getElementById('profile-email');
-    const av    = document.getElementById('profile-avatar');
-    if (name  && u.username) name.textContent  = u.username;
-    if (email && u.email)    email.textContent = u.email;
-    if (av    && u.avatar) {
-      av.textContent = u.avatar.animal;
-      av.style.background = u.avatar.gradient;
+    const client = typeof initSupabase === 'function' ? initSupabase() : null;
+    if (client) {
+      const { data: { session } } = await client.auth.getSession();
+      if (session?.user) {
+        const { data: profile } = await client
+          .from('profiles')
+          .select('*')
+          .eq('id', session.user.id)
+          .single();
+
+        u = {
+          email: session.user.email,
+          username: profile?.username || session.user.email.split('@')[0],
+          bio: profile?.bio || '',
+          avatar: profile?.avatar_animal ? {
+            animal: profile.avatar_animal,
+            gradient: profile.avatar_gradient
+          } : null
+        };
+
+        // Rafraîchir aussi le localStorage
+        localStorage.setItem('technophile_user', JSON.stringify({
+          id: session.user.id,
+          ...u,
+          createdAt: Date.now()
+        }));
+      }
     }
-  } catch (e) { console.warn('profile sync:', e); }
+  } catch (e) { console.warn('Supabase profile fetch:', e); }
+
+  // 2) Fallback localStorage
+  if (!u) {
+    try {
+      u = JSON.parse(localStorage.getItem('technophile_user') || 'null');
+    } catch (e) { u = null; }
+  }
+
+  if (!u) return;
+
+  // 3) Remplir les 6 emplacements
+  const setText = (id, val) => {
+    const el = document.getElementById(id);
+    if (el && val) el.textContent = val;
+  };
+  const setVal = (id, val) => {
+    const el = document.getElementById(id);
+    if (el) el.value = val || '';
+  };
+
+  setText('profile-username', u.username);
+  setText('profile-email', u.email);
+  setVal('edit-username', u.username);
+  setVal('edit-email', u.email);
+  setVal('edit-bio', u.bio);
+
+  const av = document.getElementById('profile-avatar');
+  if (av && u.avatar) {
+    av.textContent = u.avatar.animal;
+    av.style.background = u.avatar.gradient;
+  }
+});
+</script>
+
+    <!-- Modale de choix d'avatar -->
+  <div id="avatar-modal" class="modal-overlay">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 style="font-size:15px;font-weight:600;">Choisissez votre animal</h3>
+        <button onclick="closeAvatarModal()" style="background:none;border:none;color:var(--text-lo);cursor:pointer;font-size:18px;">✕</button>
+      </div>
+      <div id="avatar-grid" class="modal-body"></div>
+      <div class="modal-footer">
+        <button onclick="closeAvatarModal()" class="btn btn-outline">Fermer</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const gradients = [
+      'linear-gradient(135deg, #8b5cf6, #3b82f6)',
+      'linear-gradient(135deg, #ef4444, #f97316)',
+      'linear-gradient(135deg, #22c55e, #06b6d4)',
+      'linear-gradient(135deg, #eab308, #f97316)',
+      'linear-gradient(135deg, #ec4899, #f43f5e)',
+      'linear-gradient(135deg, #6366f1, #8b5cf6)',
+      'linear-gradient(135deg, #14b8a6, #10b981)',
+      'linear-gradient(135deg, #d946ef, #ec4899)',
+      'linear-gradient(135deg, #0ea5e9, #3b82f6)',
+      'linear-gradient(135deg, #4b5563, #1f2937)'
+    ];
+
+    const animalHeads = [
+      '🐶','🐱','🐭','🐹','🐰','🦊','🐻','🐼','🐨','🐯',
+      '🦁','🐮','🐷','🐸','🐵','🐔','🐧','🐦','🐤','🦆',
+      '🦅','🦉','🦇','🐺','🐗','🐴','🦄','🐝','🐛','🦋',
+      '🐌','🐞','🐜','🦟','🦗','🕷️','🦂','🐢','🐍','🦎',
+      '🦖','🦕','🐙','🦑','🦐','🦞','🦀','🐡','🐠','🐟',
+      '🐬','🐳','🐋','🦈','🐊','🐅','🐆','🦓','🦍','🦧',
+      '🐘','🦛','🦏','🐪','🐫','🦒','🦘','🐃','🐂','🐄',
+      '🐎','🐖','🐏','🐑','🦙','🐐','🦌','🐕','🐩','🦮',
+      '🐕‍🦺','🐈','🐈‍⬛','🪶','🐓','🦃','🦤','🦚','🦜','🦢',
+      '🦩','🕊️','🐇','🦝','🦨','🦡','🦦','🦥','🐁','🐀'
+    ];
+
+    let chosenAvatar = null;
+
+    function openAvatarModal() {
+      const grid = document.getElementById('avatar-grid');
+      if (grid && grid.children.length === 0) {
+        for (let i = 0; i < 100; i++) {
+          const div = document.createElement('div');
+          div.className = 'avatar-option';
+          div.style.background = gradients[i % gradients.length];
+          div.textContent = animalHeads[i];
+          div.onclick = () => selectAvatar(div, gradients[i % gradients.length], animalHeads[i]);
+          grid.appendChild(div);
+        }
+      }
+      document.getElementById('avatar-modal').classList.add('open');
+    }
+
+    function selectAvatar(el, gradient, animal) {
+      document.querySelectorAll('.avatar-option').forEach(e => e.classList.remove('selected'));
+      el.classList.add('selected');
+      chosenAvatar = { gradient, animal };
+
+      // Mise à jour visuelle immédiate
+      const profileAvatar = document.getElementById('profile-avatar');
+      if (profileAvatar) {
+        profileAvatar.textContent = animal;
+        profileAvatar.style.background = gradient;
+      }
+
+      // Sauvegarde dans localStorage
+      let user = JSON.parse(localStorage.getItem('technophile_user') || '{}');
+      user.avatar = { animal, gradient };
+      localStorage.setItem('technophile_user', JSON.stringify(user));
+
+      setTimeout(() => {
+        closeAvatarModal();
+        showToast('Avatar mis à jour');
+      }, 200);
+    }
+
+    function closeAvatarModal() {
+      document.getElementById('avatar-modal').classList.remove('open');
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const btn = document.getElementById('change-avatar-btn');
+      if (btn) btn.addEventListener('click', openAvatarModal);
+    });
+  </script>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const btn = document.getElementById('save-profile-btn');
+  if (!btn) return;
+
+  // Désactiver le champ email (modification = email de confirmation, plus complexe)
+  const emailInput = document.getElementById('edit-email');
+  if (emailInput) {
+    emailInput.disabled = true;
+    emailInput.style.opacity = '0.6';
+    emailInput.title = 'La modification de l\'email n\'est pas encore supportée';
+  }
+
+  btn.addEventListener('click', async () => {
+    const username = document.getElementById('edit-username').value.trim();
+    const bio      = document.getElementById('edit-bio').value.trim();
+
+    if (!username) {
+      showToast('Le nom d\'utilisateur est obligatoire');
+      return;
+    }
+
+    const client = typeof initSupabase === 'function' ? initSupabase() : null;
+    if (!client) return showToast('Supabase indisponible');
+
+    const { data: { session } } = await client.auth.getSession();
+    if (!session) return showToast('Non connecté');
+
+    btn.disabled = true;
+    btn.textContent = 'Enregistrement...';
+
+    const { error } = await client
+      .from('profiles')
+      .update({
+        username,
+        bio: bio || null,
+        updated_at: new Date().toISOString()
+      })
+      .eq('id', session.user.id);
+
+    if (error) {
+      console.error('save profile:', error);
+      showToast('Erreur : ' + error.message);
+      btn.disabled = false;
+      btn.textContent = 'Enregistrer les modifications';
+      return;
+    }
+
+    // MAJ localStorage
+    const u = JSON.parse(localStorage.getItem('technophile_user') || '{}');
+    u.username = username;
+    u.bio = bio;
+    localStorage.setItem('technophile_user', JSON.stringify(u));
+
+    // MAJ affichage
+    const h2 = document.getElementById('profile-username');
+    if (h2) h2.textContent = username;
+
+    showToast('Profil mis à jour');
+    btn.disabled = false;
+    btn.textContent = 'Enregistrer les modifications';
+  });
 });
 </script>
 </body>

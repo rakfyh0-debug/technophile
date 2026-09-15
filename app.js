@@ -237,3 +237,23 @@ function showToast(message) {
         toast.classList.remove('show');
     }, 2500);
 }
+
+// ==========================================
+// 5. SYNC AVATAR GLOBAL
+// ==========================================
+function syncAvatar() {
+    try {
+        const user = JSON.parse(localStorage.getItem('technophile_user') || 'null');
+        if (!user || !user.avatar) return;
+
+        document.querySelectorAll('.avatar').forEach(el => {
+            el.textContent = user.avatar.animal;
+            el.style.background = user.avatar.gradient;
+            el.style.fontSize = '14px';
+        });
+    } catch (e) {
+        console.warn('avatar sync:', e);
+    }
+}
+
+document.addEventListener('DOMContentLoaded', syncAvatar);

@@ -156,31 +156,78 @@
       document.getElementById('avatar-modal').classList.remove('open');
     }
 
-    document.getElementById('signup-form').addEventListener('submit', function(e) {
+        document.getElementById('signup-form').addEventListener('submit', async function(e) {
       e.preventDefault();
+
+      const email = document.getElementById('email').value.trim();
       const password = document.getElementById('password').value;
       const password2 = document.getElementById('password2').value;
+      const username = document.getElementById('username').value.trim();
+      const bio = document.getElementById('bio').value.trim();
 
       if (password !== password2) {
-        alert('Les mots de passe ne correspondent pas.');
+        showToast('Les mots de passe ne correspondent pas');
+        return;
+      }
+      if (password.length < 6) {
+        showToast('Mot de passe trop court (min 6 caractères)');
         return;
       }
 
-      // Redirection temporaire
-      const u = {
-        email: document.getElementById('email').value,
-        username: document.getElementById('username').value,
-        bio: document.getElementById('bio').value,
+      const client = typeof initSupabase === 'function' ? initSupabase() : null;
+      if (!client) {
+        showToast('Supabase non disponible');
+        return;
+      }
+
+      const submitBtn = document.querySelector('#signup-form button[type="submit"]');
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Création du compte...';
+
+      const { data, error } = await client.auth.signUp({
+        email,
+        password,
+        options: { data: { username, bio } }
+      });
+
+      if (error) {
+        console.error('signUp error:', error);
+        showToast('Erreur : ' + error.message);
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Créer mon compte et mon profil';
+        return;
+      }
+
+      if (selectedAvatar && data.user) {
+        const { error: updErr } = await client
+          .from('profiles')
+          .update({
+            bio: bio || null,
+            avatar_animal: selectedAvatar.animal,
+            avatar_gradient: selectedAvatar.gradient
+          })
+          .eq('id', data.user.id);
+        if (updErr) console.warn('Profil update:', updErr);
+      }
+
+      localStorage.setItem('technophile_user', JSON.stringify({
+        id: data.user?.id,
+        email, username, bio,
         avatar: selectedAvatar,
         createdAt: Date.now()
-      };
-      localStorage.setItem('technophile_user', JSON.stringify(u));
-      window.location.href = 'profile.html?welcome=true';
+      }));
+
+      showToast('Compte créé !');
+      setTimeout(() => {
+        window.location.href = 'profile.html?welcome=true';
+      }, 600);
     });
 
-    window.onload = generateAvatars;
+    window.addEventListener('DOMContentLoaded', generateAvatars);
   </script>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabase-config.js"></script>
 <script src="app.js"></script>
 <script src="partials.js"></script>
 </body>

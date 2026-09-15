@@ -1,11 +1,10 @@
-// technophile — logique JS du site (recherche, filtres, tri, interactions)
+// technophile — logique JS corrigée (sélection dynamique des cartes)
 
 document.addEventListener('DOMContentLoaded', () => {
   const searchInput = document.getElementById('global-search');
   const statusFilter = document.getElementById('status-filter');
   const sortToggle = document.getElementById('sort-toggle');
   const projectList = document.querySelector('.side-projects');
-  const projectCards = Array.from(document.querySelectorAll('.proj-card'));
 
   // Raccourci Ctrl+K / Cmd+K pour focus la recherche
   if (searchInput) {
@@ -20,8 +19,9 @@ document.addEventListener('DOMContentLoaded', () => {
   function applyFilters() {
     const query = (searchInput?.value || '').trim().toLowerCase();
     const status = (statusFilter?.value || '').toLowerCase();
+    const currentCards = Array.from(document.querySelectorAll('.proj-card'));
 
-    projectCards.forEach((card) => {
+    currentCards.forEach((card) => {
       const title = card.querySelector('h4')?.textContent.toLowerCase() || '';
       const desc = card.querySelector('p')?.textContent.toLowerCase() || '';
       const tag = card.querySelector('.status-tag')?.textContent.toLowerCase() || '';
@@ -36,11 +36,12 @@ document.addEventListener('DOMContentLoaded', () => {
   searchInput?.addEventListener('input', applyFilters);
   statusFilter?.addEventListener('change', applyFilters);
 
-  // Tri alphabétique (bascule croissant / décroissant)
+  // Tri alphabétique dynamique
   let sortAscending = true;
   sortToggle?.addEventListener('click', () => {
     sortAscending = !sortAscending;
-    const sorted = [...projectCards].sort((a, b) => {
+    const currentCards = Array.from(document.querySelectorAll('.proj-card'));
+    const sorted = [...currentCards].sort((a, b) => {
       const nameA = a.querySelector('h4')?.textContent.trim().toLowerCase() || '';
       const nameB = b.querySelector('h4')?.textContent.trim().toLowerCase() || '';
       return sortAscending ? nameA.localeCompare(nameB) : nameB.localeCompare(nameA);
