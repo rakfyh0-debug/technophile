@@ -900,3 +900,274 @@ h1 {
   background: var(--bg-0);
   color: var(--text-hi);
 }
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+
+/* Tablette et en dessous */
+@media (max-width: 1024px) {
+  .layout {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+  .content-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .hex-wrap {
+    width: 100%;
+    height: auto;
+    min-height: 400px;
+  }
+  .side-projects {
+    width: 100%;
+    padding-left: 0;
+  }
+  .side-projects::before {
+    display: none;
+  }
+  .proj-card::before {
+    display: none;
+  }
+  .usage-panel {
+    margin-top: 20px;
+  }
+  main {
+    padding: 16px 20px;
+  }
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+  /* Barre d'onglets décor : on la cache */
+  .browser-chrome {
+    display: none;
+  }
+
+  /* Topbar plus compacte */
+  .topbar {
+    padding: 8px 12px;
+    gap: 8px;
+  }
+  .topbar-right {
+    gap: 8px;
+  }
+  .search-pill {
+    display: none;
+  }
+  .org-name {
+    font-size: 13px;
+  }
+
+  /* Rail : passage en barre horizontale fixe en bas */
+  .shell {
+    flex-direction: column;
+  }
+  .rail {
+    flex-direction: row;
+    width: 100%;
+    min-height: auto;
+    height: auto;
+    padding: 8px 12px;
+    gap: 12px;
+    border-right: none;
+    border-bottom: 1px solid var(--border);
+    overflow-x: auto;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: var(--bg-0);
+  }
+  .rail-spacer {
+    display: none;
+  }
+  .rail-icon {
+    width: 32px;
+    height: 32px;
+    flex-shrink: 0;
+  }
+  .rail-icon svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  /* Layout principal */
+  main {
+    padding: 12px 14px;
+  }
+  h1 {
+    font-size: 18px;
+  }
+
+  /* Toolbar */
+  .toolbar {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .toolbar .select,
+  .toolbar .sort {
+    font-size: 12px;
+    padding: 6px 10px;
+  }
+
+  /* Hexagone → cartes empilées */
+  .hex-wrap {
+    height: auto;
+    min-height: 0;
+    padding: 20px 0;
+  }
+  .hex-wrap > svg {
+    display: none;
+  }
+  .globe-wrap {
+    position: static;
+    transform: none;
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+  }
+  .hex-card {
+    position: static !important;
+    width: 100% !important;
+    margin-bottom: 10px;
+  }
+
+  /* Cartes de projets */
+  .side-projects {
+    gap: 8px;
+  }
+  .proj-card h4 {
+    font-size: 13px;
+  }
+  .proj-card p {
+    font-size: 11.5px;
+  }
+
+  /* Panneau usage */
+  .usage-head {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  .usage-row {
+    font-size: 12px;
+  }
+
+  /* Profil */
+  .profile-content {
+    flex-direction: column;
+    overflow: visible;
+  }
+  .profile-center {
+    padding: 20px 16px;
+  }
+  .profile-right {
+    width: 100%;
+    border-left: none;
+    border-top: 1px solid var(--border);
+    padding: 20px 16px;
+  }
+  .profile-topbar {
+    padding: 0 16px;
+  }
+  .user-card {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 14px;
+  }
+  .user-card .btn {
+    margin-left: 0 !important;
+  }
+  .info-grid {
+    grid-template-columns: 1fr;
+  }
+
+  /* App pages (database, projects, stats) */
+  .app-center {
+    padding: 20px 16px;
+  }
+  .page-wrap {
+    padding: 0;
+  }
+  .kpi-row {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 10px;
+  }
+  .kpi-card .num {
+    font-size: 20px;
+  }
+  .proj-grid {
+    grid-template-columns: 1fr;
+  }
+  .proj-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .proj-toolbar .spacer {
+    display: none;
+  }
+  .proj-toolbar input,
+  .proj-toolbar select {
+    width: 100% !important;
+    max-width: none !important;
+  }
+
+  /* Table DB → scroll horizontal */
+  .db-table {
+    font-size: 12px;
+  }
+  .value-preview {
+    max-width: 200px;
+  }
+
+  /* Auth pages */
+  .auth-card {
+    padding: 24px 20px;
+    margin: 12px;
+  }
+  .auth-title {
+    font-size: 20px;
+  }
+  .form-row {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+
+  /* Settings */
+  .settings-wrap {
+    padding: 0;
+  }
+  .settings-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  .settings-row select {
+    width: 100%;
+  }
+}
+
+/* Très petit mobile */
+@media (max-width: 480px) {
+  .rail {
+    padding: 6px 8px;
+    gap: 8px;
+  }
+  .rail-icon {
+    width: 28px;
+    height: 28px;
+  }
+  .kpi-row {
+    grid-template-columns: 1fr !important;
+  }
+  .usage-panel {
+    padding: 14px;
+  }
+  h1 {
+    font-size: 17px;
+  }
+  .auth-title {
+    font-size: 18px;
+  }
+}
