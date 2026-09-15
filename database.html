@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Base de données - technophile</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .app-layout { display: flex; min-height: 100vh; }
+    .app-main { flex: 1; display: flex; flex-direction: column; min-width: 0; }
+    .app-topbar {
+      height: 48px; border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 24px; background: var(--bg-1); flex-shrink: 0;
+    }
+    .breadcrumb { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--text-lo); }
+    .app-center { flex: 1; overflow-y: auto; padding: 32px 40px; }
+    .page-wrap { max-width: 900px; margin: 0 auto; }
+
+    table.db-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    table.db-table th {
+      text-align: left; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em;
+      color: var(--text-muted); padding: 8px 10px; border-bottom: 1px solid var(--border);
+    }
+    table.db-table td {
+      padding: 10px; border-bottom: 1px solid var(--border); vertical-align: top;
+    }
+    table.db-table code {
+      font-family: ui-monospace, monospace; font-size: 11px; color: var(--text-hi);
+    }
+    .value-preview {
+      font-family: ui-monospace, monospace; font-size: 11.5px; color: var(--text-lo);
+      max-width: 420px; display: block; white-space: pre-wrap; word-break: break-word;
+    }
+    .db-actions { display: flex; gap: 6px; }
+    .db-actions button {
+      background: none; border: 1px solid var(--border); border-radius: 4px;
+      color: var(--text-lo); font-size: 11px; padding: 3px 8px; cursor: pointer;
+    }
+    .db-actions button:hover { color: var(--danger); border-color: rgba(239,68,68,0.4); }
+  </style>
+</head>
+<body>
+
+  <div class="app-layout">
+    <div class="rail"></div>
+
+    <div class="app-main">
+      <header class="app-topbar">
+        <div class="breadcrumb">
+          <span>technophile</span><span>/</span>
+          <span style="color:var(--text-hi);font-weight:500;">Base de données</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:14px;">
+          <div class="avatar" style="cursor:pointer;" onclick="location.href='profile.html'">R</div>
+        </div>
+      </header>
+
+      <main class="app-center">
+        <div class="page-wrap">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+            <div>
+              <h1 style="font-size:22px;font-weight:600;">Base de données</h1>
+              <p style="font-size:13px;color:var(--text-lo);">Contenu réel du <code style="font-family:ui-monospace,monospace;">localStorage</code> de ce navigateur pour ce site.</p>
+            </div>
+            <button type="button" class="btn btn-danger" id="reset-all">Réinitialiser tout</button>
+          </div>
+
+          <div class="card" style="margin-top:20px;">
+            <table class="db-table">
+              <thead>
+                <tr>
+                  <th>Clé</th>
+                  <th>Type</th>
+                  <th>Valeur</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody id="db-body"></tbody>
+            </table>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+  <script>
+    seedProjectsIfEmpty();
+
+    const KNOWN_KEYS = {
+      'technophile_projects': 'Liste des projets (tableau JSON)',
+      'technophile_notif_email': 'Préférence : alertes email',
+      'technophile_notif_push': 'Préférence : notifications push',
+    };
+
+    function describeValue(key, raw) {
+      if (key === 'technophile_projects') {
+        try {
+          const arr = JSON.parse(raw);
+          return `${arr.length} projet(s)`;
+        } catch {
+          return raw;
+        }
+      }
+      return raw;
+    }
+
+    function render() {
+      const body = document.getElementById('db-body');
+      body.innerHTML = '';
+
+      const keys = Object.keys(localStorage).filter(k => k.startsWith('technophile_'));
+
+      if (keys.length === 0) {
+        body.innerHTML = '<tr><td colspan="4" style="color:var(--text-lo);">Aucune donnée locale pour l\\'instant.</td></tr>';
+        return;
+      }
+
+      keys.forEach(key => {
+        const raw = localStorage.getItem(key);
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td><code>${key}</code><br><span style="font-size:11px;color:var(--text-muted);">${KNOWN_KEYS[key] || 'Donnée personnalisée'}</span></td>
+          <td>${raw && raw.trim().startsWith('[') ? 'Tableau' : 'Texte'}</td>
+          <td><span class="value-preview">${describeValue(key, raw)}</span></td>
+          <td class="db-actions"><button type="button" data-key="${key}">Vider</button></td>
+        `;
+        tr.querySelector('button[data-key]').addEventListener('click', (e) => {
+          localStorage.removeItem(e.target.dataset.key);
+          render();
+          showToast('Donnée supprimée');
+        });
+        body.appendChild(tr);
+      });
+    }
+
+    document.getElementById('reset-all').addEventListener('click', () => {
+      if (!confirm('Effacer toutes les données locales de technophile sur ce navigateur ?')) return;
+      Object.keys(localStorage)
+        .filter(k => k.startsWith('technophile_'))
+        .forEach(k => localStorage.removeItem(k));
+      render();
+      showToast('Données réinitialisées');
+    });
+
+    render();
+  </script>
+<script src="app.js"></script>
+<script src="partials.js"></script>
+</body>
+</html>

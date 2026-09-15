@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Statistiques - technophile</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .app-layout { display: flex; min-height: 100vh; }
+    .app-main { flex: 1; display: flex; flex-direction: column; min-width: 0; }
+    .app-topbar {
+      height: 48px; border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 24px; background: var(--bg-1); flex-shrink: 0;
+    }
+    .breadcrumb { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--text-lo); }
+    .app-center { flex: 1; overflow-y: auto; padding: 32px 40px; }
+    .page-wrap { max-width: 860px; margin: 0 auto; }
+
+    .kpi-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin: 24px 0; }
+    .kpi-card {
+      background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 18px;
+    }
+    .kpi-card .num { font-size: 26px; font-weight: 700; }
+    .kpi-card .label { font-size: 12px; color: var(--text-lo); margin-top: 4px; }
+
+    .bar-row { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
+    .bar-row .bar-label { width: 110px; font-size: 12.5px; color: var(--text-lo); flex-shrink: 0; }
+    .bar-track { flex: 1; height: 10px; background: var(--bg-1); border-radius: 6px; overflow: hidden; }
+    .bar-fill { height: 100%; border-radius: 6px; background: var(--accent); transition: width 0.3s; }
+    .bar-row .bar-count { width: 30px; text-align: right; font-size: 12.5px; color: var(--text-lo); }
+
+    .recent-row {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 10px 0; border-top: 1px solid var(--border); font-size: 13px;
+    }
+    .recent-row:first-child { border-top: none; }
+  </style>
+</head>
+<body>
+
+  <div class="app-layout">
+    <div class="rail"></div>
+
+    <div class="app-main">
+      <header class="app-topbar">
+        <div class="breadcrumb">
+          <span>technophile</span><span>/</span>
+          <span style="color:var(--text-hi);font-weight:500;">Statistiques</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:14px;">
+          <div class="avatar" style="cursor:pointer;" onclick="location.href='profile.html'">R</div>
+        </div>
+      </header>
+
+      <main class="app-center">
+        <div class="page-wrap">
+          <h1 style="font-size:22px;font-weight:600;">Statistiques</h1>
+          <p style="font-size:13px;color:var(--text-lo);">Calculées à partir de tes projets enregistrés.</p>
+
+          <div class="kpi-row" id="kpi-row"></div>
+
+          <div class="card" style="margin-bottom:20px;">
+            <div class="card-title">Répartition par niveau</div>
+            <div id="level-bars"></div>
+          </div>
+
+          <div class="card">
+            <div class="card-title">Projets récents</div>
+            <div id="recent-list"></div>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+  <script>
+    seedProjectsIfEmpty();
+    const projects = getProjects();
+
+    const total = projects.length;
+    const counts = { 'débutant': 0, 'intermédiaire': 0, 'avancé': 0 };
+    projects.forEach(p => { if (counts[p.level] !== undefined) counts[p.level]++; });
+
+    document.getElementById('kpi-row').innerHTML = `
+      <div class="kpi-card"><div class="num">${total}</div><div class="label">Projets au total</div></div>
+      <div class="kpi-card"><div class="num">${counts['débutant']}</div><div class="label">Niveau débutant</div></div>
+      <div class="kpi-card"><div class="num">${counts['intermédiaire']}</div><div class="label">Niveau intermédiaire</div></div>
+      <div class="kpi-card"><div class="num">${counts['avancé']}</div><div class="label">Niveau avancé</div></div>
+    `;
+
+    const barsEl = document.getElementById('level-bars');
+    ['débutant', 'intermédiaire', 'avancé'].forEach(level => {
+      const count = counts[level];
+      const pct = total ? Math.round((count / total) * 100) : 0;
+      const row = document.createElement('div');
+      row.className = 'bar-row';
+      row.innerHTML = `
+        <div class="bar-label">${level.charAt(0).toUpperCase() + level.slice(1)}</div>
+        <div class="bar-track"><div class="bar-fill" style="width:${pct}%;"></div></div>
+        <div class="bar-count">${count}</div>
+      `;
+      barsEl.appendChild(row);
+    });
+
+    const recentEl = document.getElementById('recent-list');
+    const recent = [...projects].sort((a, b) => b.createdAt - a.createdAt).slice(0, 5);
+    if (recent.length === 0) {
+      recentEl.innerHTML = '<p style="font-size:13px;color:var(--text-lo);">Aucun projet pour l\\'instant.</p>';
+    } else {
+      recent.forEach(p => {
+        const row = document.createElement('div');
+        row.className = 'recent-row';
+        const date = new Date(p.createdAt).toLocaleDateString('fr-FR');
+        row.innerHTML = `<span>${p.title}</span><span style="color:var(--text-lo);">${date}</span>`;
+        recentEl.appendChild(row);
+      });
+    }
+  </script>
+<script src="app.js"></script>
+<script src="partials.js"></script>
+</body>
+</html>

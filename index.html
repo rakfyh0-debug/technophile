@@ -1,0 +1,223 @@
+<!doctype html>
+<html lang="fr" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<title>technophile</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Barre d'onglets navigateur (décor) -->
+  <div class="browser-chrome">
+    <div class="tab active">technophile</div>
+    <div class="tab">Interface Studio - O...</div>
+    <div class="tab">Studio - Proj...</div>
+    <div class="tab">Studio - Proj...</div>
+  </div>
+
+  <!-- Topbar -->
+  <div class="topbar">
+    <div class="topbar-left">
+      <div class="logo-mark">&gt;_</div>
+      <span class="org-name">technophile</span>
+      <span class="badge">GRATUIT</span>
+    </div>
+    <div class="topbar-right">
+      <span data-i18n="topbar.back">Retour</span>
+      <div class="search-pill"><input type="text" id="global-search" placeholder="Recherche..." data-i18n="search.placeholder" autocomplete="off"><span class="search-shortcut"><kbd>Ctrl K</kbd></span></div>
+      <span>?</span>
+      <div class="avatar" onclick="location.href='profile.html'">R</div>
+    </div>
+  </div>
+
+  <div class="shell">
+
+    <!-- Sidebar -->
+    <div class="rail"></div>
+
+    <main>
+      <h1 data-i18n="page.projects">Projets</h1>
+
+      <!-- Toolbar -->
+      <div class="toolbar">
+        <select class="select" id="status-filter">
+          <option value="" data-i18n="toolbar.status.all">Statut (tous)</option>
+          <option value="débutant" data-i18n="toolbar.level.beginner">Niveau débutant</option>
+          <option value="intermédiaire" data-i18n="toolbar.level.intermediate">Niveau intermédiaire</option>
+          <option value="avancé" data-i18n="toolbar.level.advanced">Niveau avancé</option>
+        </select>
+        <button type="button" class="sort" id="sort-toggle">↕ Trié par nom</button>
+        <div class="spacer"></div>
+        <button type="button" class="icon-btn" id="view-grid" title="Vue grille"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg></button>
+        <button type="button" class="icon-btn active" id="view-list" title="Vue liste"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16"/><path d="M4 12h16"/><path d="M4 18h16"/></svg></button>
+      </div>
+
+      <div class="layout">
+        <div class="content-row">
+
+          <!-- Colonne : projets pratiques réalisables -->
+          <div class="side-projects"></div>
+
+          <!-- Hexagone : les 6 formations + globe animé au centre -->
+          <div class="hex-wrap">
+
+            <svg viewBox="0 0 700 470" style="position:absolute; inset:0; width:100%; height:100%;" aria-hidden="true">
+              <polygon points="350,20 460,157 460,312 350,450 240,312 240,157"
+                       fill="none" stroke="var(--border)" stroke-width="1.5" />
+            </svg>
+
+            <!-- Globe filaire + deux anneaux animés -->
+            <div class="globe-wrap">
+              <svg width="260" height="260" viewBox="0 0 220 220">
+                <g class="ring-outer">
+                  <path d="M 5 110 A 105 34 0 0 1 215 110" fill="none" stroke="#3b82f6" stroke-width="1.5" stroke-dasharray="3 5" />
+                </g>
+                <g class="ring-inner">
+                  <path d="M 20 110 A 90 24 0 0 1 200 110" fill="none" stroke="var(--accent)" stroke-width="1.5" stroke-dasharray="2 4" />
+                </g>
+
+                <circle cx="110" cy="110" r="75" fill="#0d0f11" />
+                <g class="planet-grid">
+                  <ellipse cx="110" cy="110" rx="75" ry="75" fill="none" stroke="#3a3f45" stroke-width="1" />
+                  <ellipse cx="110" cy="110" rx="75" ry="48" fill="none" stroke="#3a3f45" stroke-width="1" />
+                  <ellipse cx="110" cy="110" rx="75" ry="21" fill="none" stroke="#3a3f45" stroke-width="1" />
+                  <ellipse cx="110" cy="110" rx="48" ry="75" fill="none" stroke="#3a3f45" stroke-width="1" />
+                  <ellipse cx="110" cy="110" rx="21" ry="75" fill="none" stroke="#3a3f45" stroke-width="1" />
+                  <line x1="35" y1="110" x2="185" y2="110" stroke="#3a3f45" stroke-width="1" />
+                  <line x1="110" y1="35" x2="110" y2="185" stroke="#3a3f45" stroke-width="1" />
+                </g>
+                <circle cx="110" cy="110" r="75" fill="none" stroke="#4a4f55" stroke-width="1.5" />
+
+                <g class="ring-inner">
+                  <path d="M 20 110 A 90 24 0 0 0 200 110" fill="none" stroke="var(--accent)" stroke-width="1.5" stroke-dasharray="2 4" />
+                </g>
+                <g class="ring-outer">
+                  <path d="M 5 110 A 105 34 0 0 0 215 110" fill="none" stroke="#3b82f6" stroke-width="1.5" stroke-dasharray="3 5" />
+                </g>
+              </svg>
+            </div>
+
+            <div class="hex-card hex-pos-top">
+              <h3>Logique algorithmique</h3>
+              <p>Katas de code et énigmes logiques, validés automatiquement par des tests.</p>
+              <span class="status-tag">DISPONIBLE</span>
+            </div>
+
+            <div class="hex-card hex-pos-right-up">
+              <h3>Git et travail collaboratif</h3>
+              <p>Branches, merges, conflits, Pull Requests : versionne ton code.</p>
+              <span class="status-tag">DISPONIBLE</span>
+            </div>
+
+            <div class="hex-card hex-pos-right-down">
+              <h3>Développement web</h3>
+              <p>HTML, CSS, SQL, tests automatisés : brique par brique.</p>
+              <span class="status-tag">DISPONIBLE</span>
+            </div>
+
+            <div class="hex-card featured hex-pos-bottom">
+              <h3>Intelligence artificielle</h3>
+              <p>Ollama en local, modèles Llama/Mistral, pilotage en ligne de commande.</p>
+              <span class="status-tag">DISPONIBLE</span>
+            </div>
+
+            <div class="hex-card hex-pos-left-down">
+              <h3>Cybersécurité et Pentesting</h3>
+              <p>Traque des flags cachés avec Nmap et curl.</p>
+              <span class="status-tag">DISPONIBLE</span>
+            </div>
+
+            <div class="hex-card hex-pos-left-up">
+              <h3>Système, réseaux, DevOps</h3>
+              <p>Terminal virtuel : Bash, Docker, Git.</p>
+              <span class="status-tag">DISPONIBLE</span>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Panneau d'utilisation du forfait -->
+        <!-- Notifications discrètes -->
+        <div class="notif-panel">
+          <div class="notif-item">
+            <span class="notif-dot green"></span>
+            <div>
+              <strong>Nouvelle formation</strong>
+              <p>Intelligence Artificielle est maintenant disponible</p>
+            </div>
+          </div>
+          <div class="notif-item">
+            <span class="notif-dot blue"></span>
+            <div>
+              <strong>Mise à jour</strong>
+              <p>Système de profil amélioré</p>
+            </div>
+          </div>
+          <div class="notif-item">
+            <span class="notif-dot orange"></span>
+            <div>
+              <strong>Astuce</strong>
+              <p>Utilise Ctrl+K pour rechercher rapidement</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="usage-panel">
+          <div class="usage-head">
+            <div>
+              <h4>Utilisation du forfait gratuit</h4>
+              <p>Cycle de facturation act...</p>
+            </div>
+            <button class="btn-outline" onclick="showToast('Bientôt disponible')">Passez à la version Pro</button>
+          </div>
+
+          <div class="usage-row">
+            <div class="usage-label"><span class="ring fill"></span>Sortie</div>
+            <div class="usage-val">0,00 / 5 Go</div>
+          </div>
+          <div class="usage-row">
+            <div class="usage-label"><span class="ring"></span>Taille de la base de données</div>
+            <div class="usage-val">26 / 500 Mo</div>
+          </div>
+          <div class="usage-row">
+            <div class="usage-label"><span class="ring"></span>Utilisateurs actifs mensuels</div>
+            <div class="usage-val">2 / 50 000</div>
+          </div>
+          <div class="usage-row">
+            <div class="usage-label"><span class="ring"></span>stockage de fichiers</div>
+            <div class="usage-val">0 / 1 Go</div>
+          </div>
+        </div>
+
+      </div>
+    </main>
+  </div>
+
+  <script src="script.js"></script>
+<script src="app.js"></script>
+<script src="partials.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  if (typeof seedProjectsIfEmpty !== 'function') return;
+  seedProjectsIfEmpty();
+
+  const el = document.querySelector('.side-projects');
+  if (!el) return;
+
+  const list = getProjects();
+  if (list.length === 0) {
+    el.innerHTML = '<p style="font-size:12px;color:var(--text-muted);">Aucun projet. Créez-en un depuis la page Projets.</p>';
+    return;
+  }
+
+  el.innerHTML = list.map(p => `
+    <div class="proj-card">
+      <h4>${p.title}</h4>
+      <p>${p.description}</p>
+      <span class="status-tag">Niveau ${p.level}</span>
+    </div>
+  `).join('');
+});
+</script>
+</body>
+</html>

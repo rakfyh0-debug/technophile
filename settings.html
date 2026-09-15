@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Paramètres - technophile</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .app-layout {
+      display: flex;
+      min-height: 100vh;
+    }
+    .app-main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+    }
+    .app-topbar {
+      height: 48px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 24px;
+      background: var(--bg-1);
+      flex-shrink: 0;
+    }
+    .breadcrumb {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      color: var(--text-lo);
+    }
+    .app-center {
+      flex: 1;
+      overflow-y: auto;
+      padding: 32px 40px;
+    }
+    .settings-wrap {
+      max-width: 640px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+    .settings-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 16px 0;
+      border-top: 1px solid var(--border);
+    }
+    .settings-row:first-child {
+      border-top: none;
+      padding-top: 0;
+    }
+    .settings-row-label p:first-child {
+      font-size: 13px;
+      margin-bottom: 2px;
+    }
+    .settings-row-label p:last-child {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+    .link-btn {
+      background: none;
+      border: none;
+      color: var(--accent);
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+    }
+    .card-danger {
+      border-color: rgba(239, 68, 68, 0.35);
+    }
+    .card-danger .card-title {
+      color: var(--danger);
+      border-bottom-color: rgba(239, 68, 68, 0.35);
+    }
+
+    /* Toggle switch */
+    .toggle {
+      position: relative;
+      display: inline-block;
+      width: 36px;
+      height: 20px;
+      flex-shrink: 0;
+    }
+    .toggle input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+    .toggle-slider {
+      position: absolute;
+      inset: 0;
+      background: #374151;
+      border-radius: 999px;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    .toggle-slider::before {
+      content: "";
+      position: absolute;
+      height: 16px;
+      width: 16px;
+      left: 2px;
+      top: 2px;
+      background: #fff;
+      border-radius: 50%;
+      transition: transform 0.15s;
+    }
+    .toggle input:checked + .toggle-slider {
+      background: var(--accent);
+    }
+    .toggle input:checked + .toggle-slider::before {
+      transform: translateX(16px);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="app-layout">
+
+    <!-- RAIL -->
+    <div class="rail"></div>
+
+    <!-- MAIN -->
+    <div class="app-main">
+
+      <header class="app-topbar">
+        <div class="breadcrumb">
+          <span>technophile</span>
+          <span>/</span>
+          <span style="color:var(--text-hi);font-weight:500;">Paramètres</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:14px;">
+          <div class="search-pill" style="min-width:170px;padding:5px 10px;font-size:12px;">
+            Recherche... <span class="search-shortcut"><kbd>Ctrl K</kbd></span>
+          </div>
+          <div class="avatar" style="cursor:pointer;" onclick="location.href='profile.html'">R</div>
+        </div>
+      </header>
+
+      <main class="app-center">
+        <div class="settings-wrap">
+
+          <div>
+            <h1 style="font-size:22px;font-weight:600;margin-bottom:6px;">Paramètres</h1>
+            <p style="font-size:13px;color:var(--text-lo);">Gérez vos préférences et les paramètres de votre compte.</p>
+          </div>
+
+          <!-- Apparence -->
+          <div class="card">
+            <div class="card-title" data-i18n="settings.appearance">Apparence</div>
+
+            <div class="settings-row">
+              <div class="settings-row-label">
+                <p data-i18n="settings.theme">Thème de l'interface</p>
+                <p data-i18n="settings.theme.desc">Choisissez entre le mode clair et le mode sombre.</p>
+              </div>
+              <select id="theme-select" class="select">
+                <option value="dark"   data-i18n="settings.theme.dark">Sombre</option>
+                <option value="light"  data-i18n="settings.theme.light">Clair</option>
+                <option value="system" data-i18n="settings.theme.system">Système</option>
+              </select>
+            </div>
+
+            <div class="settings-row">
+              <div class="settings-row-label">
+                <p data-i18n="settings.language">Langue</p>
+                <p data-i18n="settings.language.desc">La langue d'affichage de l'application.</p>
+              </div>
+              <select id="lang-select" class="select">
+                <option value="fr">Français</option>
+                <option value="en">English</option>
+                <option value="es">Español</option>
+              </select>
+            </div>
+          </div>
+
+
+          <!-- Notifications -->
+          <div class="card">
+            <div class="card-title">Notifications</div>
+            <div class="settings-row">
+              <div class="settings-row-label">
+                <p>Alertes par email</p>
+                <p>Recevez un email lorsqu'un projet est mis à jour.</p>
+              </div>
+              <label class="toggle">
+                <input type="checkbox" id="notif-email" checked>
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+            <div class="settings-row">
+              <div class="settings-row-label">
+                <p>Notifications push</p>
+                <p>Recevez des notifications dans votre navigateur.</p>
+              </div>
+              <label class="toggle">
+                <input type="checkbox" id="notif-push">
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+          </div>
+
+          <!-- Sécurité -->
+          <div class="card">
+            <div class="card-title">Sécurité</div>
+            <div class="settings-row">
+              <div class="settings-row-label">
+                <p>Mot de passe</p>
+                <p>Dernière modification il y a 3 mois</p>
+              </div>
+              <button type="button" class="link-btn" onclick="showToast('Bientôt disponible')">Modifier</button>
+            </div>
+            <div class="settings-row">
+              <div class="settings-row-label">
+                <p>Authentification à deux facteurs (2FA)</p>
+                <p>Ajoutez une couche de sécurité supplémentaire.</p>
+              </div>
+              <button type="button" class="link-btn" onclick="showToast('Bientôt disponible')">Activer</button>
+            </div>
+          </div>
+
+          <!-- Zone de danger -->
+          <div class="card card-danger">
+            <div class="card-title">Zone de danger</div>
+            <div class="settings-row">
+              <div class="settings-row-label">
+                <p>Supprimer le compte</p>
+                <p>Une fois supprimé, toutes vos données seront effacées.</p>
+              </div>
+              <button type="button" class="btn btn-danger" onclick="showToast('Bientôt disponible')">Supprimer</button>
+            </div>
+          </div>
+
+          <div style="display:flex;justify-content:flex-end;gap:12px;padding-top:8px;">
+            <button type="button" class="btn btn-outline" onclick="location.href='index.html'">Annuler</button>
+            <button type="button" class="btn btn-primary" onclick="location.href='index.html'">Enregistrer les paramètres</button>
+          </div>
+
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+  <script>
+    // Persistance simple des notifications (pas de backend pour l'instant)
+    document.addEventListener('DOMContentLoaded', () => {
+      const emailToggle = document.getElementById('notif-email');
+      const pushToggle = document.getElementById('notif-push');
+
+      emailToggle.checked = localStorage.getItem('technophile_notif_email') !== 'false';
+      pushToggle.checked = localStorage.getItem('technophile_notif_push') === 'true';
+
+      emailToggle.addEventListener('change', () => {
+        localStorage.setItem('technophile_notif_email', emailToggle.checked);
+      });
+      pushToggle.addEventListener('change', () => {
+        localStorage.setItem('technophile_notif_push', pushToggle.checked);
+      });
+    });
+  </script>
+<script src="app.js"></script>
+<script src="partials.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const ts = document.getElementById('theme-select');
+  const ls = document.getElementById('lang-select');
+  if (!ts || !ls) return;
+  ts.value = localStorage.getItem('technophile_theme') || 'dark';
+  ls.value = localStorage.getItem('technophile_lang')  || 'fr';
+  ts.addEventListener('change', () => setTheme(ts.value));
+  ls.addEventListener('change', () => setLanguage(ls.value));
+});
+</script>
+</body>
+</html>

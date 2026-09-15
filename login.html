@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="fr" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Connexion - technophile</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="auth-page">
+
+  <div class="auth-card">
+    <div class="auth-logo">
+      <svg viewBox="0 0 24 24" fill="currentColor">
+        <path d="M21.36 12.5l-7.9-9.6a1.5 1.5 0 00-2.6.9v7.2H3.5a1.5 1.5 0 00-1.1 2.5l7.9 9.6a1.5 1.5 0 002.6-.9v-7.2h7.3a1.5 1.5 0 001.1-2.5z"/>
+      </svg>
+    </div>
+
+    <h1 class="auth-title">Bon retour !</h1>
+    <p class="auth-subtitle">Connectez-vous à votre compte.</p>
+
+    <form id="login-form">
+      <div class="form-group">
+        <label for="email">Adresse email</label>
+        <input type="email" id="email" placeholder="vous@exemple.com" required>
+      </div>
+
+      <div class="form-group">
+        <label for="password">Mot de passe</label>
+        <input type="password" id="password" placeholder="••••••••" required>
+      </div>
+
+      <button type="submit" class="btn btn-primary btn-full">Se connecter</button>
+    </form>
+
+    <p class="auth-footer">
+      Pas encore de compte ? <a href="signup.html">Créer un compte</a>
+    </p>
+  </div>
+
+  <script>
+    document.getElementById('login-form').addEventListener('submit', function(e) {
+      e.preventDefault();
+      // Pour l'instant on redirige simplement
+      const u = localStorage.getItem('technophile_user');
+      if (!u) {
+        alert('Aucun compte trouvé. Inscris-toi d\'abord.');
+        return;
+      }
+      window.location.href = 'index.html';
+
+    });
+  </script>
+
+<script src="app.js"></script>
+<script src="partials.js"></script>
+</body>
+</html>

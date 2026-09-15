@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="fr" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Créer un compte - technophile</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="auth-page">
+
+  <div class="auth-card" style="max-width: 480px;">
+    <div class="auth-logo">
+      <svg viewBox="0 0 24 24" fill="currentColor">
+        <path d="M21.36 12.5l-7.9-9.6a1.5 1.5 0 00-2.6.9v7.2H3.5a1.5 1.5 0 00-1.1 2.5l7.9 9.6a1.5 1.5 0 002.6-.9v-7.2h7.3a1.5 1.5 0 001.1-2.5z"/>
+      </svg>
+    </div>
+
+    <h1 class="auth-title">Créer un compte</h1>
+    <p class="auth-subtitle">Rejoignez technophile et configurez votre profil.</p>
+
+    <form id="signup-form">
+      <!-- Section 1 -->
+      <div class="section-title">
+        <span class="section-number">1</span>
+        Informations de connexion
+      </div>
+
+      <div class="form-group">
+        <label for="email">Adresse email</label>
+        <input type="email" id="email" placeholder="vous@exemple.com" required>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="password">Mot de passe</label>
+          <input type="password" id="password" placeholder="••••••••" required>
+        </div>
+        <div class="form-group">
+          <label for="password2">Confirmer</label>
+          <input type="password" id="password2" placeholder="••••••••" required>
+        </div>
+      </div>
+
+      <!-- Section 2 -->
+      <div class="section-title" style="margin-top: 24px;">
+        <span class="section-number">2</span>
+        Configuration du profil
+      </div>
+
+      <div class="avatar-row">
+        <div id="avatar-preview" class="avatar-preview" onclick="openAvatarModal()">❓</div>
+        <div>
+          <button type="button" onclick="openAvatarModal()" style="background:none;border:none;color:var(--accent);cursor:pointer;font-size:13px;padding:0;">
+            Choisir une tête d'animal
+          </button>
+          <p style="font-size:12px;color:var(--text-muted);margin-top:4px;">Sélectionnez parmi 100 animaux uniques.</p>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="username">Nom d'utilisateur</label>
+        <input type="text" id="username" placeholder="ex: rakyh0-debug" required>
+      </div>
+
+      <div class="form-group">
+        <label for="bio">Bio</label>
+        <textarea id="bio" rows="3" placeholder="Parlez-nous de vous..."></textarea>
+      </div>
+
+      <button type="submit" class="btn btn-primary btn-full" style="margin-top: 12px;">
+        Créer mon compte et mon profil
+      </button>
+    </form>
+
+    <p class="auth-footer">
+      Déjà un compte ? <a href="login.html">Se connecter</a>
+    </p>
+  </div>
+
+  <!-- Modal Avatar -->
+  <div id="avatar-modal" class="modal-overlay">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 style="font-size:15px;font-weight:600;">Choisissez votre animal</h3>
+        <button onclick="closeAvatarModal()" style="background:none;border:none;color:var(--text-lo);cursor:pointer;font-size:18px;">✕</button>
+      </div>
+      <div id="avatar-grid" class="modal-body"></div>
+      <div class="modal-footer">
+        <button onclick="closeAvatarModal()" class="btn btn-outline">Fermer</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const gradients = [
+      'linear-gradient(135deg, #8b5cf6, #3b82f6)',
+      'linear-gradient(135deg, #ef4444, #f97316)',
+      'linear-gradient(135deg, #22c55e, #06b6d4)',
+      'linear-gradient(135deg, #eab308, #f97316)',
+      'linear-gradient(135deg, #ec4899, #f43f5e)',
+      'linear-gradient(135deg, #6366f1, #8b5cf6)',
+      'linear-gradient(135deg, #14b8a6, #10b981)',
+      'linear-gradient(135deg, #d946ef, #ec4899)',
+      'linear-gradient(135deg, #0ea5e9, #3b82f6)',
+      'linear-gradient(135deg, #4b5563, #1f2937)'
+    ];
+
+    const animalHeads = [
+      '🐶','🐱','🐭','🐹','🐰','🦊','🐻','🐼','🐨','🐯',
+      '🦁','🐮','🐷','🐸','🐵','🐔','🐧','🐦','🐤','🦆',
+      '🦅','🦉','🦇','🐺','🐗','🐴','🦄','🐝','🐛','🦋',
+      '🐌','🐞','🐜','🦟','🦗','🕷️','🦂','🐢','🐍','🦎',
+      '🦖','🦕','🐙','🦑','🦐','🦞','🦀','🐡','🐠','🐟',
+      '🐬','🐳','🐋','🦈','🐊','🐅','🐆','🦓','🦍','🦧',
+      '🐘','🦛','🦏','🐪','🐫','🦒','🦘','🐃','🐂','🐄',
+      '🐎','🐖','🐏','🐑','🦙','🐐','🦌','🐕','🐩','🦮',
+      '🐕‍🦺','🐈','🐈‍⬛','🪶','🐓','🦃','🦤','🦚','🦜','🦢',
+      '🦩','🕊️','🐇','🦝','🦨','🦡','🦦','🦥','🐁','🐀'
+    ];
+
+    let selectedAvatar = null;
+
+    function generateAvatars() {
+      const grid = document.getElementById('avatar-grid');
+      grid.innerHTML = '';
+      for (let i = 0; i < 100; i++) {
+        const div = document.createElement('div');
+        div.className = 'avatar-option';
+        div.style.background = gradients[i % gradients.length];
+        div.textContent = animalHeads[i];
+        div.onclick = () => selectAvatar(div, gradients[i % gradients.length], animalHeads[i]);
+        grid.appendChild(div);
+      }
+    }
+
+    function selectAvatar(el, gradient, animal) {
+      document.querySelectorAll('.avatar-option').forEach(e => e.classList.remove('selected'));
+      el.classList.add('selected');
+      selectedAvatar = { gradient, animal };
+
+      const preview = document.getElementById('avatar-preview');
+      preview.style.background = gradient;
+      preview.style.borderStyle = 'solid';
+      preview.style.borderColor = 'var(--accent)';
+      preview.textContent = animal;
+      preview.classList.add('has-avatar');
+
+      setTimeout(closeAvatarModal, 200);
+    }
+
+    function openAvatarModal() {
+      document.getElementById('avatar-modal').classList.add('open');
+    }
+
+    function closeAvatarModal() {
+      document.getElementById('avatar-modal').classList.remove('open');
+    }
+
+    document.getElementById('signup-form').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const password = document.getElementById('password').value;
+      const password2 = document.getElementById('password2').value;
+
+      if (password !== password2) {
+        alert('Les mots de passe ne correspondent pas.');
+        return;
+      }
+
+      // Redirection temporaire
+      const u = {
+        email: document.getElementById('email').value,
+        username: document.getElementById('username').value,
+        bio: document.getElementById('bio').value,
+        avatar: selectedAvatar,
+        createdAt: Date.now()
+      };
+      localStorage.setItem('technophile_user', JSON.stringify(u));
+      window.location.href = 'profile.html?welcome=true';
+    });
+
+    window.onload = generateAvatars;
+  </script>
+
+<script src="app.js"></script>
+<script src="partials.js"></script>
+</body>
+</html>

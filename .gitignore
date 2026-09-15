@@ -1,0 +1,22 @@
+# OS
+.DS_Store
+Thumbs.db
+
+# Éditeurs
+.vscode/
+.idea/
+*.swp
+*~
+
+# Backups locaux
+.backup-*/
+*.bak
+/tmp/
+
+# Logs
+*.log
+
+# Secrets (si un jour on ajoute Supabase)
+.env
+.env.local
+secrets.json
