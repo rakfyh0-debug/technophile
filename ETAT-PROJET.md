@@ -103,3 +103,20 @@ settings, database).
 - Icônes du rail : active et hover en orange (#f0883e)
 - Responsive mobile sur les 6 leçons : media queries @1024px / @768px / @480px
   (rail horizontal, terminal réduit, lock-row en colonne, tables scrollables)
+
+### 2026-09-20 (nuit) — Phase A : Design system + extraction CSS
+
+- Enrichissement de :root dans style.css : tokens d'espacement (--space-1..8),
+  rayons (--radius-sm), largeurs de layout (--lesson-side-width, --lesson-page-max,
+  --topbar-height, --lesson-side-gap)
+- Création de css/lesson.css : extraction du CSS dupliqué dans les 6 leçons
+- Les 6 leçons passent d'environ 550 lignes à 390-480 lignes, plus aucun bloc
+  <style> local
+- Suppression des magic numbers dans css/lesson.css (360px, 388px, 1320px
+  remplacés par var(--lesson-*))
+- Ordre de chargement : style.css → xterm.css → lesson.css
+
+TODO Phase B/C/D restants :
+- Phase B : propager les tokens dans style.css (autres magic numbers)
+- Phase C : data/lecons.json + js/progress.js (progression dynamique)
+- Phase D : carte "Logique algorithmique" dynamique sur index.html
