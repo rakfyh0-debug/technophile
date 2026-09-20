@@ -4,6 +4,13 @@
 <meta charset="UTF-8">
 <title>technophile</title>
 <link rel="stylesheet" href="style.css">
+<style>
+    body { display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
+    .browser-chrome, .topbar { flex-shrink: 0; }
+    .shell { flex: 1; min-height: 0; overflow: hidden; }
+    .shell > .rail { height: auto; min-height: 0; max-height: 100%; overflow-y: auto; }
+    .shell > main { overflow-y: auto; }
+  </style>
 </head>
 <body>
 
@@ -97,7 +104,7 @@
               </svg>
             </div>
 
-            <div class="hex-card hex-pos-top">
+            <div class="hex-card hex-pos-top" style="cursor:pointer;" onclick="location.href='logique-algo/lecon-algo-1.html'">
               <h3>Logique algorithmique</h3>
               <p>Katas de code et énigmes logiques, validés automatiquement par des tests.</p>
               <span class="status-tag">DISPONIBLE</span>

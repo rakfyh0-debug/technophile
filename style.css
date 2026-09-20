@@ -2,17 +2,23 @@
    VARIABLES & RESET
    ============================================================ */
 :root {
-  --bg-0: #0f1113;
-  --bg-1: #141618;
-  --bg-2: #1a1d1f;
-  --bg-card: #1c1c1c;
-  --border: #2a2d30;
-  --text-hi: #eceff1;
-  --text-lo: #9aa1a6;
-  --text-muted: #6b7280;
+  --bg-0: #0d1117;
+  --bg-1: #161b22;
+  --bg-2: #21262d;
+  --bg-card: #161b22;
+  --border: #30363d;
+  --text-hi: #e6edf3;
+  --text-lo: #8b949e;
+  --text-muted: #6e7681;
   --accent: #3ecf8e;
   --accent-dim: rgba(62, 207, 142, 0.12);
   --accent-hover: #34b87a;
+  --blue: #1f6feb;
+  --blue-hover: #388bfd;
+  --blue-dim: rgba(31, 111, 235, 0.12);
+  --orange: #f0883e;
+  --orange-hover: #ffa657;
+  --orange-dim: rgba(240, 136, 62, 0.12);
   --danger: #ef4444;
   --danger-dim: rgba(239, 68, 68, 0.1);
   --radius: 8px;
@@ -61,11 +67,12 @@ a:hover {
 }
 
 .btn-primary {
-  background: var(--accent);
-  color: #08110d;
+  background: var(--blue);
+  color: #ffffff;
 }
 .btn-primary:hover {
-  opacity: 0.9;
+  background: var(--blue-hover);
+  opacity: 1;
 }
 
 .btn-outline {
@@ -74,7 +81,8 @@ a:hover {
   color: var(--text-hi);
 }
 .btn-outline:hover {
-  background: rgba(255, 255, 255, 0.04);
+  border-color: var(--orange);
+  color: var(--orange);
 }
 
 .btn-danger {
@@ -486,8 +494,17 @@ kbd {
   font-size: 11px;
 }
 .rail-icon.active {
-  color: var(--accent);
-  background: var(--accent-dim);
+  color: var(--orange);
+  background: var(--orange-dim);
+  border-color: var(--orange);
+}
+.rail-icon {
+  transition: color 0.15s, background 0.15s, border-color 0.15s;
+}
+.rail-icon:not(.active):hover {
+  color: var(--orange);
+  background: var(--orange-dim);
+  border-color: var(--orange);
 }
 .rail-icon svg,
 .icon-btn svg {

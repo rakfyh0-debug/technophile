@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Leçon 2 — Les 5 qualités d'un bon algorithme - technophile</title>
+  <link rel="stylesheet" href="../style.css">
+  <link rel="stylesheet" href="../vendor/xterm.css">
+  <style>
+    .app-layout { display: flex; height: 100vh; overflow: hidden; }
+    .app-main { flex: 1; display: flex; flex-direction: column; min-width: 0; }
+    .app-topbar {
+      height: 48px; border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 24px; background: var(--bg-1); flex-shrink: 0;
+    }
+    .breadcrumb { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--text-lo); }
+    .app-center { flex: 1; overflow-y: auto; padding: 32px 40px; }
+    .page-wrap { max-width: 1320px; margin: 0 auto; }
+
+    .lesson-layout { display: grid; grid-template-columns: 1fr 360px; gap: 28px; align-items: start; }
+    .lesson-side {
+      position: fixed; top: 68px; right: 40px; width: 360px;
+      border-left: 1px solid var(--border); padding-left: 24px;
+      display: flex; flex-direction: column; gap: 16px;
+      height: calc(100vh - 100px);
+    }
+    .side-text { flex: 1; overflow-y: auto; }
+    .side-terminal { flex-shrink: 0; background: transparent; border: none; padding: 0; }
+    @media (max-width: 1024px) {
+      .lesson-layout { grid-template-columns: 1fr; }
+      .lesson-side { position: static; }
+    }
+
+    .lesson-head { margin-bottom: 24px; }
+    .lesson-head .eyebrow { font-size: 12px; color: var(--accent); font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; margin-bottom: 6px; }
+    .lesson-head h1 { font-size: 24px; font-weight: 700; margin-bottom: 6px; }
+    .lesson-head p { font-size: 13.5px; color: var(--text-lo); }
+
+    .lesson-section { margin-bottom: 28px; }
+    .lesson-section h2 { font-size: 15px; font-weight: 600; margin-bottom: 10px; display:flex; align-items:center; gap:8px; }
+    .lesson-section h2 .num {
+      width: 22px; height: 22px; border-radius: 50%; background: var(--accent-dim); color: var(--accent);
+      font-size: 11px; font-weight: 700; display:flex; align-items:center; justify-content:center; flex-shrink:0;
+    }
+    .lesson-section p { font-size: 13.5px; line-height: 1.7; color: var(--text-hi); margin-bottom: 10px; }
+    .lesson-section p.sub { color: var(--text-lo); font-size: 13px; }
+
+    .diagram-card {
+      background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-lg);
+      padding: 20px; display: flex; justify-content: center; margin: 16px 0;
+    }
+    .diagram-card svg { max-width: 100%; height: auto; }
+
+    .vocab-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px; margin: 14px 0; }
+    .vocab-card {
+      background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 12px 14px;
+    }
+    .vocab-card .term { font-size: 12.5px; font-weight: 700; color: var(--accent); margin-bottom: 4px; }
+    .vocab-card .def { font-size: 12px; color: var(--text-lo); line-height: 1.5; }
+
+    .exercise-card {
+      background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-lg);
+      padding: 20px;
+    }
+    .exercise-card .exo-title { font-size: 14px; font-weight: 700; margin-bottom: 6px; }
+    .exercise-card .exo-desc { font-size: 13px; color: var(--text-lo); margin-bottom: 6px; }
+    .exercise-card code {
+      font-family: ui-monospace, monospace; font-size: 12px; background: var(--bg-0);
+      padding: 1px 6px; border-radius: 4px; color: var(--accent);
+    }
+    .exo-tests { font-size: 12px; color: var(--text-muted); margin-bottom: 14px; }
+    .exo-tests li { margin-bottom: 2px; list-style: none; }
+
+    #terminal-wrap {
+      background: #0a0b0c; border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 10px; overflow: hidden;
+    }
+    #terminal { height: 380px; }
+    .lesson-side .exercise-card .exo-title { margin-bottom: 10px; font-family: ui-monospace, monospace; color: var(--accent); }
+
+    .term-toolbar { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
+
+    .lock-row {
+      display: flex; align-items: center; justify-content: space-between;
+      background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-lg);
+      padding: 16px 20px; margin-top: 24px; opacity: 0.55;
+      transition: opacity 0.2s, border-color 0.2s;
+    }
+    .lock-row.unlocked { opacity: 1; border-color: rgba(62,207,142,0.4); }
+    .lock-row .btn { cursor: not-allowed; opacity: 0.65; }
+    .lock-row.unlocked .btn { cursor: pointer; opacity: 1; }
+    .lock-row .lr-title { font-size: 13.5px; font-weight: 600; display:flex; align-items:center; gap:8px; }
+    .lock-row .lr-sub { font-size: 12px; color: var(--text-lo); margin-top: 2px; }
+    .lock-icon { width: 16px; height: 16px; color: var(--text-muted); }
+    .lock-row.unlocked .lock-icon { color: var(--accent); }
+    @media (min-width: 1025px) { .lock-row { margin-right: 388px; } }
+  </style>
+</head>
+<body>
+
+  <div class="app-layout">
+    <div class="rail"></div>
+
+    <div class="app-main">
+      <header class="app-topbar">
+        <div class="breadcrumb">
+          <span>technophile</span><span>/</span>
+          <span>Logique algorithmique</span><span>/</span>
+          <span style="color:var(--text-hi);font-weight:500;">Leçon 2</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:14px;">
+          <div class="avatar" style="cursor:pointer;" onclick="location.href='../profile.html'">R</div>
+        </div>
+      </header>
+
+      <main class="app-center">
+        <div class="page-wrap">
+
+          <div class="lesson-head">
+            <div class="eyebrow">Logique algorithmique — Leçon 2</div>
+            <h1>Les 5 qualités d'un bon algorithme</h1>
+            <p>Écrire des étapes ne suffit pas : encore faut-il qu'elles soient correctes, claires et utilisables. Voici les 5 critères qui séparent un brouillon d'un vrai algorithme.</p>
+          </div>
+
+          <div class="lesson-layout">
+          <div class="lesson-main">
+
+          <div class="lesson-section">
+            <h2><span class="num">1</span>Pourquoi juger un algorithme ?</h2>
+            <p>Deux personnes peuvent écrire un algorithme qui « marche » sur un exemple et pourtant être de qualité très inégale. L'un sera lisible, réutilisable, fiable ; l'autre contiendra des zones floues qui casseront dès qu'on changera une valeur.</p>
+            <p class="sub">Pour trancher, on utilise <strong>5 critères objectifs</strong>. Ils ne sont pas théoriques : chacun correspond à un bug concret que tu rencontreras en codant.</p>
+          </div>
+
+          <div class="lesson-section">
+            <h2><span class="num">2</span>Les 5 qualités</h2>
+            <p>Un bon algorithme doit respecter <em>les cinq</em>. En rater un seul suffit à le rendre inutilisable en production.</p>
+
+            <div class="diagram-card">
+              <svg viewBox="0 0 720 120" width="720" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                  <marker id="arrowQ" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+                    <path d="M0,0 L8,4 L0,8 Z" fill="#3ecf8e"/>
+                  </marker>
+                </defs>
+                <g font-family="ui-sans-serif,system-ui,sans-serif" font-size="11" fill="#eceff1">
+                  <text x="360" y="18" text-anchor="middle" font-size="10" fill="#9aa1a6">un algorithme doit respecter les 5 critères</text>
+                  <rect x="10" y="40" width="128" height="60" rx="10" fill="#1c1c1c" stroke="#3ecf8e" stroke-width="1.5"/>
+                  <text x="74" y="65" text-anchor="middle" font-weight="700" fill="#3ecf8e" font-size="12">1. Finitude</text>
+                  <text x="74" y="83" text-anchor="middle" font-size="10" fill="#9aa1a6">se termine</text>
+                  <line x1="138" y1="70" x2="150" y2="70" stroke="#3ecf8e" stroke-width="1.5" marker-end="url(#arrowQ)"/>
+                  <rect x="154" y="40" width="128" height="60" rx="10" fill="#1c1c1c" stroke="#3ecf8e" stroke-width="1.5"/>
+                  <text x="218" y="65" text-anchor="middle" font-weight="700" fill="#3ecf8e" font-size="12">2. Précision</text>
+                  <text x="218" y="83" text-anchor="middle" font-size="10" fill="#9aa1a6">non ambigu</text>
+                  <line x1="282" y1="70" x2="294" y2="70" stroke="#3ecf8e" stroke-width="1.5" marker-end="url(#arrowQ)"/>
+                  <rect x="298" y="40" width="128" height="60" rx="10" fill="#1c1c1c" stroke="#3ecf8e" stroke-width="1.5"/>
+                  <text x="362" y="65" text-anchor="middle" font-weight="700" fill="#3ecf8e" font-size="12">3. Efficacité</text>
+                  <text x="362" y="83" text-anchor="middle" font-size="10" fill="#9aa1a6">peu d'étapes</text>
+                  <line x1="426" y1="70" x2="438" y2="70" stroke="#3ecf8e" stroke-width="1.5" marker-end="url(#arrowQ)"/>
+                  <rect x="442" y="40" width="128" height="60" rx="10" fill="#1c1c1c" stroke="#3ecf8e" stroke-width="1.5"/>
+                  <text x="506" y="65" text-anchor="middle" font-weight="700" fill="#3ecf8e" font-size="12">4. Généralité</text>
+                  <text x="506" y="83" text-anchor="middle" font-size="10" fill="#9aa1a6">tous les cas</text>
+                  <line x1="570" y1="70" x2="582" y2="70" stroke="#3ecf8e" stroke-width="1.5" marker-end="url(#arrowQ)"/>
+                  <rect x="586" y="40" width="128" height="60" rx="10" fill="#1c1c1c" stroke="#3ecf8e" stroke-width="1.5"/>
+                  <text x="650" y="65" text-anchor="middle" font-weight="700" fill="#3ecf8e" font-size="12">5. Justesse</text>
+                  <text x="650" y="83" text-anchor="middle" font-size="10" fill="#9aa1a6">bon résultat</text>
+                </g>
+              </svg>
+            </div>
+
+            <div class="vocab-grid">
+              <div class="vocab-card"><div class="term">Finitude</div><div class="def">Il se termine toujours, en un nombre fini d'étapes. Pas de boucle infinie, pas d'attente sans fin.</div></div>
+              <div class="vocab-card"><div class="term">Précision</div><div class="def">Chaque étape est sans ambiguïté. « Mets un peu d'eau » est mauvais ; « verse 200 ml » est précis.</div></div>
+              <div class="vocab-card"><div class="term">Efficacité</div><div class="def">Il atteint le résultat en un nombre raisonnable d'étapes — ni trop d'étapes inutiles, ni de calculs redondants.</div></div>
+              <div class="vocab-card"><div class="term">Généralité</div><div class="def">Il fonctionne pour plusieurs cas, pas juste pour l'exemple qu'on avait en tête.</div></div>
+              <div class="vocab-card"><div class="term">Justesse</div><div class="def">Il produit le bon résultat. C'est le critère le plus dur : un algorithme fini, précis, efficace... et faux, reste faux.</div></div>
+            </div>
+
+            <p class="sub">Les 5 vont ensemble. Un algorithme rapide mais faux ne sert à rien. Un algorithme juste mais qui boucle à l'infini non plus.</p>
+          </div>
+
+          <div class="lesson-section">
+            <h2><span class="num">3</span>Mauvais vs bon : le même objectif</h2>
+            <p>Prenons l'exemple classique : « faire cuire des pâtes ». Voici deux versions, l'une ratée, l'autre réussie. Compare ligne par ligne, les 5 qualités sautent aux yeux.</p>
+
+            <div class="vocab-grid" style="grid-template-columns: 1fr 1fr;">
+              <div class="vocab-card" style="border-color: rgba(239,68,68,0.4);">
+                <div class="term" style="color:#ef4444;">✗ Mauvais</div>
+                <div class="def" style="font-family: ui-monospace, monospace; font-size: 12px; line-height: 1.7; color: var(--text-hi);">
+                  Mettre un peu d'eau<br>
+                  Chauffer<br>
+                  Ajouter les pâtes<br>
+                  Attendre<br>
+                  Égoutter
+                </div>
+              </div>
+              <div class="vocab-card" style="border-color: rgba(62,207,142,0.4);">
+                <div class="term">✓ Bon</div>
+                <div class="def" style="font-family: ui-monospace, monospace; font-size: 12px; line-height: 1.7; color: var(--text-hi);">
+                  Verser 1,5 L d'eau dans une casserole de 2 L<br>
+                  Chauffer à feu vif jusqu'à ébullition<br>
+                  Ajouter 250 g de pâtes sèches<br>
+                  Cuire 9 min à feu moyen<br>
+                  Égoutter et servir
+                </div>
+              </div>
+            </div>
+
+            <p style="margin-top:16px;"><strong>Analyse critère par critère</strong> — pourquoi la version de droite gagne :</p>
+            <table style="width:100%; border-collapse:collapse; font-size:12.5px; margin-top:8px;">
+              <thead>
+                <tr style="text-align:left; color:var(--text-lo);">
+                  <th style="padding:6px 8px; border-bottom:1px solid var(--border);">Critère</th>
+                  <th style="padding:6px 8px; border-bottom:1px solid var(--border);">Version de gauche</th>
+                  <th style="padding:6px 8px; border-bottom:1px solid var(--border);">Version de droite</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td style="padding:6px 8px; border-bottom:1px solid var(--border);">Finitude</td><td style="padding:6px 8px; border-bottom:1px solid var(--border); color:#ef4444;">✗ « Attendre » = sans fin</td><td style="padding:6px 8px; border-bottom:1px solid var(--border); color:#3ecf8e;">✓ 5 étapes numérotées</td></tr>
+                <tr><td style="padding:6px 8px; border-bottom:1px solid var(--border);">Précision</td><td style="padding:6px 8px; border-bottom:1px solid var(--border); color:#ef4444;">✗ « un peu », « attendre »</td><td style="padding:6px 8px; border-bottom:1px solid var(--border); color:#3ecf8e;">✓ volumes, températures, durées</td></tr>
+                <tr><td style="padding:6px 8px; border-bottom:1px solid var(--border);">Efficacité</td><td style="padding:6px 8px; border-bottom:1px solid var(--border); color:#f59e0b;">~ correcte mais floue</td><td style="padding:6px 8px; border-bottom:1px solid var(--border); color:#3ecf8e;">✓ aucune étape inutile</td></tr>
+                <tr><td style="padding:6px 8px; border-bottom:1px solid var(--border);">Généralité</td><td style="padding:6px 8px; border-bottom:1px solid var(--border); color:#ef4444;">✗ impossible à adapter</td><td style="padding:6px 8px; border-bottom:1px solid var(--border); color:#3ecf8e;">✓ ajustable (500 g → 18 min)</td></tr>
+                <tr><td style="padding:6px 8px;">Justesse</td><td style="padding:6px 8px; color:#ef4444;">✗ résultat aléatoire</td><td style="padding:6px 8px; color:#3ecf8e;">✓ pâtes cuites à point</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="lesson-section">
+            <h2><span class="num">4</span>Pièges fréquents</h2>
+            <div class="vocab-grid">
+              <div class="vocab-card"><div class="term">« Ça marche » ≠ « c'est juste »</div><div class="def">Un algorithme peut donner le bon résultat sur un cas par hasard et se tromper partout ailleurs. Un seul exemple qui passe ne prouve rien.</div></div>
+              <div class="vocab-card"><div class="term">Confondre efficacité et vitesse</div><div class="def">Efficace ≠ « tourne en 1 ms ». C'est « fait le travail en un nombre raisonnable d'étapes ».</div></div>
+              <div class="vocab-card"><div class="term">L'infini caché</div><div class="def">Un algorithme qui « attend » sans condition de sortie n'est pas fini. La finitude se vérifie en regardant chaque étape, pas en espérant.</div></div>
+            </div>
+          </div>
+
+          <div class="lesson-section">
+            <h2><span class="num">5</span>À toi de jouer</h2>
+            <p class="sub">Trois fonctions qui testent les qualités en pratique : la <strong>précision</strong> sur les bornes, la <strong>justesse</strong> sur plusieurs cas, la <strong>généralité</strong> sur n'importe quelle entrée.</p>
+
+            <div class="exercise-card">
+              <div class="exo-title">Exercice — 3 mini-défis</div>
+              <div class="exo-desc">Enchaîne ces 3 fonctions dans le terminal, dans l'ordre :</div>
+              <ul class="exo-tests">
+                <li>• <code>estValide(age)</code> — renvoie <code>true</code> si 0 ≤ age ≤ 150, sinon <code>false</code></li>
+                <li>• <code>etatEau(temp)</code> — renvoie <code>"glace"</code> (temp ≤ 0), <code>"liquide"</code> (0 &lt; temp &lt; 100) ou <code>"vapeur"</code> (temp ≥ 100)</li>
+                <li>• <code>dansIntervalle(x, min, max)</code> — renvoie <code>true</code> si min ≤ x ≤ max</li>
+              </ul>
+              <ul class="exo-tests">
+                <li>• Chaque fonction doit être <strong>générale</strong> : elle marche pour n'importe quelle valeur</li>
+                <li>• Tape <code>valider</code> après chaque fonction pour débloquer la suivante</li>
+                <li>• Tape <code>aide</code> à tout moment, ou <code>clear</code> pour nettoyer l'écran</li>
+              </ul>
+            </div>
+          </div>
+
+          </div>
+          <!-- /.lesson-main -->
+
+          <aside class="lesson-side">
+            <div class="exercise-card side-text">
+              <div class="exo-title">Objectif</div>
+              <div class="exo-desc" id="side-objective-desc">1/3 — Implémente estValide(age) : true si 0 ≤ age ≤ 150.</div>
+              <ul class="exo-tests">
+                <li>• <code>valider</code> → lance les tests</li>
+                <li>• <code>aide</code> → revoir la consigne</li>
+                <li>• <code>clear</code> → nettoyer l'écran</li>
+              </ul>
+            </div>
+            <div class="exercise-card side-terminal">
+              <div class="exo-title">&gt;_ Terminal</div>
+              <div id="terminal-wrap">
+                <div id="terminal"></div>
+              </div>
+              <div class="term-toolbar">
+                <button type="button" class="btn btn-outline" id="btn-clear">Effacer</button>
+                <button type="button" class="btn btn-primary" id="btn-valider">Valider</button>
+              </div>
+            </div>
+          </aside>
+
+          </div>
+          <!-- /.lesson-layout -->
+
+          <div class="lock-row unlocked" id="lesson3-row">
+            <div>
+              <div class="lr-title">
+                <svg class="lock-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10" width="16" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>
+                Leçon 3 — Les données : variables, constantes et types
+              </div>
+              <div class="lr-sub" id="lesson3-sub">Valide les 3 exercices ci-dessus pour débloquer cette leçon.</div>
+            </div>
+            <div style="display:flex;gap:8px;"><button type="button" class="btn btn-outline" id="btn-prev-lesson">← Précédent</button><button type="button" class="btn btn-outline" id="btn-next-lesson" aria-disabled="false">Continuer</button></div>
+          </div>
+
+        </div>
+      </main>
+    </div>
+  </div>
+
+<script src="../vendor/xterm.js"></script>
+<script src="../supabase-js.min.js"></script>
+<script src="../supabase-config.js"></script>
+<script src="../script.js"></script>
+<script src="../app.js"></script>
+<script src="../partials.js"></script>
+
+<script>
+(function () {
+  const PROGRESS_KEY = 'technophile_algo_progress';
+  const globalEval = (0, eval);
+
+  function getProgress() {
+    try { return JSON.parse(localStorage.getItem(PROGRESS_KEY)) || {}; } catch { return {}; }
+  }
+  function setProgress(p) { localStorage.setItem(PROGRESS_KEY, JSON.stringify(p)); }
+
+  const term = new Terminal({
+    theme: {
+      background: '#0a0b0c',
+      foreground: '#eceff1',
+      cursor: '#3ecf8e',
+      green: '#3ecf8e',
+      red: '#ef4444'
+    },
+    fontSize: 13,
+    fontFamily: 'ui-monospace, monospace',
+    cursorBlink: true,
+    convertEol: true,
+    cols: 40,
+    rows: 20
+  });
+  term.open(document.getElementById('terminal'));
+
+  const EXERCISES = [
+    { fn: 'estValide', desc: "1/3 — Implémente estValide(age) : renvoie true si 0 ≤ age ≤ 150.",
+      cases: [ {args:[25], expected:true}, {args:[-1], expected:false}, {args:[150], expected:true}, {args:[151], expected:false} ] },
+    { fn: 'etatEau', desc: "2/3 — Implémente etatEau(temp) : 'glace' si temp ≤ 0, 'liquide' si 0 < temp < 100, 'vapeur' si temp ≥ 100.",
+      cases: [ {args:[-5], expected:"glace"}, {args:[20], expected:"liquide"}, {args:[100], expected:"vapeur"}, {args:[0], expected:"glace"} ] },
+    { fn: 'dansIntervalle', desc: "3/3 — Implémente dansIntervalle(x, min, max) : renvoie true si min ≤ x ≤ max.",
+      cases: [ {args:[5,1,10], expected:true}, {args:[0,1,10], expected:false}, {args:[1,1,10], expected:true}, {args:[10,1,10], expected:true} ] }
+  ];
+  let exerciseIndex = 0;
+  function currentExercise() { return EXERCISES[exerciseIndex] || null; }
+
+  function updateSidebarObjective() {
+    const descEl = document.getElementById('side-objective-desc');
+    if (!descEl) return;
+    const ex = currentExercise();
+    descEl.textContent = ex ? ex.desc : 'Tous les exercices sont validés. Bravo !';
+  }
+
+  let buffer = '';
+  const PROMPT = '\x1b[32malgo>\x1b[0m ';
+
+  function prompt() { term.write('\r\n' + PROMPT); }
+
+  function printHelp() {
+    const ex = currentExercise();
+    const msg = ex ? ex.desc : 'Tous les exercices sont validés.';
+    term.write('\r\n' + msg + "\r\nCommandes : 'valider' pour tester, 'clear' pour nettoyer, 'aide' pour revoir ceci.\r\n");
+  }
+
+  function runValidation() {
+    term.write('\r\n');
+    const ex = currentExercise();
+    if (!ex) {
+      term.write('\x1b[32mTout est déjà validé !\x1b[0m\r\n');
+      prompt();
+      return;
+    }
+    const fn = window[ex.fn];
+    if (typeof fn !== 'function') {
+      term.write(`\x1b[31m✗ La fonction ${ex.fn}(...) n'existe pas encore. Écris-la d'abord.\x1b[0m\r\n`);
+      prompt();
+      return;
+    }
+    let allOk = true;
+    ex.cases.forEach(c => {
+      let got, ok;
+      try {
+        got = fn(...c.args);
+        ok = got === c.expected;
+      } catch (e) {
+        got = 'erreur: ' + e.message;
+        ok = false;
+      }
+      if (!ok) allOk = false;
+      const mark = ok ? '\x1b[32m✓\x1b[0m' : '\x1b[31m✗\x1b[0m';
+      term.write(`${mark} ${ex.fn}(${c.args.join(', ')}) → attendu ${JSON.stringify(c.expected)}, obtenu ${JSON.stringify(got)}\r\n`);
+    });
+
+    if (allOk) {
+      exerciseIndex++;
+      if (currentExercise()) {
+        term.write(`\r\n\x1b[32mBravo, exercice ${exerciseIndex}/${EXERCISES.length} validé !\x1b[0m\r\n`);
+        updateSidebarObjective();
+        printHelp();
+      } else {
+        term.write('\r\n\x1b[32mBravo, les 3 exercices sont validés ! La leçon 3 est débloquée.\x1b[0m\r\n');
+        const p = getProgress();
+        p.lesson2 = true;
+        setProgress(p);
+        unlockNext();
+        updateSidebarObjective();
+        if (typeof showToast === 'function') showToast('Leçon 2 validée !');
+      }
+    } else {
+      term.write('\r\n\x1b[31mPas encore bon, corrige et retape "valider".\x1b[0m\r\n');
+    }
+    prompt();
+  }
+
+  function execLine(line) {
+    const trimmed = line.trim();
+    if (trimmed === 'valider') { runValidation(); return; }
+    if (trimmed === 'clear' || trimmed === 'cls') { term.clear(); prompt(); return; }
+    if (trimmed === 'aide' || trimmed === 'help') { printHelp(); prompt(); return; }
+    if (trimmed === '') { prompt(); return; }
+
+    try {
+      const result = globalEval(trimmed);
+      if (result !== undefined) {
+        term.write('\r\n' + JSON.stringify(result));
+      }
+    } catch (e) {
+      term.write('\r\n\x1b[31m' + e.message + '\x1b[0m');
+    }
+    prompt();
+  }
+
+  term.onData(data => {
+    const code = data.charCodeAt(0);
+    if (code === 13) {
+      const line = buffer;
+      buffer = '';
+      execLine(line);
+    } else if (code === 127) {
+      if (buffer.length > 0) {
+        buffer = buffer.slice(0, -1);
+        term.write('\b \b');
+      }
+    } else if (code < 32) {
+      // ignore
+    } else {
+      buffer += data;
+      term.write(data);
+    }
+  });
+
+  term.write('\x1b[32mTerminal algo — technophile\x1b[0m\r\n');
+  printHelp();
+  prompt();
+
+  document.getElementById('btn-clear').addEventListener('click', () => { term.clear(); prompt(); term.focus(); });
+  document.getElementById('btn-valider').addEventListener('click', () => { execLine('valider'); term.focus(); });
+
+  function unlockNext() {
+    const row = document.getElementById('lesson3-row');
+    const btn = document.getElementById('btn-next-lesson');
+    const sub = document.getElementById('lesson3-sub');
+    row.classList.add('unlocked');
+    btn.setAttribute('aria-disabled', 'false');
+    sub.textContent = 'Débloquée — tu peux continuer.';
+  }
+
+  document.getElementById('btn-next-lesson').addEventListener('click', (e) => {
+    if (e.currentTarget.getAttribute('aria-disabled') === 'true') {
+      if (typeof showToast === 'function') showToast('Valide les 3 exercices pour débloquer');
+      return;
+    }
+    location.href = 'lecon-algo-3.html';
+  });
+
+  document.getElementById('btn-prev-lesson').addEventListener('click', () => { location.href = 'lecon-algo-1.html'; });
+
+  if (getProgress().lesson2) unlockNext();
+})();
+</script>
+
+</body>
+</html>

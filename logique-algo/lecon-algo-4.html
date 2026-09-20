@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Leçon 4 — Lire et écrire (entrées / sorties) - technophile</title>
+  <link rel="stylesheet" href="../style.css">
+  <link rel="stylesheet" href="../vendor/xterm.css">
+  <style>
+    .app-layout { display: flex; height: 100vh; overflow: hidden; }
+    .app-main { flex: 1; display: flex; flex-direction: column; min-width: 0; }
+    .app-topbar {
+      height: 48px; border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 24px; background: var(--bg-1); flex-shrink: 0;
+    }
+    .breadcrumb { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--text-lo); }
+    .app-center { flex: 1; overflow-y: auto; padding: 32px 40px; }
+    .page-wrap { max-width: 1320px; margin: 0 auto; }
+
+    .lesson-layout { display: grid; grid-template-columns: 1fr 360px; gap: 28px; align-items: start; }
+    .lesson-side {
+      position: fixed; top: 68px; right: 40px; width: 360px;
+      border-left: 1px solid var(--border); padding-left: 24px;
+      display: flex; flex-direction: column; gap: 16px;
+      height: calc(100vh - 100px);
+    }
+    .side-text { flex: 1; overflow-y: auto; }
+    .side-terminal { flex-shrink: 0; background: transparent; border: none; padding: 0; }
+    @media (max-width: 1024px) {
+      .lesson-layout { grid-template-columns: 1fr; }
+      .lesson-side { position: static; }
+    }
+
+    .lesson-head { margin-bottom: 24px; }
+    .lesson-head .eyebrow { font-size: 12px; color: var(--accent); font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; margin-bottom: 6px; }
+    .lesson-head h1 { font-size: 24px; font-weight: 700; margin-bottom: 6px; }
+    .lesson-head p { font-size: 13.5px; color: var(--text-lo); }
+
+    .lesson-section { margin-bottom: 28px; }
+    .lesson-section h2 { font-size: 15px; font-weight: 600; margin-bottom: 10px; display:flex; align-items:center; gap:8px; }
+    .lesson-section h2 .num {
+      width: 22px; height: 22px; border-radius: 50%; background: var(--accent-dim); color: var(--accent);
+      font-size: 11px; font-weight: 700; display:flex; align-items:center; justify-content:center; flex-shrink:0;
+    }
+    .lesson-section p { font-size: 13.5px; line-height: 1.7; color: var(--text-hi); margin-bottom: 10px; }
+    .lesson-section p.sub { color: var(--text-lo); font-size: 13px; }
+    .lesson-section ul { font-size: 13.5px; line-height: 1.8; color: var(--text-hi); margin: 8px 0 12px 20px; }
+    .lesson-section ul li { margin-bottom: 4px; }
+
+    .diagram-card {
+      background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-lg);
+      padding: 20px; display: flex; justify-content: center; margin: 16px 0;
+    }
+    .diagram-card svg { max-width: 100%; height: auto; }
+
+    .vocab-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px; margin: 14px 0; }
+    .vocab-card {
+      background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 12px 14px;
+    }
+    .vocab-card .term { font-size: 12.5px; font-weight: 700; color: var(--accent); margin-bottom: 4px; }
+    .vocab-card .def { font-size: 12px; color: var(--text-lo); line-height: 1.5; }
+
+    .exercise-card {
+      background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-lg);
+      padding: 20px;
+    }
+    .exercise-card .exo-title { font-size: 14px; font-weight: 700; margin-bottom: 6px; }
+    .exercise-card .exo-desc { font-size: 13px; color: var(--text-lo); margin-bottom: 6px; }
+    .exercise-card code {
+      font-family: ui-monospace, monospace; font-size: 12px; background: var(--bg-0);
+      padding: 1px 6px; border-radius: 4px; color: var(--accent);
+    }
+    .exo-tests { font-size: 12px; color: var(--text-muted); margin-bottom: 14px; }
+    .exo-tests li { margin-bottom: 2px; list-style: none; }
+
+    #terminal-wrap {
+      background: #0a0b0c; border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 10px; overflow: hidden;
+    }
+    #terminal { height: 380px; }
+    .lesson-side .exercise-card .exo-title { margin-bottom: 10px; font-family: ui-monospace, monospace; color: var(--accent); }
+
+    .term-toolbar { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
+
+    .lock-row {
+      display: flex; align-items: center; justify-content: space-between;
+      background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-lg);
+      padding: 16px 20px; margin-top: 24px; opacity: 0.55;
+      transition: opacity 0.2s, border-color 0.2s;
+    }
+    .lock-row.unlocked { opacity: 1; border-color: rgba(62,207,142,0.4); }
+    .lock-row .lr-title { font-size: 13.5px; font-weight: 600; display:flex; align-items:center; gap:8px; }
+    .lock-row .lr-sub { font-size: 12px; color: var(--text-lo); margin-top: 2px; }
+    .lock-icon { width: 16px; height: 16px; color: var(--text-muted); }
+    .lock-row.unlocked .lock-icon { color: var(--accent); }
+    .lock-row .btn { cursor: not-allowed; opacity: 0.65; }
+    .lock-row.unlocked .btn { cursor: pointer; opacity: 1; }
+
+    .exemple-box {
+      background: var(--bg-0); border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 14px 16px; margin: 10px 0; font-family: ui-monospace, monospace;
+      font-size: 12.5px; color: var(--text-hi); line-height: 1.8; white-space: pre;
+      overflow-x: auto;
+    }
+    .exemple-box .cmt { color: var(--text-muted); }
+    .exemple-box .kw { color: #3ecf8e; font-weight: 700; }
+
+    @media (min-width: 1025px) { .lock-row { margin-right: 388px; } }
+  </style>
+</head>
+<body>
+
+  <div class="app-layout">
+    <div class="rail"></div>
+
+    <div class="app-main">
+      <header class="app-topbar">
+        <div class="breadcrumb">
+          <span>technophile</span><span>/</span>
+          <span>Logique algorithmique</span><span>/</span>
+          <span style="color:var(--text-hi);font-weight:500;">Leçon 4</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:14px;">
+          <div class="avatar" style="cursor:pointer;" onclick="location.href='../profile.html'">R</div>
+        </div>
+      </header>
+
+      <main class="app-center">
+        <div class="page-wrap">
+
+          <div class="lesson-head">
+            <div class="eyebrow">Logique algorithmique — Leçon 4</div>
+            <h1>Lire et écrire (entrées / sorties)</h1>
+            <p>Un algorithme qui ne parle à personne ne sert à rien. Il a besoin de deux gestes : <strong>écrire</strong> un résultat, <strong>lire</strong> une donnée. C'est la base de toute interaction.</p>
+          </div>
+
+          <div class="lesson-layout">
+          <div class="lesson-main">
+
+          <!-- 1. Écrire -->
+          <div class="lesson-section">
+            <h2><span class="num">1</span>Écrire : envoyer vers la sortie</h2>
+            <p><strong>Écrire</strong>, c'est envoyer une valeur vers la <em>sortie standard</em> : l'écran, la console, un journal. C'est ainsi que l'algorithme communique son résultat à l'utilisateur.</p>
+
+            <div class="vocab-grid">
+              <div class="vocab-card">
+                <div class="term">Écrire (afficher)</div>
+                <div class="def">Envoyer une valeur vers la sortie. En pseudo-code : <code>Écrire "Bonjour"</code>. En JavaScript : <code>console.log("Bonjour")</code>.</div>
+              </div>
+              <div class="vocab-card">
+                <div class="term">Sortie standard</div>
+                <div class="def">Le canal par défaut pour afficher. Historiquement : le terminal. Aujourd'hui : aussi la page web, une notification, un fichier de log.</div>
+              </div>
+              <div class="vocab-card">
+                <div class="term">Concaténation</div>
+                <div class="def">Coller plusieurs valeurs bout à bout pour former un texte. <code>"Bonjour " + nom</code> → <code>"Bonjour Alice"</code>.</div>
+              </div>
+            </div>
+
+            <p>On peut afficher du texte brut, ou combiner texte et variables :</p>
+            <div class="exemple-box">  Écrire "Bonjour"
+  Écrire "Tu as ", age, " ans"
+  Écrire résultat
+
+  <span class="cmt">// En JavaScript moderne (interpolation) :</span>
+  console.log(`Tu as ${age} ans`)</div>
+
+            <p class="sub">Les <em>backticks</em> <code>`</code> en JavaScript permettent d'insérer une variable directement dans une chaîne avec <code>${...}</code>. C'est plus lisible que de coller des morceaux avec <code>+</code>.</p>
+          </div>
+
+          <!-- 2. Lire -->
+          <div class="lesson-section">
+            <h2><span class="num">2</span>Lire : récupérer depuis l'entrée</h2>
+            <p><strong>Lire</strong>, c'est récupérer une valeur depuis l'<em>entrée standard</em> et la ranger dans une variable. C'est ainsi que l'algorithme reçoit les données de l'utilisateur.</p>
+
+            <div class="vocab-grid">
+              <div class="vocab-card">
+                <div class="term">Lire (saisir)</div>
+                <div class="def">Récupérer une valeur depuis l'entrée. En pseudo-code : <code>Lire prénom</code>. En JS navigateur : <code>prompt("Quel est ton prénom ?")</code>.</div>
+              </div>
+              <div class="vocab-card">
+                <div class="term">Entrée standard</div>
+                <div class="def">Le canal par défaut pour saisir. Historiquement : le clavier du terminal. Aujourd'hui : aussi un formulaire HTML, un fichier, une API.</div>
+              </div>
+              <div class="vocab-card">
+                <div class="term">Saisie ≠ valeur typée</div>
+                <div class="def">Tout ce qui vient d'une saisie utilisateur arrive en <strong>texte</strong>. Même "25" arrive comme chaîne, pas comme entier. Il faut souvent convertir.</div>
+              </div>
+            </div>
+
+            <p>Le principe : on demande, on lit, on range :</p>
+            <div class="exemple-box">  Écrire "Quel est ton prénom ?"
+  Lire prénom
+
+  Écrire "Quel est ton âge ?"
+  Lire âge</div>
+
+            <p class="sub">Attention : quand on lit, on <strong>ne sait pas</strong> ce que l'utilisateur va taper. Il peut se tromper, laisser vide, écrire du texte au lieu d'un nombre. C'est le rôle des conditions (Module 2) et de la conversion de type.</p>
+          </div>
+
+          <!-- 3. Un algorithme complet -->
+          <div class="lesson-section">
+            <h2><span class="num">3</span>Un algorithme complet : lire puis écrire</h2>
+            <p>Voici un petit programme qui demande le prénom, l'âge, puis affiche un message personnalisé.</p>
+
+            <div class="exemple-box">  Écrire "Quel est ton prénom ?"
+  Lire prénom
+  Écrire "Quel est ton âge ?"
+  Lire âge
+
+  Écrire "Bonjour ", prénom, ", tu as ", âge, " ans."</div>
+
+            <div class="diagram-card">
+              <svg viewBox="0 0 560 220" width="560" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                  <marker id="arrowLE" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+                    <path d="M0,0 L8,4 L0,8 Z" fill="#3ecf8e"/>
+                  </marker>
+                </defs>
+                <g font-family="ui-sans-serif,system-ui,sans-serif" font-size="12" fill="#eceff1">
+                  <rect x="20" y="20" width="180" height="40" rx="8" fill="#1c1c1c" stroke="#2a2d30"/>
+                  <text x="110" y="44" text-anchor="middle">Écrire "Prénom ?"</text>
+
+                  <line x1="200" y1="40" x2="240" y2="40" stroke="#3ecf8e" stroke-width="2" marker-end="url(#arrowLE)"/>
+
+                  <rect x="245" y="20" width="150" height="40" rx="8" fill="#1c1c1c" stroke="#3ecf8e" stroke-width="1.5"/>
+                  <text x="320" y="44" text-anchor="middle" fill="#3ecf8e">Lire prénom</text>
+
+                  <line x1="320" y1="60" x2="320" y2="90" stroke="#3ecf8e" stroke-width="2" marker-end="url(#arrowLE)"/>
+
+                  <rect x="230" y="95" width="180" height="40" rx="8" fill="#1c1c1c" stroke="#2a2d30"/>
+                  <text x="320" y="119" text-anchor="middle">Écrire "Âge ?"</text>
+
+                  <line x1="320" y1="135" x2="320" y2="160" stroke="#3ecf8e" stroke-width="2" marker-end="url(#arrowLE)"/>
+
+                  <rect x="240" y="165" width="160" height="40" rx="8" fill="#1c1c1c" stroke="#3ecf8e" stroke-width="1.5"/>
+                  <text x="320" y="189" text-anchor="middle" fill="#3ecf8e">Lire âge</text>
+
+                  <line x1="400" y1="185" x2="450" y2="185" stroke="#3ecf8e" stroke-width="2"/>
+                  <line x1="450" y1="185" x2="450" y2="40" stroke="#3ecf8e" stroke-width="2"/>
+                  <line x1="450" y1="40" x2="490" y2="40" stroke="#3ecf8e" stroke-width="2" marker-end="url(#arrowLE)"/>
+                  <text x="510" y="44" font-size="11" fill="#9aa1a6">Afficher</text>
+                  <text x="510" y="58" font-size="11" fill="#9aa1a6">"Bonjour ..."</text>
+                </g>
+              </svg>
+            </div>
+
+            <p style="margin-top:16px;"><strong>Trace d'exécution</strong> — avec prénom = "Alice" et âge = 25 :</p>
+            <table style="width:100%; border-collapse:collapse; font-size:12.5px; margin-top:8px;">
+              <thead>
+                <tr style="text-align:left; color:var(--text-lo);">
+                  <th style="padding:6px 8px; border-bottom:1px solid var(--border);">Étape</th>
+                  <th style="padding:6px 8px; border-bottom:1px solid var(--border);">Action</th>
+                  <th style="padding:6px 8px; border-bottom:1px solid var(--border);">Effet</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td style="padding:6px 8px; border-bottom:1px solid var(--border);">1</td><td style="padding:6px 8px; border-bottom:1px solid var(--border);">Écrire "Prénom ?"</td><td style="padding:6px 8px; border-bottom:1px solid var(--border);">L'utilisateur voit la question</td></tr>
+                <tr><td style="padding:6px 8px; border-bottom:1px solid var(--border);">2</td><td style="padding:6px 8px; border-bottom:1px solid var(--border);">Lire prénom</td><td style="padding:6px 8px; border-bottom:1px solid var(--border);"><code>prénom = "Alice"</code></td></tr>
+                <tr><td style="padding:6px 8px; border-bottom:1px solid var(--border);">3</td><td style="padding:6px 8px; border-bottom:1px solid var(--border);">Écrire "Âge ?"</td><td style="padding:6px 8px; border-bottom:1px solid var(--border);">L'utilisateur voit la question</td></tr>
+                <tr><td style="padding:6px 8px; border-bottom:1px solid var(--border);">4</td><td style="padding:6px 8px; border-bottom:1px solid var(--border);">Lire âge</td><td style="padding:6px 8px; border-bottom:1px solid var(--border);"><code>âge = "25"</code> (chaîne !)</td></tr>
+                <tr><td style="padding:6px 8px;">5</td><td style="padding:6px 8px;">Écrire le message</td><td style="padding:6px 8px;"><code>"Bonjour Alice, tu as 25 ans."</code></td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- 4. Pièges -->
+          <div class="lesson-section">
+            <h2><span class="num">4</span>Pièges fréquents</h2>
+            <div class="vocab-grid">
+              <div class="vocab-card">
+                <div class="term">Tout est texte à l'entrée</div>
+                <div class="def">Ce qui vient d'une saisie utilisateur arrive en <strong>chaîne</strong>. Pour calculer avec, il faut convertir : <code>Number("25")</code> → <code>25</code>.</div>
+              </div>
+              <div class="vocab-card">
+                <div class="term">Oublier de valider</div>
+                <div class="def">Rien ne garantit que l'utilisateur tape un nombre. <code>"abc"</code> transformé en <code>Number</code> donne <code>NaN</code> (Not a Number), qui propage silencieusement l'erreur.</div>
+              </div>
+              <div class="vocab-card">
+                <div class="term">Confondre afficher et retourner</div>
+                <div class="def"><code>console.log</code> affiche dans la console mais ne <em>retourne</em> rien. <code>return</code> renvoie une valeur mais n'affiche rien. Ce sont deux gestes différents.</div>
+              </div>
+              <div class="vocab-card">
+                <div class="term">Message incompréhensible</div>
+                <div class="def">Afficher <code>42</code> tout seul ne dit rien à l'utilisateur. Afficher <code>"Résultat : 42"</code> ou <code>"42 €"</code>, oui. Le message fait partie de l'algorithme.</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 5. Exercice -->
+          <div class="lesson-section">
+            <h2><span class="num">5</span>À toi de jouer</h2>
+            <p class="sub">Dans ce terminal, on ne peut pas saisir de vraies entrées interactives — mais on peut simuler : chaque exercice reçoit ses "entrées" en paramètres et renvoie ce qu'il aurait fallu "écrire".</p>
+
+            <div class="exercise-card">
+              <div class="exo-title">Exercice — 3 mini-défis</div>
+              <div class="exo-desc">Enchaîne ces 3 fonctions dans le terminal, dans l'ordre :</div>
+              <ul class="exo-tests">
+                <li>• <code>presentation(nom, age)</code> — renvoie <code>"Bonjour Alice, tu as 25 ans."</code></li>
+                <li>• <code>convertirNombre(texte)</code> — convertit une chaîne en nombre ; renvoie <code>null</code> si ce n'est pas convertible</li>
+                <li>• <code>formaterPrix(ht, tauxTva)</code> — renvoie le prix TTC formaté sur 2 décimales, suffixé de <code>" € TTC"</code></li>
+              </ul>
+              <ul class="exo-tests">
+                <li>• Indices : template literals <code>`...${x}...`</code>, <code>Number(...)</code>, <code>isNaN(...)</code>, <code>.toFixed(2)</code></li>
+                <li>• <code>presentation("Alice", 25)</code> → <code>"Bonjour Alice, tu as 25 ans."</code> (attention à la ponctuation exacte)</li>
+                <li>• <code>formaterPrix(100, 0.2)</code> → <code>"120.00 € TTC"</code></li>
+                <li>• Tape <code>valider</code> après chaque fonction pour débloquer la suivante</li>
+              </ul>
+            </div>
+          </div>
+
+          </div>
+          <!-- /.lesson-main -->
+
+          <aside class="lesson-side">
+            <div class="exercise-card side-text">
+              <div class="exo-title">Objectif</div>
+              <div class="exo-desc" id="side-objective-desc">1/3 — Implémente presentation(nom, age) : renvoie "Bonjour Alice, tu as 25 ans."</div>
+              <ul class="exo-tests">
+                <li>• <code>valider</code> → lance les tests</li>
+                <li>• <code>aide</code> → revoir la consigne</li>
+                <li>• <code>clear</code> → nettoyer l'écran</li>
+              </ul>
+            </div>
+            <div class="exercise-card side-terminal">
+              <div class="exo-title">&gt;_ Terminal</div>
+              <div id="terminal-wrap">
+                <div id="terminal"></div>
+              </div>
+              <div class="term-toolbar">
+                <button type="button" class="btn btn-outline" id="btn-clear">Effacer</button>
+                <button type="button" class="btn btn-primary" id="btn-valider">Valider</button>
+              </div>
+            </div>
+          </aside>
+
+          </div>
+          <!-- /.lesson-layout -->
+
+          <div class="lock-row unlocked" id="lesson5-row">
+            <div>
+              <div class="lr-title">
+                <svg class="lock-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10" width="16" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>
+                Leçon 5 — Les opérateurs arithmétiques et les expressions
+              </div>
+              <div class="lr-sub" id="lesson5-sub">Valide les 3 exercices ci-dessus pour débloquer cette leçon.</div>
+            </div>
+            <div style="display:flex;gap:8px;">
+              <button type="button" class="btn btn-outline" id="btn-prev-lesson">← Précédent</button>
+              <button type="button" class="btn btn-outline" id="btn-next-lesson" aria-disabled="false">Continuer</button>
+            </div>
+          </div>
+
+        </div>
+      </main>
+    </div>
+  </div>
+
+<script src="../vendor/xterm.js"></script>
+<script src="../supabase-js.min.js"></script>
+<script src="../supabase-config.js"></script>
+<script src="../script.js"></script>
+<script src="../app.js"></script>
+<script src="../partials.js"></script>
+
+<script>
+(function () {
+  const PROGRESS_KEY = 'technophile_algo_progress';
+  const globalEval = (0, eval);
+
+  function getProgress() {
+    try { return JSON.parse(localStorage.getItem(PROGRESS_KEY)) || {}; } catch { return {}; }
+  }
+  function setProgress(p) { localStorage.setItem(PROGRESS_KEY, JSON.stringify(p)); }
+
+  const term = new Terminal({
+    theme: {
+      background: '#0a0b0c',
+      foreground: '#eceff1',
+      cursor: '#3ecf8e',
+      green: '#3ecf8e',
+      red: '#ef4444'
+    },
+    fontSize: 13,
+    fontFamily: 'ui-monospace, monospace',
+    cursorBlink: true,
+    convertEol: true,
+    cols: 40,
+    rows: 20
+  });
+  term.open(document.getElementById('terminal'));
+
+  const EXERCISES = [
+    { fn: 'presentation', desc: "1/3 — Implémente presentation(nom, age) : renvoie \"Bonjour Alice, tu as 25 ans.\"",
+      cases: [ {args:["Alice", 25], expected:"Bonjour Alice, tu as 25 ans."}, {args:["Bob", 7], expected:"Bonjour Bob, tu as 7 ans."}, {args:["Éva", 100], expected:"Bonjour Éva, tu as 100 ans."} ] },
+    { fn: 'convertirNombre', desc: "2/3 — Implémente convertirNombre(texte) : renvoie le nombre, ou null si non convertible.",
+      cases: [ {args:["42"], expected:42}, {args:["3.14"], expected:3.14}, {args:["abc"], expected:null}, {args:[""], expected:null} ] },
+    { fn: 'formaterPrix', desc: "3/3 — Implémente formaterPrix(ht, tauxTva) : renvoie \"120.00 € TTC\" par exemple.",
+      cases: [ {args:[100, 0.2], expected:"120.00 € TTC"}, {args:[50, 0.055], expected:"52.75 € TTC"}, {args:[0, 0.2], expected:"0.00 € TTC"} ] }
+  ];
+  let exerciseIndex = 0;
+  function currentExercise() { return EXERCISES[exerciseIndex] || null; }
+
+  function updateSidebarObjective() {
+    const descEl = document.getElementById('side-objective-desc');
+    if (!descEl) return;
+    const ex = currentExercise();
+    descEl.textContent = ex ? ex.desc : 'Tous les exercices sont validés. Bravo !';
+  }
+
+  let buffer = '';
+  const PROMPT = '\x1b[32malgo>\x1b[0m ';
+
+  function prompt() { term.write('\r\n' + PROMPT); }
+
+  function printHelp() {
+    const ex = currentExercise();
+    const msg = ex ? ex.desc : 'Tous les exercices sont validés.';
+    term.write('\r\n' + msg + "\r\nCommandes : 'valider' pour tester, 'clear' pour nettoyer, 'aide' pour revoir ceci.\r\n");
+  }
+
+  function runValidation() {
+    term.write('\r\n');
+    const ex = currentExercise();
+    if (!ex) {
+      term.write('\x1b[32mTout est déjà validé !\x1b[0m\r\n');
+      prompt();
+      return;
+    }
+    const fn = window[ex.fn];
+    if (typeof fn !== 'function') {
+      term.write(`\x1b[31m✗ La fonction ${ex.fn}(...) n'existe pas encore. Écris-la d'abord.\x1b[0m\r\n`);
+      prompt();
+      return;
+    }
+    let allOk = true;
+    ex.cases.forEach(c => {
+      let got, ok;
+      try {
+        got = fn(...c.args);
+        ok = got === c.expected;
+      } catch (e) {
+        got = 'erreur: ' + e.message;
+        ok = false;
+      }
+      if (!ok) allOk = false;
+      const mark = ok ? '\x1b[32m✓\x1b[0m' : '\x1b[31m✗\x1b[0m';
+      term.write(`${mark} ${ex.fn}(${c.args.map(a => JSON.stringify(a)).join(', ')}) → attendu ${JSON.stringify(c.expected)}, obtenu ${JSON.stringify(got)}\r\n`);
+    });
+
+    if (allOk) {
+      exerciseIndex++;
+      if (currentExercise()) {
+        term.write(`\r\n\x1b[32mBravo, exercice ${exerciseIndex}/${EXERCISES.length} validé !\x1b[0m\r\n`);
+        updateSidebarObjective();
+        printHelp();
+      } else {
+        term.write('\r\n\x1b[32mBravo, les 3 exercices sont validés ! La leçon 5 est débloquée.\x1b[0m\r\n');
+        const p = getProgress();
+        p.lesson4 = true;
+        setProgress(p);
+        unlockNext();
+        updateSidebarObjective();
+        if (typeof showToast === 'function') showToast('Leçon 4 validée !');
+      }
+    } else {
+      term.write('\r\n\x1b[31mPas encore bon, corrige et retape "valider".\x1b[0m\r\n');
+    }
+    prompt();
+  }
+
+  function execLine(line) {
+    const trimmed = line.trim();
+    if (trimmed === 'valider') { runValidation(); return; }
+    if (trimmed === 'clear' || trimmed === 'cls') { term.clear(); prompt(); return; }
+    if (trimmed === 'aide' || trimmed === 'help') { printHelp(); prompt(); return; }
+    if (trimmed === '') { prompt(); return; }
+
+    try {
+      const result = globalEval(trimmed);
+      if (result !== undefined) {
+        term.write('\r\n' + JSON.stringify(result));
+      }
+    } catch (e) {
+      term.write('\r\n\x1b[31m' + e.message + '\x1b[0m');
+    }
+    prompt();
+  }
+
+  term.onData(data => {
+    const code = data.charCodeAt(0);
+    if (code === 13) {
+      const line = buffer;
+      buffer = '';
+      execLine(line);
+    } else if (code === 127) {
+      if (buffer.length > 0) {
+        buffer = buffer.slice(0, -1);
+        term.write('\b \b');
+      }
+    } else if (code < 32) {
+      // ignore
+    } else {
+      buffer += data;
+      term.write(data);
+    }
+  });
+
+  term.write('\x1b[32mTerminal algo — technophile\x1b[0m\r\n');
+  printHelp();
+  prompt();
+
+  document.getElementById('btn-clear').addEventListener('click', () => { term.clear(); prompt(); term.focus(); });
+  document.getElementById('btn-valider').addEventListener('click', () => { execLine('valider'); term.focus(); });
+
+  function unlockNext() {
+    const row = document.getElementById('lesson5-row');
+    const btn = document.getElementById('btn-next-lesson');
+    const sub = document.getElementById('lesson5-sub');
+    row.classList.add('unlocked');
+    btn.setAttribute('aria-disabled', 'false');
+    sub.textContent = 'Débloquée — tu peux continuer.';
+  }
+
+  document.getElementById('btn-prev-lesson').addEventListener('click', () => {
+    location.href = 'lecon-algo-3.html';
+  });
+
+  document.getElementById('btn-next-lesson').addEventListener('click', (e) => {
+    if (e.currentTarget.getAttribute('aria-disabled') === 'true') {
+      if (typeof showToast === 'function') showToast('Valide les 3 exercices pour débloquer');
+      return;
+    }
+    location.href = 'lecon-algo-5.html';
+  });
+
+  if (getProgress().lesson4) unlockNext();
+})();
+</script>
+
+</body>
+</html>

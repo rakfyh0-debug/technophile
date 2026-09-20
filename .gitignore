@@ -1,22 +1,18 @@
-# OS
+# Sauvegardes
+*.bak
+*.tmp
+
+# Fichiers temporaires système
 .DS_Store
 Thumbs.db
 
-# Éditeurs
-.vscode/
-.idea/
-*.swp
-*~
+# Fichiers de travail locaux
+HTMLEOF.txt
+Pasted*.txt
+kali@RHAK*.txt
 
-# Backups locaux
+# Scripts de patch jetables
+patch_*.py
+
+# Sauvegardes de version
 .backup-*/
-*.bak
-/tmp/
-
-# Logs
-*.log
-
-# Secrets (si un jour on ajoute Supabase)
-.env
-.env.local
-secrets.json

@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Leçon 6 — Les opérateurs de comparaison et logiques - technophile</title>
+  <link rel="stylesheet" href="../style.css">
+  <link rel="stylesheet" href="../vendor/xterm.css">
+  <style>
+    .app-layout { display: flex; height: 100vh; overflow: hidden; }
+    .app-main { flex: 1; display: flex; flex-direction: column; min-width: 0; }
+    .app-topbar {
+      height: 48px; border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 24px; background: var(--bg-1); flex-shrink: 0;
+    }
+    .breadcrumb { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--text-lo); }
+    .app-center { flex: 1; overflow-y: auto; padding: 32px 40px; }
+    .page-wrap { max-width: 1320px; margin: 0 auto; }
+
+    .lesson-layout { display: grid; grid-template-columns: 1fr 360px; gap: 28px; align-items: start; }
+    .lesson-side {
+      position: fixed; top: 68px; right: 40px; width: 360px;
+      border-left: 1px solid var(--border); padding-left: 24px;
+      display: flex; flex-direction: column; gap: 16px;
+      height: calc(100vh - 100px);
+    }
+    .side-text { flex: 1; overflow-y: auto; }
+    .side-terminal { flex-shrink: 0; background: transparent; border: none; padding: 0; }
+    @media (max-width: 1024px) {
+      .lesson-layout { grid-template-columns: 1fr; }
+      .lesson-side { position: static; }
+    }
+
+    .lesson-head { margin-bottom: 24px; }
+    .lesson-head .eyebrow { font-size: 12px; color: var(--accent); font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; margin-bottom: 6px; }
+    .lesson-head h1 { font-size: 24px; font-weight: 700; margin-bottom: 6px; }
+    .lesson-head p { font-size: 13.5px; color: var(--text-lo); }
+
+    .lesson-section { margin-bottom: 28px; }
+    .lesson-section h2 { font-size: 15px; font-weight: 600; margin-bottom: 10px; display:flex; align-items:center; gap:8px; }
+    .lesson-section h2 .num {
+      width: 22px; height: 22px; border-radius: 50%; background: var(--accent-dim); color: var(--accent);
+      font-size: 11px; font-weight: 700; display:flex; align-items:center; justify-content:center; flex-shrink:0;
+    }
+    .lesson-section p { font-size: 13.5px; line-height: 1.7; color: var(--text-hi); margin-bottom: 10px; }
+    .lesson-section p.sub { color: var(--text-lo); font-size: 13px; }
+    .lesson-section ul { font-size: 13.5px; line-height: 1.8; color: var(--text-hi); margin: 8px 0 12px 20px; }
+    .lesson-section ul li { margin-bottom: 4px; }
+
+    .diagram-card {
+      background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-lg);
+      padding: 20px; display: flex; justify-content: center; margin: 16px 0;
+    }
+    .diagram-card svg { max-width: 100%; height: auto; }
+
+    .vocab-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px; margin: 14px 0; }
+    .vocab-card {
+      background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 12px 14px;
+    }
+    .vocab-card .term { font-size: 12.5px; font-weight: 700; color: var(--accent); margin-bottom: 4px; }
+    .vocab-card .def { font-size: 12px; color: var(--text-lo); line-height: 1.5; }
+
+    .exercise-card {
+      background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-lg);
+      padding: 20px;
+    }
+    .exercise-card .exo-title { font-size: 14px; font-weight: 700; margin-bottom: 6px; }
+    .exercise-card .exo-desc { font-size: 13px; color: var(--text-lo); margin-bottom: 6px; }
+    .exercise-card code {
+      font-family: ui-monospace, monospace; font-size: 12px; background: var(--bg-0);
+      padding: 1px 6px; border-radius: 4px; color: var(--accent);
+    }
+    .exo-tests { font-size: 12px; color: var(--text-muted); margin-bottom: 14px; }
+    .exo-tests li { margin-bottom: 2px; list-style: none; }
+
+    #terminal-wrap {
+      background: #0a0b0c; border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 10px; overflow: hidden;
+    }
+    #terminal { height: 380px; }
+    .lesson-side .exercise-card .exo-title { margin-bottom: 10px; font-family: ui-monospace, monospace; color: var(--accent); }
+
+    .term-toolbar { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
+
+    .lock-row {
+      display: flex; align-items: center; justify-content: space-between;
+      background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-lg);
+      padding: 16px 20px; margin-top: 24px; opacity: 0.55;
+      transition: opacity 0.2s, border-color 0.2s;
+    }
+    .lock-row.unlocked { opacity: 1; border-color: rgba(62,207,142,0.4); }
+    .lock-row .lr-title { font-size: 13.5px; font-weight: 600; display:flex; align-items:center; gap:8px; }
+    .lock-row .lr-sub { font-size: 12px; color: var(--text-lo); margin-top: 2px; }
+    .lock-icon { width: 16px; height: 16px; color: var(--text-muted); }
+    .lock-row.unlocked .lock-icon { color: var(--accent); }
+    .lock-row .btn { cursor: not-allowed; opacity: 0.65; }
+    .lock-row.unlocked .btn { cursor: pointer; opacity: 1; }
+
+    .exemple-box {
+      background: var(--bg-0); border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 14px 16px; margin: 10px 0; font-family: ui-monospace, monospace;
+      font-size: 12.5px; color: var(--text-hi); line-height: 1.8; white-space: pre;
+      overflow-x: auto;
+    }
+    .exemple-box .cmt { color: var(--text-muted); }
+    .exemple-box .kw { color: #3ecf8e; font-weight: 700; }
+    .exemple-box .v { color: #3ecf8e; }
+    .exemple-box .f { color: #ef4444; }
+
+    .op-table {
+      width: 100%; border-collapse: collapse; font-size: 13px; margin: 12px 0;
+    }
+    .op-table th {
+      text-align: left; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em;
+      color: var(--text-muted); padding: 8px 10px; border-bottom: 1px solid var(--border);
+    }
+    .op-table td {
+      padding: 10px; border-bottom: 1px solid var(--border); vertical-align: top;
+    }
+    .op-table code {
+      font-family: ui-monospace, monospace; font-size: 13px; color: var(--accent);
+      background: var(--bg-0); padding: 1px 6px; border-radius: 4px;
+    }
+
+    .truth-table {
+      width: 100%; border-collapse: collapse; font-size: 12.5px; margin: 12px 0;
+      font-family: ui-monospace, monospace;
+    }
+    .truth-table th {
+      text-align: center; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em;
+      color: var(--text-muted); padding: 8px 10px; border-bottom: 1px solid var(--border);
+    }
+    .truth-table td {
+      padding: 8px 10px; border-bottom: 1px solid var(--border); text-align: center;
+    }
+    .truth-table .t { color: #3ecf8e; font-weight: 700; }
+    .truth-table .f { color: #ef4444; font-weight: 700; }
+
+    @media (min-width: 1025px) { .lock-row { margin-right: 388px; } }
+  </style>
+</head>
+<body>
+
+  <div class="app-layout">
+    <div class="rail"></div>
+
+    <div class="app-main">
+      <header class="app-topbar">
+        <div class="breadcrumb">
+          <span>technophile</span><span>/</span>
+          <span>Logique algorithmique</span><span>/</span>
+          <span style="color:var(--text-hi);font-weight:500;">Leçon 6</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:14px;">
+          <div class="avatar" style="cursor:pointer;" onclick="location.href='../profile.html'">R</div>
+        </div>
+      </header>
+
+      <main class="app-center">
+        <div class="page-wrap">
+
+          <div class="lesson-head">
+            <div class="eyebrow">Logique algorithmique — Leçon 6</div>
+            <h1>Les opérateurs de comparaison et logiques</h1>
+            <p>Un algorithme doit savoir décider. Pour cela, il compare des valeurs et combine des conditions. C'est la dernière brique avant les <strong>structures de contrôle</strong> du Module 2.</p>
+          </div>
+
+          <div class="lesson-layout">
+          <div class="lesson-main">
+
+          <!-- 1. Comparaison -->
+          <div class="lesson-section">
+            <h2><span class="num">1</span>Comparer deux valeurs</h2>
+            <p>Un <strong>opérateur de comparaison</strong> prend deux valeurs et renvoie un <strong>booléen</strong> : <code>Vrai</code> ou <code>Faux</code>. Il y en a six à connaître.</p>
+
+            <table class="op-table">
+              <thead>
+                <tr>
+                  <th>Opérateur</th>
+                  <th>Signification</th>
+                  <th>Exemple</th>
+                  <th>Résultat</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>==</code></td>
+                  <td>égal à</td>
+                  <td><code>5 == 5</code></td>
+                  <td>Vrai</td>
+                </tr>
+                <tr>
+                  <td><code>!=</code></td>
+                  <td>différent de</td>
+                  <td><code>5 != 3</code></td>
+                  <td>Vrai</td>
+                </tr>
+                <tr>
+                  <td><code>&lt;</code></td>
+                  <td>strictement inférieur</td>
+                  <td><code>3 &lt; 5</code></td>
+                  <td>Vrai</td>
+                </tr>
+                <tr>
+                  <td><code>&gt;</code></td>
+                  <td>strictement supérieur</td>
+                  <td><code>3 &gt; 5</code></td>
+                  <td>Faux</td>
+                </tr>
+                <tr>
+                  <td><code>&lt;=</code></td>
+                  <td>inférieur ou égal</td>
+                  <td><code>5 &lt;= 5</code></td>
+                  <td>Vrai</td>
+                </tr>
+                <tr>
+                  <td><code>&gt;=</code></td>
+                  <td>supérieur ou égal</td>
+                  <td><code>3 &gt;= 5</code></td>
+                  <td>Faux</td>
+                </tr>
+              </tbody>
+            </table>
+
+            <p class="sub">Retiens la différence entre <code>&lt;</code> et <code>&lt;=</code> : elle est cruciale. <code>3 &lt; 3</code> est faux, <code>3 &lt;= 3</code> est vrai. Une borne incluse ou exclue change complètement un algorithme.</p>
+
+            <div class="vocab-grid">
+              <div class="vocab-card">
+                <div class="term">Prédicat / condition</div>
+                <div class="def">Une expression qui renvoie Vrai ou Faux. Ex : <code>age &gt;= 18</code>. C'est la brique de base des décisions.</div>
+              </div>
+              <div class="vocab-card">
+                <div class="term">Booléen résultat</div>
+                <div class="def">Toute comparaison produit un booléen. On peut le ranger dans une variable : <code>estMajeur ← age &gt;= 18</code>.</div>
+              </div>
+              <div class="vocab-card">
+                <div class="term">=== (JS)</div>
+                <div class="def">En JavaScript, <code>===</code> compare valeur <strong>et</strong> type, sans conversion. Plus sûr que <code>==</code>. On y revient en pièges.</div>
+              </div>
+            </div>
+
+            <p>Une comparaison s'utilise directement dans une condition :</p>
+            <div class="exemple-box">  age <span class="cmt">←</span> 20
+  estMajeur <span class="cmt">←</span> (age &gt;= 18)      <span class="cmt">// Vrai</span>
+
+  note <span class="cmt">←</span> 12
+  estAdmis <span class="cmt">←</span> (note &gt;= 10)    <span class="cmt">// Vrai</span></div>
+          </div>
+
+          <!-- 2. Logiques -->
+          <div class="lesson-section">
+            <h2><span class="num">2</span>Combiner avec ET, OU, NON</h2>
+            <p>Une seule comparaison ne suffit pas toujours. Pour exprimer « l'âge est entre 13 et 17 » ou « c'est le week-end », il faut <strong>combiner</strong> plusieurs conditions avec des <strong>opérateurs logiques</strong>.</p>
+
+            <div class="vocab-grid">
+              <div class="vocab-card">
+                <div class="term">ET (AND, <code>&amp;&amp;</code>)</div>
+                <div class="def">Vrai <strong>seulement si</strong> les deux conditions sont vraies. Sinon Faux. « Je sors s'il fait beau <strong>et</strong> si j'ai le temps. »</div>
+              </div>
+              <div class="vocab-card">
+                <div class="term">OU (OR, <code>||</code>)</div>
+                <div class="def">Vrai <strong>dès qu'une</strong> des deux conditions est vraie. Faux seulement si les deux sont fausses. « Je sors s'il fait beau <strong>ou</strong> si j'ai envie. »</div>
+              </div>
+              <div class="vocab-card">
+                <div class="term">NON (NOT, <code>!</code>)</div>
+                <div class="def">Inverse un booléen. <code>!Vrai</code> = Faux, <code>!Faux</code> = Vrai. « Je sors <strong>sauf si</strong> il pleut. »</div>
+              </div>
+            </div>
+
+            <p>Les <strong>tables de vérité</strong> disent tout :</p>
+
+            <table class="truth-table">
+              <thead>
+                <tr>
+                  <th>A</th>
+                  <th>B</th>
+                  <th>A ET B</th>
+                  <th>A OU B</th>
+                  <th>NON A</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td class="t">Vrai</td><td class="t">Vrai</td><td class="t">Vrai</td><td class="t">Vrai</td><td class="f">Faux</td></tr>
+                <tr><td class="t">Vrai</td><td class="f">Faux</td><td class="f">Faux</td><td class="t">Vrai</td><td class="f">Faux</td></tr>
+                <tr><td class="f">Faux</td><td class="t">Vrai</td><td class="f">Faux</td><td class="t">Vrai</td><td class="t">Vrai</td></tr>
+                <tr><td class="f">Faux</td><td class="f">Faux</td><td class="f">Faux</td><td class="f">Faux</td><td class="t">Vrai</td></tr>
+              </tbody>
+            </table>
+
+            <p>Exemples concrets avec les trois opérateurs :</p>
+            <div class="exemple-box">  <span class="cmt">// ET : les deux conditions doivent être vraies</span>
+  estAdo <span class="cmt">←</span> (age &gt;= 13) <span class="kw">&amp;&amp;</span> (age &lt;= 17)
+
+  <span class="cmt">// OU : au moins une des deux doit être vraie</span>
+  estWeekend <span class="cmt">←</span> (jour == "samedi") <span class="kw">||</span> (jour == "dimanche")
+
+  <span class="cmt">// NON : on inverse</span>
+  nEstPasVide <span class="cmt">←</span> <span class="kw">!</span>(texte == "")</div>
+
+            <p class="sub">Les opérateurs logiques sont la colle entre les comparaisons. Sans eux, on ne peut exprimer que des questions très simples. Avec eux, on construit des décisions complexes.</p>
+          </div>
+
+          <!-- 3. Priorité et parenthèses -->
+          <div class="lesson-section">
+            <h2><span class="num">3</span>Priorité et parenthèses</h2>
+            <p>Quand plusieurs opérateurs se croisent, l'ordre d'évaluation est le suivant (du plus prioritaire au moins) :</p>
+            <ul>
+              <li><strong>1er</strong> : parenthèses <code>( ... )</code></li>
+              <li><strong>2e</strong> : NON <code>!</code></li>
+              <li><strong>3e</strong> : comparaisons <code>==</code>, <code>!=</code>, <code>&lt;</code>, <code>&gt;</code>, <code>&lt;=</code>, <code>&gt;=</code></li>
+              <li><strong>4e</strong> : ET <code>&amp;&amp;</code></li>
+              <li><strong>5e</strong> : OU <code>||</code></li>
+            </ul>
+
+            <p>Regarde la différence :</p>
+            <div class="exemple-box">  <span class="cmt">// Sans parenthèses, ET passe avant OU</span>
+  a <span class="kw">||</span> b <span class="kw">&amp;&amp;</span> c       <span class="cmt">// = a || (b &amp;&amp; c)</span>
+
+  <span class="cmt">// Avec parenthèses, on force un autre ordre</span>
+  (a <span class="kw">||</span> b) <span class="kw">&amp;&amp;</span> c     <span class="cmt">// = (a || b) && c</span>
+
+  <span class="cmt">// Exemple complet</span>
+  estAdulteEtInscrit <span class="cmt">←</span> (age &gt;= 18) <span class="kw">&amp;&amp;</span> (inscrit == Vrai)</div>
+
+            <p class="sub">Comme pour l'arithmétique : <strong>en cas de doute, mets des parenthèses</strong>. Elles ne coûtent rien, clarifient l'intention, et évitent les bugs de priorité.</p>
+          </div>
+
+          <!-- 4. Pièges -->
+          <div class="lesson-section">
+            <h2><span class="num">4</span>Pièges fréquents</h2>
+            <div class="vocab-grid">
+              <div class="vocab-card">
+                <div class="term">Confondre = et ==</div>
+                <div class="def"><code>=</code> affecte (« range 5 dans x »). <code>==</code> compare (« est-ce que x vaut 5 ? »). Deux rôles opposés, une lettre de différence.</div>
+              </div>
+              <div class="vocab-card">
+                <div class="term">== vs === en JS</div>
+                <div class="def"><code>"5" == 5</code> donne <code>Vrai</code> (JS convertit). <code>"5" === 5</code> donne <code>Faux</code> (types différents). En JavaScript moderne, on utilise <strong>toujours</strong> <code>===</code>.</div>
+              </div>
+              <div class="vocab-card">
+                <div class="term">Inverser ET / OU</div>
+                <div class="def">« Il fait beau <strong>ou</strong> j'ai le temps » n'est pas « il fait beau <strong>et</strong> j'ai le temps ». Une seule erreur de mot change toute la logique.</div>
+              </div>
+              <div class="vocab-card">
+                <div class="term">Loi de De Morgan</div>
+                <div class="def"><code>!(A &amp;&amp; B)</code> équivaut à <code>!A || !B</code>. Et <code>!(A || B)</code> à <code>!A &amp;&amp; !B</code>. Utile pour simplifier des conditions.</div>
+              </div>
+              <div class="vocab-card">
+                <div class="term">Court-circuit (JS)</div>
+                <div class="def"><code>a &amp;&amp; b</code> n'évalue <code>b</code> que si <code>a</code> est vrai. <code>a || b</code> n'évalue <code>b</code> que si <code>a</code> est faux. Ça peut masquer des effets de bord.</div>
+              </div>
+              <div class="vocab-card">
+                <div class="term">Oublier les parenthèses</div>
+                <div class="def"><code>age &gt;= 13 &amp;&amp; age &lt;= 17</code> fonctionne (les comparaisons passent avant ET). Mais <code>a == 1 || b == 2 &amp;&amp; c == 3</code> se lit <code>a == 1 || (b == 2 &amp;&amp; c == 3)</code>. Ajoute des parenthèses.</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 5. Exercice -->
+          <div class="lesson-section">
+            <h2><span class="num">5</span>À toi de jouer</h2>
+            <p class="sub">Trois fonctions qui exercent les trois types d'opérateurs : comparaison simple, combinaison avec ET, combinaison avec OU.</p>
+
+            <div class="exercise-card">
+              <div class="exo-title">Exercice — 3 mini-défis</div>
+              <div class="exo-desc">Enchaîne ces 3 fonctions dans le terminal, dans l'ordre :</div>
+              <ul class="exo-tests">
+                <li>• <code>estMajeur(age)</code> — renvoie <code>true</code> si l'âge est ≥ 18</li>
+                <li>• <code>estAdo(age)</code> — renvoie <code>true</code> si l'âge est entre 13 et 17 inclus (utilise ET <code>&amp;&amp;</code>)</li>
+                <li>• <code>estWeekend(jour)</code> — renvoie <code>true</code> si jour vaut <code>"samedi"</code> ou <code>"dimanche"</code> (utilise OU <code>||</code>)</li>
+              </ul>
+              <ul class="exo-tests">
+                <li>• <code>estMajeur(18)</code> → <code>true</code>, <code>estMajeur(17)</code> → <code>false</code> (attention à la borne)</li>
+                <li>• <code>estAdo(13)</code> → <code>true</code>, <code>estAdo(18)</code> → <code>false</code> (bornes incluses)</li>
+                <li>• <code>estWeekend("dimanche")</code> → <code>true</code>, <code>estWeekend("lundi")</code> → <code>false</code></li>
+                <li>• Tape <code>valider</code> après chaque fonction pour débloquer la suivante</li>
+              </ul>
+            </div>
+          </div>
+
+          </div>
+          <!-- /.lesson-main -->
+
+          <aside class="lesson-side">
+            <div class="exercise-card side-text">
+              <div class="exo-title">Objectif</div>
+              <div class="exo-desc" id="side-objective-desc">1/3 — Implémente estMajeur(age) : true si age ≥ 18.</div>
+              <ul class="exo-tests">
+                <li>• <code>valider</code> → lance les tests</li>
+                <li>• <code>aide</code> → revoir la consigne</li>
+                <li>• <code>clear</code> → nettoyer l'écran</li>
+              </ul>
+            </div>
+            <div class="exercise-card side-terminal">
+              <div class="exo-title">&gt;_ Terminal</div>
+              <div id="terminal-wrap">
+                <div id="terminal"></div>
+              </div>
+              <div class="term-toolbar">
+                <button type="button" class="btn btn-outline" id="btn-clear">Effacer</button>
+                <button type="button" class="btn btn-primary" id="btn-valider">Valider</button>
+              </div>
+            </div>
+          </aside>
+
+          </div>
+          <!-- /.lesson-layout -->
+
+          <div class="lock-row unlocked" id="module2-row">
+            <div>
+              <div class="lr-title">
+                <svg class="lock-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10" width="16" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>
+                🎓 Fin du Module 1 — Fondations
+              </div>
+              <div class="lr-sub" id="module2-sub">Valide les 3 exercices ci-dessus pour terminer le module.</div>
+            </div>
+            <div style="display:flex;gap:8px;">
+              <button type="button" class="btn btn-outline" id="btn-prev-lesson">← Précédent</button>
+              <button type="button" class="btn btn-primary" id="btn-next-lesson" aria-disabled="false">Terminer le module</button>
+            </div>
+          </div>
+
+        </div>
+      </main>
+    </div>
+  </div>
+
+<script src="../vendor/xterm.js"></script>
+<script src="../supabase-js.min.js"></script>
+<script src="../supabase-config.js"></script>
+<script src="../script.js"></script>
+<script src="../app.js"></script>
+<script src="../partials.js"></script>
+
+<script>
+(function () {
+  const PROGRESS_KEY = 'technophile_algo_progress';
+  const globalEval = (0, eval);
+
+  function getProgress() {
+    try { return JSON.parse(localStorage.getItem(PROGRESS_KEY)) || {}; } catch { return {}; }
+  }
+  function setProgress(p) { localStorage.setItem(PROGRESS_KEY, JSON.stringify(p)); }
+
+  const term = new Terminal({
+    theme: {
+      background: '#0a0b0c',
+      foreground: '#eceff1',
+      cursor: '#3ecf8e',
+      green: '#3ecf8e',
+      red: '#ef4444'
+    },
+    fontSize: 13,
+    fontFamily: 'ui-monospace, monospace',
+    cursorBlink: true,
+    convertEol: true,
+    cols: 40,
+    rows: 20
+  });
+  term.open(document.getElementById('terminal'));
+
+  const EXERCISES = [
+    { fn: 'estMajeur', desc: "1/3 — Implémente estMajeur(age) : renvoie true si age ≥ 18.",
+      cases: [ {args:[18], expected:true}, {args:[17], expected:false}, {args:[25], expected:true}, {args:[0], expected:false} ] },
+    { fn: 'estAdo', desc: "2/3 — Implémente estAdo(age) : renvoie true si 13 ≤ age ≤ 17.",
+      cases: [ {args:[13], expected:true}, {args:[17], expected:true}, {args:[12], expected:false}, {args:[18], expected:false} ] },
+    { fn: 'estWeekend', desc: "3/3 — Implémente estWeekend(jour) : renvoie true si jour est 'samedi' ou 'dimanche'.",
+      cases: [ {args:["samedi"], expected:true}, {args:["dimanche"], expected:true}, {args:["lundi"], expected:false}, {args:[""], expected:false} ] }
+  ];
+  let exerciseIndex = 0;
+  function currentExercise() { return EXERCISES[exerciseIndex] || null; }
+
+  function updateSidebarObjective() {
+    const descEl = document.getElementById('side-objective-desc');
+    if (!descEl) return;
+    const ex = currentExercise();
+    descEl.textContent = ex ? ex.desc : 'Tous les exercices sont validés. Bravo !';
+  }
+
+  let buffer = '';
+  const PROMPT = '\x1b[32malgo>\x1b[0m ';
+
+  function prompt() { term.write('\r\n' + PROMPT); }
+
+  function printHelp() {
+    const ex = currentExercise();
+    const msg = ex ? ex.desc : 'Tous les exercices sont validés.';
+    term.write('\r\n' + msg + "\r\nCommandes : 'valider' pour tester, 'clear' pour nettoyer, 'aide' pour revoir ceci.\r\n");
+  }
+
+  function runValidation() {
+    term.write('\r\n');
+    const ex = currentExercise();
+    if (!ex) {
+      term.write('\x1b[32mTout est déjà validé !\x1b[0m\r\n');
+      prompt();
+      return;
+    }
+    const fn = window[ex.fn];
+    if (typeof fn !== 'function') {
+      term.write(`\x1b[31m✗ La fonction ${ex.fn}(...) n'existe pas encore. Écris-la d'abord.\x1b[0m\r\n`);
+      prompt();
+      return;
+    }
+    let allOk = true;
+    ex.cases.forEach(c => {
+      let got, ok;
+      try {
+        got = fn(...c.args);
+        ok = got === c.expected;
+      } catch (e) {
+        got = 'erreur: ' + e.message;
+        ok = false;
+      }
+      if (!ok) allOk = false;
+      const mark = ok ? '\x1b[32m✓\x1b[0m' : '\x1b[31m✗\x1b[0m';
+      term.write(`${mark} ${ex.fn}(${c.args.map(a => JSON.stringify(a)).join(', ')}) → attendu ${JSON.stringify(c.expected)}, obtenu ${JSON.stringify(got)}\r\n`);
+    });
+
+    if (allOk) {
+      exerciseIndex++;
+      if (currentExercise()) {
+        term.write(`\r\n\x1b[32mBravo, exercice ${exerciseIndex}/${EXERCISES.length} validé !\x1b[0m\r\n`);
+        updateSidebarObjective();
+        printHelp();
+      } else {
+        term.write('\r\n\x1b[32m🎓 Bravo, le Module 1 est terminé !\x1b[0m\r\n');
+        const p = getProgress();
+        p.lesson6 = true;
+        p.module1_complete = true;
+        setProgress(p);
+        unlockNext();
+        updateSidebarObjective();
+        if (typeof showToast === 'function') showToast('Module 1 terminé !');
+      }
+    } else {
+      term.write('\r\n\x1b[31mPas encore bon, corrige et retape "valider".\x1b[0m\r\n');
+    }
+    prompt();
+  }
+
+  function execLine(line) {
+    const trimmed = line.trim();
+    if (trimmed === 'valider') { runValidation(); return; }
+    if (trimmed === 'clear' || trimmed === 'cls') { term.clear(); prompt(); return; }
+    if (trimmed === 'aide' || trimmed === 'help') { printHelp(); prompt(); return; }
+    if (trimmed === '') { prompt(); return; }
+
+    try {
+      const result = globalEval(trimmed);
+      if (result !== undefined) {
+        term.write('\r\n' + JSON.stringify(result));
+      }
+    } catch (e) {
+      term.write('\r\n\x1b[31m' + e.message + '\x1b[0m');
+    }
+    prompt();
+  }
+
+  term.onData(data => {
+    const code = data.charCodeAt(0);
+    if (code === 13) {
+      const line = buffer;
+      buffer = '';
+      execLine(line);
+    } else if (code === 127) {
+      if (buffer.length > 0) {
+        buffer = buffer.slice(0, -1);
+        term.write('\b \b');
+      }
+    } else if (code < 32) {
+      // ignore
+    } else {
+      buffer += data;
+      term.write(data);
+    }
+  });
+
+  term.write('\x1b[32mTerminal algo — technophile\x1b[0m\r\n');
+  printHelp();
+  prompt();
+
+  document.getElementById('btn-clear').addEventListener('click', () => { term.clear(); prompt(); term.focus(); });
+  document.getElementById('btn-valider').addEventListener('click', () => { execLine('valider'); term.focus(); });
+
+  function unlockNext() {
+    const row = document.getElementById('module2-row');
+    const btn = document.getElementById('btn-next-lesson');
+    const sub = document.getElementById('module2-sub');
+    row.classList.add('unlocked');
+    btn.setAttribute('aria-disabled', 'false');
+    sub.textContent = 'Module 1 validé — en route vers le Module 2.';
+  }
+
+  document.getElementById('btn-prev-lesson').addEventListener('click', () => {
+    location.href = 'lecon-algo-5.html';
+  });
+
+  document.getElementById('btn-next-lesson').addEventListener('click', (e) => {
+    if (e.currentTarget.getAttribute('aria-disabled') === 'true') {
+      if (typeof showToast === 'function') showToast('Valide les 3 exercices pour terminer');
+      return;
+    }
+    if (typeof showToast === 'function') showToast('🎓 Module 1 terminé — Module 2 en préparation');
+  });
+
+  if (getProgress().lesson6) unlockNext();
+})();
+</script>
+
+</body>
+</html>

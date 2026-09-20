@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Leçon 3 — Les données : variables, constantes et types - technophile</title>
+  <link rel="stylesheet" href="../style.css">
+  <link rel="stylesheet" href="../vendor/xterm.css">
+  <style>
+    .app-layout { display: flex; height: 100vh; overflow: hidden; }
+    .app-main { flex: 1; display: flex; flex-direction: column; min-width: 0; }
+    .app-topbar {
+      height: 48px; border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 24px; background: var(--bg-1); flex-shrink: 0;
+    }
+    .breadcrumb { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--text-lo); }
+    .app-center { flex: 1; overflow-y: auto; padding: 32px 40px; }
+    .page-wrap { max-width: 1320px; margin: 0 auto; }
+
+    .lesson-layout { display: grid; grid-template-columns: 1fr 360px; gap: 28px; align-items: start; }
+    .lesson-side {
+      position: fixed; top: 68px; right: 40px; width: 360px;
+      border-left: 1px solid var(--border); padding-left: 24px;
+      display: flex; flex-direction: column; gap: 16px;
+      height: calc(100vh - 100px);
+    }
+    .side-text { flex: 1; overflow-y: auto; }
+    .side-terminal { flex-shrink: 0; background: transparent; border: none; padding: 0; }
+    @media (max-width: 1024px) {
+      .lesson-layout { grid-template-columns: 1fr; }
+      .lesson-side { position: static; }
+    }
+
+    .lesson-head { margin-bottom: 24px; }
+    .lesson-head .eyebrow { font-size: 12px; color: var(--accent); font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; margin-bottom: 6px; }
+    .lesson-head h1 { font-size: 24px; font-weight: 700; margin-bottom: 6px; }
+    .lesson-head p { font-size: 13.5px; color: var(--text-lo); }
+
+    .lesson-section { margin-bottom: 28px; }
+    .lesson-section h2 { font-size: 15px; font-weight: 600; margin-bottom: 10px; display:flex; align-items:center; gap:8px; }
+    .lesson-section h2 .num {
+      width: 22px; height: 22px; border-radius: 50%; background: var(--accent-dim); color: var(--accent);
+      font-size: 11px; font-weight: 700; display:flex; align-items:center; justify-content:center; flex-shrink:0;
+    }
+    .lesson-section p { font-size: 13.5px; line-height: 1.7; color: var(--text-hi); margin-bottom: 10px; }
+    .lesson-section p.sub { color: var(--text-lo); font-size: 13px; }
+    .lesson-section ul { font-size: 13.5px; line-height: 1.8; color: var(--text-hi); margin: 8px 0 12px 20px; }
+    .lesson-section ul li { margin-bottom: 4px; }
+
+    .diagram-card {
+      background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-lg);
+      padding: 20px; display: flex; justify-content: center; margin: 16px 0;
+    }
+    .diagram-card svg { max-width: 100%; height: auto; }
+
+    .vocab-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px; margin: 14px 0; }
+    .vocab-card {
+      background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 12px 14px;
+    }
+    .vocab-card .term { font-size: 12.5px; font-weight: 700; color: var(--accent); margin-bottom: 4px; }
+    .vocab-card .def { font-size: 12px; color: var(--text-lo); line-height: 1.5; }
+
+    .exercise-card {
+      background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-lg);
+      padding: 20px;
+    }
+    .exercise-card .exo-title { font-size: 14px; font-weight: 700; margin-bottom: 6px; }
+    .exercise-card .exo-desc { font-size: 13px; color: var(--text-lo); margin-bottom: 6px; }
+    .exercise-card code {
+      font-family: ui-monospace, monospace; font-size: 12px; background: var(--bg-0);
+      padding: 1px 6px; border-radius: 4px; color: var(--accent);
+    }
+    .exo-tests { font-size: 12px; color: var(--text-muted); margin-bottom: 14px; }
+    .exo-tests li { margin-bottom: 2px; list-style: none; }
+
+    #terminal-wrap {
+      background: #0a0b0c; border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 10px; overflow: hidden;
+    }
+    #terminal { height: 380px; }
+    .lesson-side .exercise-card .exo-title { margin-bottom: 10px; font-family: ui-monospace, monospace; color: var(--accent); }
+
+    .term-toolbar { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
+
+    .lock-row {
+      display: flex; align-items: center; justify-content: space-between;
+      background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-lg);
+      padding: 16px 20px; margin-top: 24px; opacity: 0.55;
+      transition: opacity 0.2s, border-color 0.2s;
+    }
+    .lock-row.unlocked { opacity: 1; border-color: rgba(62,207,142,0.4); }
+    .lock-row .lr-title { font-size: 13.5px; font-weight: 600; display:flex; align-items:center; gap:8px; }
+    .lock-row .lr-sub { font-size: 12px; color: var(--text-lo); margin-top: 2px; }
+    .lock-icon { width: 16px; height: 16px; color: var(--text-muted); }
+    .lock-row.unlocked .lock-icon { color: var(--accent); }
+    .lock-row .btn { cursor: not-allowed; opacity: 0.65; }
+    .lock-row.unlocked .btn { cursor: pointer; opacity: 1; }
+
+    .exemple-box {
+      background: var(--bg-0); border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 14px 16px; margin: 10px 0; font-family: ui-monospace, monospace;
+      font-size: 12.5px; color: var(--text-hi); line-height: 1.8; white-space: pre;
+      overflow-x: auto;
+    }
+    .exemple-box .cmt { color: var(--text-muted); }
+    .exemple-box .kw { color: #3ecf8e; font-weight: 700; }
+
+    @media (min-width: 1025px) { .lock-row { margin-right: 388px; } }
+  </style>
+</head>
+<body>
+
+  <div class="app-layout">
+    <div class="rail"></div>
+
+    <div class="app-main">
+      <header class="app-topbar">
+        <div class="breadcrumb">
+          <span>technophile</span><span>/</span>
+          <span>Logique algorithmique</span><span>/</span>
+          <span style="color:var(--text-hi);font-weight:500;">Leçon 3</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:14px;">
+          <div class="avatar" style="cursor:pointer;" onclick="location.href='../profile.html'">R</div>
+        </div>
+      </header>
+
+      <main class="app-center">
+        <div class="page-wrap">
+
+          <div class="lesson-head">
+            <div class="eyebrow">Logique algorithmique — Leçon 3</div>
+            <h1>Les données : variables, constantes et types</h1>
+            <p>Un algorithme sans données ne sert à rien. Avant de calculer, comparer ou décider, il faut savoir où ranger les valeurs et de quelle nature elles sont.</p>
+          </div>
+
+          <div class="lesson-layout">
+          <div class="lesson-main">
+
+          <!-- 1. Variable vs constante -->
+          <div class="lesson-section">
+            <h2><span class="num">1</span>Deux boîtes différentes : variable et constante</h2>
+            <p>Pour stocker une information, un algorithme utilise des <strong>boîtes nommées</strong>. Il y en a deux sortes, et la différence est essentielle.</p>
+
+            <div class="vocab-grid">
+              <div class="vocab-card">
+                <div class="term">Variable</div>
+                <div class="def">Une boîte dont la valeur <strong>peut changer</strong> pendant l'exécution. On la déclare une fois, on peut la modifier autant de fois qu'on veut.</div>
+              </div>
+              <div class="vocab-card">
+                <div class="term">Constante</div>
+                <div class="def">Une boîte dont la valeur est <strong>fixée une fois pour toutes</strong>. Après sa déclaration, on n'y touche plus jamais.</div>
+              </div>
+            </div>
+
+            <p><strong>Pourquoi cette distinction ?</strong> Parce que les deux jouent des rôles différents dans un algorithme :</p>
+            <ul>
+              <li>Une <strong>variable</strong> mémorise un état qui évolue : le score d'un joueur augmente, un compteur s'incrémente, une température change.</li>
+              <li>Une <strong>constante</strong> mémorise une règle du monde qui ne bouge pas : le nombre de jours dans une semaine (7), la vitesse de la lumière, un taux de TVA légal, la valeur de π.</li>
+            </ul>
+
+            <p class="sub">Quand tu lis du code, une constante bien nommée te dit immédiatement : « cette valeur ne changera pas, tu peux t'y fier ». C'est une forme de documentation gratuite.</p>
+
+            <p><strong>Convention d'écriture</strong> — pour les repérer d'un coup d'œil, on écrit les constantes en MAJUSCULES :</p>
+            <div class="exemple-box">  <span class="cmt">// Variables (minuscules)</span>
+  age          <span class="cmt">←</span> 25
+  score        <span class="cmt">←</span> 0
+  temperature  <span class="cmt">←</span> 37.5
+
+  <span class="cmt">// Constantes (MAJUSCULES)</span>
+  JOURS_SEMAINE  <span class="cmt">←</span> 7
+  TVA_STANDARD   <span class="cmt">←</span> 0.20
+  PI             <span class="cmt">←</span> 3.14159</div>
+
+            <p class="sub">Le symbole <code>←</code> se lit « reçoit ». On dit qu'on <em>affecte</em> une valeur à une variable. Ne pas confondre avec <code>=</code> qui, lui, servira à tester une égalité (Leçon 6).</p>
+          </div>
+
+          <!-- 2. Les 4 types de base -->
+          <div class="lesson-section">
+            <h2><span class="num">2</span>Les 4 types de base</h2>
+            <p>Toute valeur a un <strong>type</strong> : sa nature. Le type détermine ce qu'on peut faire avec la valeur (additionner, concaténer, comparer…). Quatre types suffisent pour 90 % des algorithmes débutants.</p>
+
+            <div class="vocab-grid">
+              <div class="vocab-card">
+                <div class="term">Entier (integer)</div>
+                <div class="def">Un nombre sans virgule : <code>0</code>, <code>7</code>, <code>-42</code>, <code>1000</code>. Sert à <strong>compter</strong>.</div>
+              </div>
+              <div class="vocab-card">
+                <div class="term">Réel (float)</div>
+                <div class="def">Un nombre avec virgule : <code>3.14</code>, <code>-0.5</code>, <code>1.68</code>. Sert à <strong>mesurer</strong>.</div>
+              </div>
+              <div class="vocab-card">
+                <div class="term">Chaîne (string)</div>
+                <div class="def">Du texte, entre guillemets : <code>"Alice"</code>, <code>"bonjour"</code>. Peut contenir lettres, chiffres et symboles.</div>
+              </div>
+              <div class="vocab-card">
+                <div class="term">Booléen (boolean)</div>
+                <div class="def">Deux valeurs possibles : <code>Vrai</code> ou <code>Faux</code>. Sert à mémoriser une réponse à une question fermée.</div>
+              </div>
+            </div>
+
+            <div class="diagram-card">
+              <svg viewBox="0 0 720 160" width="720" xmlns="http://www.w3.org/2000/svg">
+                <g font-family="ui-sans-serif,system-ui,sans-serif" font-size="11" fill="#eceff1">
+                  <text x="360" y="18" text-anchor="middle" font-size="11" fill="#9aa1a6">les 4 types de base, chacun avec sa boîte</text>
+
+                  <rect x="20" y="40" width="155" height="100" rx="10" fill="#1c1c1c" stroke="#3ecf8e" stroke-width="1.5"/>
+                  <text x="97" y="65" text-anchor="middle" font-weight="700" fill="#3ecf8e" font-size="13">Entier</text>
+                  <text x="97" y="88" text-anchor="middle" font-size="11" fill="#9aa1a6">compter</text>
+                  <text x="97" y="112" text-anchor="middle" font-family="ui-monospace, monospace" font-size="12" fill="#eceff1">7 · -3 · 42</text>
+
+                  <rect x="190" y="40" width="155" height="100" rx="10" fill="#1c1c1c" stroke="#3ecf8e" stroke-width="1.5"/>
+                  <text x="267" y="65" text-anchor="middle" font-weight="700" fill="#3ecf8e" font-size="13">Réel</text>
+                  <text x="267" y="88" text-anchor="middle" font-size="11" fill="#9aa1a6">mesurer</text>
+                  <text x="267" y="112" text-anchor="middle" font-family="ui-monospace, monospace" font-size="12" fill="#eceff1">3.14 · -0.5</text>
+
+                  <rect x="360" y="40" width="155" height="100" rx="10" fill="#1c1c1c" stroke="#3ecf8e" stroke-width="1.5"/>
+                  <text x="437" y="65" text-anchor="middle" font-weight="700" fill="#3ecf8e" font-size="13">Chaîne</text>
+                  <text x="437" y="88" text-anchor="middle" font-size="11" fill="#9aa1a6">du texte</text>
+                  <text x="437" y="112" text-anchor="middle" font-family="ui-monospace, monospace" font-size="11" fill="#eceff1">"Alice" · "bonjour"</text>
+
+                  <rect x="530" y="40" width="170" height="100" rx="10" fill="#1c1c1c" stroke="#3ecf8e" stroke-width="1.5"/>
+                  <text x="615" y="65" text-anchor="middle" font-weight="700" fill="#3ecf8e" font-size="13">Booléen</text>
+                  <text x="615" y="88" text-anchor="middle" font-size="11" fill="#9aa1a6">oui / non</text>
+                  <text x="615" y="112" text-anchor="middle" font-family="ui-monospace, monospace" font-size="12" fill="#eceff1">Vrai · Faux</text>
+                </g>
+              </svg>
+            </div>
+
+            <p>Un exemple de déclaration qui couvre les 4 types :</p>
+            <div class="exemple-box">  nom          <span class="cmt">←</span> "Alice"        <span class="cmt">// chaîne</span>
+  age          <span class="cmt">←</span> 25             <span class="cmt">// entier</span>
+  taille       <span class="cmt">←</span> 1.68           <span class="cmt">// réel</span>
+  estÉtudiant  <span class="cmt">←</span> Vrai           <span class="cmt">// booléen</span></div>
+
+            <p class="sub">Chaque boîte a un nom (l'étiquette), une valeur (le contenu) et un type (la nature du contenu). Le type dépend de la valeur que tu ranges dedans, pas du nom que tu lui donnes.</p>
+          </div>
+
+          <!-- 3. Pourquoi le type compte -->
+          <div class="lesson-section">
+            <h2><span class="num">3</span>Pourquoi le type compte autant</h2>
+            <p>Le type n'est pas une décoration : il détermine <strong>ce que tu peux faire</strong> avec la valeur, et <strong>ce que ça donne</strong>. Le même symbole <code>+</code> ne se comporte pas pareil selon les types en jeu.</p>
+
+            <div class="exemple-box">  5 + 3        <span class="cmt">// 8      → addition</span>
+  "5" + "3"    <span class="cmt">// "53"   → concaténation (on colle les textes)</span>
+  5 + "3"      <span class="cmt">// ambigu : selon le langage, ça peut donner "53" ou 8</span>
+
+  5 == 5       <span class="cmt">// Vrai    → même valeur, même type</span>
+  "5" == 5     <span class="cmt">// selon le langage : Vrai (converti) ou Faux (strict)</span></div>
+
+            <p>Ce genre de piège cause une grande partie des bugs des débutants. La règle à retenir :</p>
+            <p class="sub"><strong>Avant de manipuler une valeur, demande-toi systématiquement de quel type elle est.</strong> Un texte n'est pas un nombre, même s'il ressemble à un nombre.</p>
+
+            <p>Autre conséquence : le type d'une valeur détermine ce que tu peux lui demander :</p>
+            <ul>
+              <li>Sur un <strong>nombre</strong> : additionner, soustraire, comparer avec <code>&lt;</code>, calculer un modulo.</li>
+              <li>Sur une <strong>chaîne</strong> : mesurer sa longueur, la mettre en majuscules, chercher un caractère dedans.</li>
+              <li>Sur un <strong>booléen</strong> : combiner avec <code>ET</code>, <code>OU</code>, <code>NON</code>.</li>
+            </ul>
+            <p class="sub">Essayer d'ajouter deux booléens n'a aucun sens. Essayer de mesurer la longueur d'un entier non plus. Le type dicte la grammaire.</p>
+          </div>
+
+          <!-- 4. Pièges fréquents -->
+          <div class="lesson-section">
+            <h2><span class="num">4</span>Pièges fréquents</h2>
+            <div class="vocab-grid">
+              <div class="vocab-card">
+                <div class="term">Mettre une constante en variable</div>
+                <div class="def">Techniquement ça marche, mais tu perds l'information « cette valeur ne bougera pas ». Une constante bien nommée rend l'intention lisible.</div>
+              </div>
+              <div class="vocab-card">
+                <div class="term">Confondre "5" et 5</div>
+                <div class="def">Le premier est une chaîne d'un caractère, le second un entier. <code>"5" + "3"</code> donne <code>"53"</code>, pas <code>8</code>.</div>
+              </div>
+              <div class="vocab-card">
+                <div class="term">Nommer mal ses boîtes</div>
+                <div class="def"><code>a</code>, <code>b</code>, <code>x</code>, <code>truc</code>, <code>temp2</code>... Six mois plus tard, tu ne comprendras plus ton propre code. <code>ageUtilisateur</code> vaut mieux que <code>a</code>.</div>
+              </div>
+              <div class="vocab-card">
+                <div class="term">Réutiliser un nom</div>
+                <div class="def">Déclarer <code>score</code> pour un compteur de vies, puis réutiliser <code>score</code> pour un prix : deux rôles dans la même boîte, source de confusion.</div>
+              </div>
+              <div class="vocab-card">
+                <div class="term">Mélanger les types sans le vouloir</div>
+                <div class="def">Lire l'âge d'un utilisateur depuis un formulaire te donne une <strong>chaîne</strong> ("25"), pas un entier. Il faudra le convertir avant de calculer.</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 5. Exercice -->
+          <div class="lesson-section">
+            <h2><span class="num">5</span>À toi de jouer</h2>
+            <p class="sub">Trois fonctions qui inspectent le type d'une valeur. En JavaScript, <code>typeof x</code> renvoie <code>"number"</code>, <code>"string"</code>, <code>"boolean"</code> etc. Pour distinguer un entier d'un réel, on utilise <code>Number.isInteger(x)</code>.</p>
+
+            <div class="exercise-card">
+              <div class="exo-title">Exercice — 3 mini-défis</div>
+              <div class="exo-desc">Enchaîne ces 3 fonctions dans le terminal, dans l'ordre :</div>
+              <ul class="exo-tests">
+                <li>• <code>estEntier(x)</code> — renvoie <code>true</code> si x est un nombre entier (ex : 5, -3), sinon <code>false</code></li>
+                <li>• <code>estTexte(x)</code> — renvoie <code>true</code> si x est une chaîne de caractères</li>
+                <li>• <code>typeDe(x)</code> — renvoie <code>"entier"</code>, <code>"réel"</code>, <code>"texte"</code>, <code>"booléen"</code> ou <code>"inconnu"</code></li>
+              </ul>
+              <ul class="exo-tests">
+                <li>• Indices : <code>typeof x</code>, <code>Number.isInteger(x)</code></li>
+                <li>• <code>estEntier("5")</code> doit renvoyer <code>false</code> : "5" est une chaîne, pas un entier</li>
+                <li>• Tape <code>valider</code> après chaque fonction pour débloquer la suivante</li>
+                <li>• Tape <code>aide</code> à tout moment, ou <code>clear</code> pour nettoyer l'écran</li>
+              </ul>
+            </div>
+          </div>
+
+          </div>
+          <!-- /.lesson-main -->
+
+          <aside class="lesson-side">
+            <div class="exercise-card side-text">
+              <div class="exo-title">Objectif</div>
+              <div class="exo-desc" id="side-objective-desc">1/3 — Implémente estEntier(x) : true si x est un nombre entier.</div>
+              <ul class="exo-tests">
+                <li>• <code>valider</code> → lance les tests</li>
+                <li>• <code>aide</code> → revoir la consigne</li>
+                <li>• <code>clear</code> → nettoyer l'écran</li>
+              </ul>
+            </div>
+            <div class="exercise-card side-terminal">
+              <div class="exo-title">&gt;_ Terminal</div>
+              <div id="terminal-wrap">
+                <div id="terminal"></div>
+              </div>
+              <div class="term-toolbar">
+                <button type="button" class="btn btn-outline" id="btn-clear">Effacer</button>
+                <button type="button" class="btn btn-primary" id="btn-valider">Valider</button>
+              </div>
+            </div>
+          </aside>
+
+          </div>
+          <!-- /.lesson-layout -->
+
+          <div class="lock-row unlocked" id="lesson4-row">
+            <div>
+              <div class="lr-title">
+                <svg class="lock-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10" width="16" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>
+                Leçon 4 — Lire et écrire (entrées / sorties)
+              </div>
+              <div class="lr-sub" id="lesson4-sub">Valide les 3 exercices ci-dessus pour débloquer cette leçon.</div>
+            </div>
+            <div style="display:flex;gap:8px;">
+              <button type="button" class="btn btn-outline" id="btn-prev-lesson">← Précédent</button>
+              <button type="button" class="btn btn-outline" id="btn-next-lesson" aria-disabled="false">Continuer</button>
+            </div>
+          </div>
+
+        </div>
+      </main>
+    </div>
+  </div>
+
+<script src="../vendor/xterm.js"></script>
+<script src="../supabase-js.min.js"></script>
+<script src="../supabase-config.js"></script>
+<script src="../script.js"></script>
+<script src="../app.js"></script>
+<script src="../partials.js"></script>
+
+<script>
+(function () {
+  const PROGRESS_KEY = 'technophile_algo_progress';
+  const globalEval = (0, eval);
+
+  function getProgress() {
+    try { return JSON.parse(localStorage.getItem(PROGRESS_KEY)) || {}; } catch { return {}; }
+  }
+  function setProgress(p) { localStorage.setItem(PROGRESS_KEY, JSON.stringify(p)); }
+
+  const term = new Terminal({
+    theme: {
+      background: '#0a0b0c',
+      foreground: '#eceff1',
+      cursor: '#3ecf8e',
+      green: '#3ecf8e',
+      red: '#ef4444'
+    },
+    fontSize: 13,
+    fontFamily: 'ui-monospace, monospace',
+    cursorBlink: true,
+    convertEol: true,
+    cols: 40,
+    rows: 20
+  });
+  term.open(document.getElementById('terminal'));
+
+  const EXERCISES = [
+    { fn: 'estEntier', desc: "1/3 — Implémente estEntier(x) : renvoie true si x est un nombre entier.",
+      cases: [ {args:[5], expected:true}, {args:[5.5], expected:false}, {args:[-3], expected:true}, {args:["5"], expected:false} ] },
+    { fn: 'estTexte', desc: "2/3 — Implémente estTexte(x) : renvoie true si x est une chaîne de caractères.",
+      cases: [ {args:["bonjour"], expected:true}, {args:[42], expected:false}, {args:[""], expected:true}, {args:[true], expected:false} ] },
+    { fn: 'typeDe', desc: "3/3 — Implémente typeDe(x) : renvoie 'entier', 'réel', 'texte', 'booléen' ou 'inconnu'.",
+      cases: [ {args:[5], expected:"entier"}, {args:[3.14], expected:"réel"}, {args:["abc"], expected:"texte"}, {args:[true], expected:"booléen"}, {args:[null], expected:"inconnu"} ] }
+  ];
+  let exerciseIndex = 0;
+  function currentExercise() { return EXERCISES[exerciseIndex] || null; }
+
+  function updateSidebarObjective() {
+    const descEl = document.getElementById('side-objective-desc');
+    if (!descEl) return;
+    const ex = currentExercise();
+    descEl.textContent = ex ? ex.desc : 'Tous les exercices sont validés. Bravo !';
+  }
+
+  let buffer = '';
+  const PROMPT = '\x1b[32malgo>\x1b[0m ';
+
+  function prompt() { term.write('\r\n' + PROMPT); }
+
+  function printHelp() {
+    const ex = currentExercise();
+    const msg = ex ? ex.desc : 'Tous les exercices sont validés.';
+    term.write('\r\n' + msg + "\r\nCommandes : 'valider' pour tester, 'clear' pour nettoyer, 'aide' pour revoir ceci.\r\n");
+  }
+
+  function runValidation() {
+    term.write('\r\n');
+    const ex = currentExercise();
+    if (!ex) {
+      term.write('\x1b[32mTout est déjà validé !\x1b[0m\r\n');
+      prompt();
+      return;
+    }
+    const fn = window[ex.fn];
+    if (typeof fn !== 'function') {
+      term.write(`\x1b[31m✗ La fonction ${ex.fn}(...) n'existe pas encore. Écris-la d'abord.\x1b[0m\r\n`);
+      prompt();
+      return;
+    }
+    let allOk = true;
+    ex.cases.forEach(c => {
+      let got, ok;
+      try {
+        got = fn(...c.args);
+        ok = got === c.expected;
+      } catch (e) {
+        got = 'erreur: ' + e.message;
+        ok = false;
+      }
+      if (!ok) allOk = false;
+      const mark = ok ? '\x1b[32m✓\x1b[0m' : '\x1b[31m✗\x1b[0m';
+      term.write(`${mark} ${ex.fn}(${c.args.map(a => JSON.stringify(a)).join(', ')}) → attendu ${JSON.stringify(c.expected)}, obtenu ${JSON.stringify(got)}\r\n`);
+    });
+
+    if (allOk) {
+      exerciseIndex++;
+      if (currentExercise()) {
+        term.write(`\r\n\x1b[32mBravo, exercice ${exerciseIndex}/${EXERCISES.length} validé !\x1b[0m\r\n`);
+        updateSidebarObjective();
+        printHelp();
+      } else {
+        term.write('\r\n\x1b[32mBravo, les 3 exercices sont validés ! La leçon 4 est débloquée.\x1b[0m\r\n');
+        const p = getProgress();
+        p.lesson3 = true;
+        setProgress(p);
+        unlockNext();
+        updateSidebarObjective();
+        if (typeof showToast === 'function') showToast('Leçon 3 validée !');
+      }
+    } else {
+      term.write('\r\n\x1b[31mPas encore bon, corrige et retape "valider".\x1b[0m\r\n');
+    }
+    prompt();
+  }
+
+  function execLine(line) {
+    const trimmed = line.trim();
+    if (trimmed === 'valider') { runValidation(); return; }
+    if (trimmed === 'clear' || trimmed === 'cls') { term.clear(); prompt(); return; }
+    if (trimmed === 'aide' || trimmed === 'help') { printHelp(); prompt(); return; }
+    if (trimmed === '') { prompt(); return; }
+
+    try {
+      const result = globalEval(trimmed);
+      if (result !== undefined) {
+        term.write('\r\n' + JSON.stringify(result));
+      }
+    } catch (e) {
+      term.write('\r\n\x1b[31m' + e.message + '\x1b[0m');
+    }
+    prompt();
+  }
+
+  term.onData(data => {
+    const code = data.charCodeAt(0);
+    if (code === 13) {
+      const line = buffer;
+      buffer = '';
+      execLine(line);
+    } else if (code === 127) {
+      if (buffer.length > 0) {
+        buffer = buffer.slice(0, -1);
+        term.write('\b \b');
+      }
+    } else if (code < 32) {
+      // ignore
+    } else {
+      buffer += data;
+      term.write(data);
+    }
+  });
+
+  term.write('\x1b[32mTerminal algo — technophile\x1b[0m\r\n');
+  printHelp();
+  prompt();
+
+  document.getElementById('btn-clear').addEventListener('click', () => { term.clear(); prompt(); term.focus(); });
+  document.getElementById('btn-valider').addEventListener('click', () => { execLine('valider'); term.focus(); });
+
+  function unlockNext() {
+    const row = document.getElementById('lesson4-row');
+    const btn = document.getElementById('btn-next-lesson');
+    const sub = document.getElementById('lesson4-sub');
+    row.classList.add('unlocked');
+    btn.setAttribute('aria-disabled', 'false');
+    sub.textContent = 'Débloquée — tu peux continuer.';
+  }
+
+  document.getElementById('btn-prev-lesson').addEventListener('click', () => {
+    location.href = 'lecon-algo-2.html';
+  });
+
+  document.getElementById('btn-next-lesson').addEventListener('click', (e) => {
+    if (e.currentTarget.getAttribute('aria-disabled') === 'true') {
+      if (typeof showToast === 'function') showToast('Valide les 3 exercices pour débloquer');
+      return;
+    }
+    location.href = 'lecon-algo-4.html';
+  });
+
+  if (getProgress().lesson3) unlockNext();
+})();
+</script>
+
+</body>
+</html>
