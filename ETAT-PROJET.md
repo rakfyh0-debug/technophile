@@ -101,3 +101,5 @@ settings, database).
 - Palette fond GitHub Dark (--bg-0 #0d1117, --bg-1 #161b22, --border #30363d, etc.)
 - Nouvelle palette boutons : btn-primary en bleu (#1f6feb), btn-outline hover en orange (#f0883e)
 - Icônes du rail : active et hover en orange (#f0883e)
+- Responsive mobile sur les 6 leçons : media queries @1024px / @768px / @480px
+  (rail horizontal, terminal réduit, lock-row en colonne, tables scrollables)
