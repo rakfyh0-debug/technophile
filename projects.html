@@ -48,43 +48,43 @@
 
       <main class="app-center">
         <div class="page-wrap">
-          <h1 style="font-size:22px;font-weight:600;">Projets</h1>
-          <p style="font-size:13px;color:var(--text-lo);">Tous tes projets, stockés en local sur cette machine.</p>
+          <h1 style="font-size:22px;font-weight:600;" data-i18n="page.projects">Projets</h1>
+          <p style="font-size:13px;color:var(--text-lo);" data-i18n="projects.subtitle">Tous tes projets, stockés en local sur cette machine.</p>
 
           <div class="proj-toolbar">
             <input type="text" id="proj-search" placeholder="Rechercher un projet..." style="max-width:220px;">
             <select id="proj-filter" class="select">
-              <option value="">Tous les niveaux</option>
-              <option value="débutant">Débutant</option>
-              <option value="intermédiaire">Intermédiaire</option>
-              <option value="avancé">Avancé</option>
+              <option value="" data-i18n="projects.all_levels">Tous les niveaux</option>
+              <option value="débutant" data-i18n="toolbar.level.beginner">Débutant</option>
+              <option value="intermédiaire" data-i18n="toolbar.level.intermediate">Intermédiaire</option>
+              <option value="avancé" data-i18n="toolbar.level.advanced">Avancé</option>
             </select>
             <button type="button" class="sort" id="proj-sort">↕ Plus récent</button>
             <div class="spacer"></div>
-            <button type="button" class="btn btn-primary" id="new-project-btn">+ Nouveau projet</button>
+            <button type="button" class="btn btn-primary" id="new-project-btn" data-i18n="projects.new_btn">+ Nouveau projet</button>
           </div>
 
           <div class="card" id="new-project-form" style="display:none; margin-bottom:20px;">
-            <div class="card-title">Nouveau projet</div>
+            <div class="card-title" data-i18n="projects.new">Nouveau projet</div>
             <div class="form-group">
-              <label>Titre</label>
+              <label data-i18n="projects.field.title">Titre</label>
               <input type="text" id="np-title" placeholder="ex: Scraper de prix">
             </div>
             <div class="form-group">
-              <label>Description</label>
+              <label data-i18n="projects.field.desc">Description</label>
               <textarea id="np-desc" rows="2" placeholder="En quoi consiste le projet ?"></textarea>
             </div>
             <div class="form-group">
-              <label>Niveau</label>
+              <label data-i18n="projects.field.level">Niveau</label>
               <select id="np-level" class="select" style="width:100%;">
-                <option value="débutant">Débutant</option>
-                <option value="intermédiaire" selected>Intermédiaire</option>
-                <option value="avancé">Avancé</option>
+                <option value="débutant" data-i18n="toolbar.level.beginner">Débutant</option>
+                <option value="intermédiaire" selected data-i18n="toolbar.level.intermediate">Intermédiaire</option>
+                <option value="avancé" data-i18n="toolbar.level.advanced">Avancé</option>
               </select>
             </div>
             <div style="display:flex;justify-content:flex-end;gap:10px;">
-              <button type="button" class="btn btn-outline" id="np-cancel">Annuler</button>
-              <button type="button" class="btn btn-primary" id="np-create">Créer</button>
+              <button type="button" class="btn btn-outline" id="np-cancel" data-i18n="projects.cancel">Annuler</button>
+              <button type="button" class="btn btn-primary" id="np-create" data-i18n="projects.create">Créer</button>
             </div>
           </div>
 

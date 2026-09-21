@@ -43,19 +43,19 @@
         <div class="page-wrap">
           <div style="display:flex;justify-content:space-between;align-items:flex-start;">
             <div>
-              <h1 style="font-size:22px;font-weight:600;">Base de données</h1>
+              <h1 style="font-size:22px;font-weight:600;" data-i18n="page.database">Base de données</h1>
               <p style="font-size:13px;color:var(--text-lo);">Contenu réel du <code style="font-family:ui-monospace,monospace;">localStorage</code> de ce navigateur pour ce site.</p>
             </div>
-            <button type="button" class="btn btn-danger" id="reset-all">Réinitialiser tout</button>
+            <button type="button" class="btn btn-danger" id="reset-all" data-i18n="db.reset">Réinitialiser tout</button>
           </div>
 
           <div class="card" style="margin-top:20px;">
             <table class="db-table">
               <thead>
                 <tr>
-                  <th>Clé</th>
-                  <th>Type</th>
-                  <th>Valeur</th>
+                  <th data-i18n="db.col.key">Clé</th>
+                  <th data-i18n="db.col.type">Type</th>
+                  <th data-i18n="db.col.value">Valeur</th>
                   <th></th>
                 </tr>
               </thead>
