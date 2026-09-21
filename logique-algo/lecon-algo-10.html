@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Leçon 10 — Les boucles « tant que » (while) - technophile</title>
+  <link rel="stylesheet" href="../style.css">
+  <link rel="stylesheet" href="../vendor/xterm.css">
+  <link rel="stylesheet" href="../css/lesson.css">
+</head>
+<body>
+
+  <div class="app-layout">
+    <div class="rail"></div>
+
+    <div class="app-main">
+      <header class="app-topbar">
+        <div class="breadcrumb">
+          <span>technophile</span><span>/</span>
+          <span>Logique algorithmique</span><span>/</span>
+          <span style="color:var(--text-hi);font-weight:500;">Leçon 10</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:14px;">
+          <div class="avatar" style="cursor:pointer;" onclick="location.href='../profile.html'">R</div>
+        </div>
+      </header>
+
+      <main class="app-center">
+        <div class="page-wrap">
+
+          <div class="lesson-head">
+            <div class="eyebrow">Structures de contrôle — Leçon 10</div>
+            <h1>Les boucles « tant que » (while)</h1>
+            <p>Jusqu'ici, chaque instruction s'exécutait une seule fois. Une <strong>boucle</strong> permet de répéter un bloc d'instructions tant qu'une condition reste vraie — sans avoir à le réécrire.</p>
+          </div>
+
+          <div class="lesson-layout">
+          <div class="lesson-main">
+
+          <!-- 1. Pourquoi boucler -->
+          <div class="lesson-section">
+            <h2><span class="num">1</span>Pourquoi répéter ?</h2>
+            <p>Imaginez : afficher les nombres de 1 à 1000. Sans boucle, il faudrait écrire 1000 lignes <code>Écrire 1</code>, <code>Écrire 2</code>… Absurde. Une boucle <strong>répète une même action</strong> sans la dupliquer.</p>
+            <p class="sub">On retrouve les boucles partout : attendre un mot de passe correct, parcourir une liste, répéter un jeu jusqu'à ce que le joueur gagne, calculer une somme…</p>
+
+            <div class="vocab-grid">
+              <div class="vocab-card">
+                <div class="term">Itération</div>
+                <div class="def">Un passage complet du corps de la boucle. « 5 itérations » = le corps a été exécuté 5 fois.</div>
+              </div>
+              <div class="vocab-card">
+                <div class="term">Condition d'arrêt</div>
+                <div class="def">L'expression testée à chaque tour. Tant qu'elle est <code>Vrai</code>, on continue. Dès qu'elle devient <code>Faux</code>, on sort.</div>
+              </div>
+              <div class="vocab-card">
+                <div class="term">Boucle infinie</div>
+                <div class="def">Si la condition ne devient jamais fausse (par exemple parce qu'on oublie de faire évoluer la variable), le programme tourne indéfiniment.</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 2. Structure -->
+          <div class="lesson-section">
+            <h2><span class="num">2</span>La structure <code>Tant que… faire</code></h2>
+            <p>La boucle <code>Tant que</code> vérifie la condition <strong>avant</strong> chaque tour :</p>
+
+            <div class="exemple-box">  <span class="kw">Tant que</span> condition <span class="kw">faire</span>
+      instruction 1
+      instruction 2
+      ...
+  <span class="kw">Fin Tant que</span></div>
+
+            <p>Comment ça marche, étape par étape :</p>
+            <ul>
+              <li>On évalue la condition.</li>
+              <li>Si elle est <code>Vrai</code>, on exécute tout le corps de la boucle.</li>
+              <li>On remonte au début, on réévalue la condition.</li>
+              <li>Si elle est <code>Faux</code>, on sort de la boucle et on continue après <code>Fin Tant que</code>.</li>
+              <li><strong>Cas particulier</strong> : si la condition est fausse dès le premier test, le corps ne s'exécute <em>jamais</em>. Une boucle <code>Tant que</code> peut donc faire 0 itération.</li>
+            </ul>
+
+            <div class="diagram-card">
+              <svg viewBox="0 0 460 340" width="460" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                  <marker id="arrowWhile" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+                    <path d="M0,0 L8,4 L0,8 Z" fill="#3ecf8e"/>
+                  </marker>
+                  <marker id="arrowWhileGray" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+                    <path d="M0,0 L8,4 L0,8 Z" fill="#9aa1a6"/>
+                  </marker>
+                </defs>
+                <g font-family="ui-sans-serif,system-ui,sans-serif" font-size="12" fill="#eceff1">
+                  <rect x="160" y="10" width="140" height="34" rx="17" fill="#1c1c1c" stroke="#2a2d30"/>
+                  <text x="230" y="32" text-anchor="middle">Entrée</text>
+
+                  <line x1="230" y1="44" x2="230" y2="70" stroke="#3ecf8e" stroke-width="2" marker-end="url(#arrowWhile)"/>
+
+                  <!-- Losange condition -->
+                  <polygon points="230,76 330,120 230,164 130,120" fill="#1c1c1c" stroke="#3ecf8e" stroke-width="1.5">
+                    <animate attributeName="stroke-width" values="1.5;3;1.5" dur="2s" repeatCount="indefinite"/>
+                  </polygon>
+                  <text x="230" y="118" text-anchor="middle" fill="#3ecf8e">condition ?</text>
+                  <text x="230" y="134" text-anchor="middle" font-size="10" fill="#9aa1a6">testée AVANT</text>
+
+                  <!-- Branche Faux : sortie -->
+                  <line x1="130" y1="120" x2="60" y2="120" stroke="#9aa1a6" stroke-width="2"/>
+                  <line x1="60" y1="120" x2="60" y2="290" stroke="#9aa1a6" stroke-width="2"/>
+                  <line x1="60" y1="290" x2="200" y2="290" stroke="#9aa1a6" stroke-width="2" marker-end="url(#arrowWhileGray)"/>
+                  <text x="85" y="112" font-size="10" fill="#9aa1a6">non → sortie</text>
+
+                  <!-- Branche Vrai : corps -->
+                  <line x1="230" y1="164" x2="230" y2="200" stroke="#3ecf8e" stroke-width="2" marker-end="url(#arrowWhile)"/>
+                  <text x="242" y="185" font-size="10" fill="#3ecf8e">oui</text>
+
+                  <rect x="160" y="205" width="140" height="50" rx="8" fill="#1c1c1c" stroke="#3ecf8e"/>
+                  <text x="230" y="226" text-anchor="middle" fill="#3ecf8e">Corps</text>
+                  <text x="230" y="244" text-anchor="middle" font-size="10" fill="#9aa1a6">instructions</text>
+
+                  <!-- Retour vers condition -->
+                  <path d="M 160 230 L 100 230 L 100 120 L 130 120" stroke="#3ecf8e" stroke-width="2" fill="none" marker-end="url(#arrowWhile)"/>
+                  <text x="105" y="200" font-size="10" fill="#3ecf8e" transform="rotate(-90 105 200)">retour</text>
+
+                  <rect x="200" y="295" width="120" height="34" rx="17" fill="#1c1c1c" stroke="#2a2d30"/>
+                  <text x="260" y="317" text-anchor="middle">Suite</text>
+                </g>
+              </svg>
+            </div>
+
+            <p class="sub">La flèche de retour qui remonte du corps vers le losange est la signature d'une boucle. Tant que la condition reste vraie, on repart dans ce cycle.</p>
+          </div>
+
+          <!-- 3. Exemples -->
+          <div class="lesson-section">
+            <h2><span class="num">3</span>Trois exemples concrets</h2>
+
+            <h3 style="font-size:13.5px;font-weight:600;margin:16px 0 8px;color:var(--accent);">Exemple 1 — Compter de 1 à 5</h3>
+            <p class="sub">Un compteur qui s'incrémente à chaque tour.</p>
+            <div class="exemple-box">  compteur <span class="cmt">←</span> 1
+  <span class="kw">Tant que</span> compteur &lt;= 5 <span class="kw">faire</span>
+      Écrire compteur
+      compteur <span class="cmt">←</span> compteur + 1
+  <span class="kw">Fin Tant que</span></div>
+
+            <h3 style="font-size:13.5px;font-weight:600;margin:16px 0 8px;color:var(--accent);">Exemple 2 — Somme de 1 à N</h3>
+            <p class="sub">Demander N, puis calculer 1 + 2 + 3 + … + N.</p>
+            <div class="exemple-box">  Lire N
+  somme <span class="cmt">←</span> 0
+  i <span class="cmt">←</span> 1
+  <span class="kw">Tant que</span> i &lt;= N <span class="kw">faire</span>
+      somme <span class="cmt">←</span> somme + i
+      i <span class="cmt">←</span> i + 1
+  <span class="kw">Fin Tant que</span>
+  Écrire "Somme totale : ", somme</div>
+
+            <h3 style="font-size:13.5px;font-weight:600;margin:16px 0 8px;color:var(--accent);">Exemple 3 — Mot de passe</h3>
+            <p class="sub">Redemander tant que le mot de passe est incorrect.</p>
+            <div class="exemple-box">  Lire saisie
+  <span class="kw">Tant que</span> saisie != "secret" <span class="kw">faire</span>
+      Écrire "Mauvais mot de passe, réessayez"
+      Lire saisie
+  <span class="kw">Fin Tant que</span>
+  Écrire "Bienvenue"</div>
+
+            <p><strong>Trace d'exécution</strong> — exemple 1 (compteur) :</p>
+            <table style="width:100%; border-collapse:collapse; font-size:12.5px; margin-top:8px;">
+              <thead>
+                <tr style="text-align:left; color:var(--text-lo);">
+                  <th style="padding:6px 8px; border-bottom:1px solid var(--border);">Itération</th>
+                  <th style="padding:6px 8px; border-bottom:1px solid var(--border);">compteur au test</th>
+                  <th style="padding:6px 8px; border-bottom:1px solid var(--border);">compteur ≤ 5 ?</th>
+                  <th style="padding:6px 8px; border-bottom:1px solid var(--border);">Affiché</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td style="padding:6px 8px; border-bottom:1px solid var(--border);">1</td><td style="padding:6px 8px; border-bottom:1px solid var(--border);">1</td><td style="padding:6px 8px; border-bottom:1px solid var(--border); color:#3ecf8e;">Vrai</td><td style="padding:6px 8px; border-bottom:1px solid var(--border);">1</td></tr>
+                <tr><td style="padding:6px 8px; border-bottom:1px solid var(--border);">2</td><td style="padding:6px 8px; border-bottom:1px solid var(--border);">2</td><td style="padding:6px 8px; border-bottom:1px solid var(--border); color:#3ecf8e;">Vrai</td><td style="padding:6px 8px; border-bottom:1px solid var(--border);">2</td></tr>
+                <tr><td style="padding:6px 8px; border-bottom:1px solid var(--border);">3</td><td style="padding:6px 8px; border-bottom:1px solid var(--border);">3</td><td style="padding:6px 8px; border-bottom:1px solid var(--border); color:#3ecf8e;">Vrai</td><td style="padding:6px 8px; border-bottom:1px solid var(--border);">3</td></tr>
+                <tr><td style="padding:6px 8px; border-bottom:1px solid var(--border);">4</td><td style="padding:6px 8px; border-bottom:1px solid var(--border);">4</td><td style="padding:6px 8px; border-bottom:1px solid var(--border); color:#3ecf8e;">Vrai</td><td style="padding:6px 8px; border-bottom:1px solid var(--border);">4</td></tr>
+                <tr><td style="padding:6px 8px; border-bottom:1px solid var(--border);">5</td><td style="padding:6px 8px; border-bottom:1px solid var(--border);">5</td><td style="padding:6px 8px; border-bottom:1px solid var(--border); color:#3ecf8e;">Vrai</td><td style="padding:6px 8px; border-bottom:1px solid var(--border);">5</td></tr>
+                <tr><td style="padding:6px 8px;">6</td><td style="padding:6px 8px;">6</td><td style="padding:6px 8px; color:#ef4444;">Faux → sortie</td><td style="padding:6px 8px;">(rien)</td></tr>
+              </tbody>
+            </table>
+            <p class="sub">La variable <code>compteur</code> doit être modifiée <em>à l'intérieur</em> de la boucle. Sinon la condition reste vraie pour toujours et le programme ne s'arrête jamais.</p>
+          </div>
+
+          <!-- 4. Pièges -->
+          <div class="lesson-section">
+            <h2><span class="num">4</span>Pièges fréquents</h2>
+            <div class="vocab-grid">
+              <div class="vocab-card">
+                <div class="term">Boucle infinie</div>
+                <div class="def">Le piège n°1. Si on oublie <code>compteur ← compteur + 1</code>, la condition reste toujours vraie. Le navigateur se figera.</div>
+              </div>
+              <div class="vocab-card">
+                <div class="term">Zéro itération</div>
+                <div class="def">Si la condition est fausse dès le premier test, le corps ne s'exécute jamais. Parfois c'est voulu, parfois c'est un bug — relire la condition.</div>
+              </div>
+              <div class="vocab-card">
+                <div class="term">Condition mal placée</div>
+                <div class="def"><code>Tant que</code> teste <strong>avant</strong>. Si on veut tester après, il faudra <code>Répéter… jusqu'à</code> (vu plus tard). Confondre les deux = décalage d'une itération.</div>
+              </div>
+              <div class="vocab-card">
+                <div class="term">Modifier la mauvaise variable</div>
+                <div class="def">Si on incrémente une variable qui n'apparaît pas dans la condition, elle ne deviendra jamais fausse. La condition doit porter sur la variable qu'on modifie.</div>
+              </div>
+              <div class="vocab-card">
+                <div class="term">Confondre <code>&lt;</code> et <code>&lt;=</code></div>
+                <div class="def"><code>Tant que i &lt; 5</code> fait 5 tours (0,1,2,3,4). <code>Tant que i &lt;= 5</code> fait 6 tours (0,1,2,3,4,5). La borne décide.</div>
+              </div>
+              <div class="vocab-card">
+                <div class="term">Boucler sur une saisie</div>
+                <div class="def">Quand on redemande une saisie en boucle, bien remettre <code>Lire</code> <em>à la fin</em> du corps, sinon on teste toujours la même valeur.</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 5. Exercice -->
+          <div class="lesson-section">
+            <h2><span class="num">5</span>À toi de jouer</h2>
+            <p class="sub">Trois fonctions qui utilisent une boucle <code>while</code> en JavaScript.</p>
+
+            <div class="exercise-card">
+              <div class="exo-title">Exercice — 3 mini-défis</div>
+              <div class="exo-desc">Enchaîne ces 3 fonctions dans le terminal, dans l'ordre :</div>
+              <ul class="exo-tests">
+                <li>• <code>sommeJusqua(n)</code> — renvoie la somme 1 + 2 + … + n</li>
+                <li>• <code>compterChiffres(n)</code> — renvoie le nombre de chiffres de n (0 → 1, 123 → 3)</li>
+                <li>• <code>factorielle(n)</code> — renvoie n! (factorielle de n)</li>
+              </ul>
+              <ul class="exo-tests">
+                <li>• Indices : <code>while (i &lt;= n) { ... }</code>, <code>Math.floor(n / 10)</code> pour retirer un chiffre</li>
+                <li>• <code>factorielle(5)</code> → <code>120</code>, <code>factorielle(0)</code> → <code>1</code> (par convention)</li>
+                <li>• Tape <code>valider</code> après chaque fonction pour débloquer la suivante</li>
+                <li>• Tape <code>aide</code> à tout moment, ou <code>clear</code> pour nettoyer l'écran</li>
+              </ul>
+            </div>
+          </div>
+
+          </div>
+          <!-- /.lesson-main -->
+
+          <aside class="lesson-side">
+            <div class="exercise-card side-text">
+              <div class="exo-title">Objectif</div>
+              <div class="exo-desc" id="side-objective-desc">1/3 — Implémente sommeJusqua(n) : somme 1 + 2 + … + n.</div>
+              <ul class="exo-tests">
+                <li>• <code>valider</code> → lance les tests</li>
+                <li>• <code>aide</code> → revoir la consigne</li>
+                <li>• <code>clear</code> → nettoyer l'écran</li>
+              </ul>
+            </div>
+            <div class="exercise-card side-terminal">
+              <div class="exo-title">&gt;_ Terminal</div>
+              <div id="terminal-wrap">
+                <div id="terminal"></div>
+              </div>
+              <div class="term-toolbar">
+                <button type="button" class="btn btn-outline" id="btn-clear">Effacer</button>
+                <button type="button" class="btn btn-primary" id="btn-valider">Valider</button>
+              </div>
+            </div>
+          </aside>
+
+          </div>
+          <!-- /.lesson-layout -->
+
+          <div class="lock-row unlocked" id="lesson11-row">
+            <div>
+              <div class="lr-title">
+                <svg class="lock-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10" width="16" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>
+                Leçon 11 — Les boucles « pour » (for)
+              </div>
+              <div class="lr-sub" id="lesson11-sub">Valide les 3 exercices ci-dessus pour débloquer cette leçon.</div>
+            </div>
+            <div style="display:flex;gap:8px;">
+              <button type="button" class="btn btn-outline" id="btn-prev-lesson">← Précédent</button>
+              <button type="button" class="btn btn-outline" id="btn-next-lesson" aria-disabled="false">Continuer</button>
+            </div>
+          </div>
+
+        </div>
+      </main>
+    </div>
+  </div>
+
+<script src="../vendor/xterm.js"></script>
+<script src="../supabase-js.min.js"></script>
+<script src="../supabase-config.js"></script>
+<script src="../script.js"></script>
+<script src="../app.js"></script>
+<script src="../partials.js"></script>
+
+<script>
+(function () {
+  const PROGRESS_KEY = 'technophile_algo_progress';
+  const globalEval = (0, eval);
+
+  function getProgress() {
+    try { return JSON.parse(localStorage.getItem(PROGRESS_KEY)) || {}; } catch { return {}; }
+  }
+  function setProgress(p) { localStorage.setItem(PROGRESS_KEY, JSON.stringify(p)); }
+
+  const term = new Terminal({
+    theme: {
+      background: '#0a0b0c',
+      foreground: '#eceff1',
+      cursor: '#3ecf8e',
+      green: '#3ecf8e',
+      red: '#ef4444'
+    },
+    fontSize: 13,
+    fontFamily: 'ui-monospace, monospace',
+    cursorBlink: true,
+    convertEol: true,
+    cols: 40,
+    rows: 20
+  });
+  term.open(document.getElementById('terminal'));
+
+  const EXERCISES = [
+    { fn: 'sommeJusqua', desc: "1/3 — Implémente sommeJusqua(n) : renvoie 1 + 2 + … + n.",
+      cases: [ {args:[5], expected:15}, {args:[1], expected:1}, {args:[10], expected:55}, {args:[0], expected:0} ] },
+    { fn: 'compterChiffres', desc: "2/3 — Implémente compterChiffres(n) : nombre de chiffres de n.",
+      cases: [ {args:[0], expected:1}, {args:[9], expected:1}, {args:[10], expected:2}, {args:[123], expected:3}, {args:[9999], expected:4} ] },
+    { fn: 'factorielle', desc: "3/3 — Implémente factorielle(n) : n! = n × (n-1) × … × 1.",
+      cases: [ {args:[0], expected:1}, {args:[1], expected:1}, {args:[3], expected:6}, {args:[5], expected:120}, {args:[6], expected:720} ] }
+  ];
+  let exerciseIndex = 0;
+  function currentExercise() { return EXERCISES[exerciseIndex] || null; }
+
+  function updateSidebarObjective() {
+    const descEl = document.getElementById('side-objective-desc');
+    if (!descEl) return;
+    const ex = currentExercise();
+    descEl.textContent = ex ? ex.desc : 'Tous les exercices sont validés. Bravo !';
+  }
+
+  let buffer = '';
+  const PROMPT = '\x1b[32malgo>\x1b[0m ';
+
+  function prompt() { term.write('\r\n' + PROMPT); }
+
+  function printHelp() {
+    const ex = currentExercise();
+    const msg = ex ? ex.desc : 'Tous les exercices sont validés.';
+    term.write('\r\n' + msg + "\r\nCommandes : 'valider' pour tester, 'clear' pour nettoyer, 'aide' pour revoir ceci.\r\n");
+  }
+
+  function runValidation() {
+    term.write('\r\n');
+    const ex = currentExercise();
+    if (!ex) {
+      term.write('\x1b[32mTout est déjà validé !\x1b[0m\r\n');
+      prompt();
+      return;
+    }
+    const fn = window[ex.fn];
+    if (typeof fn !== 'function') {
+      term.write(`\x1b[31m✗ La fonction ${ex.fn}(...) n'existe pas encore. Écris-la d'abord.\x1b[0m\r\n`);
+      prompt();
+      return;
+    }
+    let allOk = true;
+    ex.cases.forEach(c => {
+      let got, ok;
+      try {
+        got = fn(...c.args);
+        ok = got === c.expected;
+      } catch (e) {
+        got = 'erreur: ' + e.message;
+        ok = false;
+      }
+      if (!ok) allOk = false;
+      const mark = ok ? '\x1b[32m✓\x1b[0m' : '\x1b[31m✗\x1b[0m';
+      term.write(`${mark} ${ex.fn}(${c.args.map(a => JSON.stringify(a)).join(', ')}) → attendu ${JSON.stringify(c.expected)}, obtenu ${JSON.stringify(got)}\r\n`);
+    });
+
+    if (allOk) {
+      exerciseIndex++;
+      if (currentExercise()) {
+        term.write(`\r\n\x1b[32mBravo, exercice ${exerciseIndex}/${EXERCISES.length} validé !\x1b[0m\r\n`);
+        updateSidebarObjective();
+        printHelp();
+      } else {
+        term.write('\r\n\x1b[32mBravo, les 3 exercices sont validés ! La leçon 11 est débloquée.\x1b[0m\r\n');
+        const p = getProgress();
+        p.lesson10 = true;
+        setProgress(p);
+        unlockNext();
+        updateSidebarObjective();
+        if (typeof showToast === 'function') showToast('Leçon 10 validée !');
+      }
+    } else {
+      term.write('\r\n\x1b[31mPas encore bon, corrige et retape "valider".\x1b[0m\r\n');
+    }
+    prompt();
+  }
+
+  function execLine(line) {
+    const trimmed = line.trim();
+    if (trimmed === 'valider') { runValidation(); return; }
+    if (trimmed === 'clear' || trimmed === 'cls') { term.clear(); prompt(); return; }
+    if (trimmed === 'aide' || trimmed === 'help') { printHelp(); prompt(); return; }
+    if (trimmed === '') { prompt(); return; }
+
+    try {
+      const result = globalEval(trimmed);
+      if (result !== undefined) {
+        term.write('\r\n' + JSON.stringify(result));
+      }
+    } catch (e) {
+      term.write('\r\n\x1b[31m' + e.message + '\x1b[0m');
+    }
+    prompt();
+  }
+
+  term.onData(data => {
+    const code = data.charCodeAt(0);
+    if (code === 13) {
+      const line = buffer;
+      buffer = '';
+      execLine(line);
+    } else if (code === 127) {
+      if (buffer.length > 0) {
+        buffer = buffer.slice(0, -1);
+        term.write('\b \b');
+      }
+    } else if (code < 32) {
+      // ignore
+    } else {
+      buffer += data;
+      term.write(data);
+    }
+  });
+
+  term.write('\x1b[32mTerminal algo — technophile\x1b[0m\r\n');
+  printHelp();
+  prompt();
+
+  document.getElementById('btn-clear').addEventListener('click', () => { term.clear(); prompt(); term.focus(); });
+  document.getElementById('btn-valider').addEventListener('click', () => { execLine('valider'); term.focus(); });
+
+  function unlockNext() {
+    const row = document.getElementById('lesson11-row');
+    const btn = document.getElementById('btn-next-lesson');
+    const sub = document.getElementById('lesson11-sub');
+    row.classList.add('unlocked');
+    btn.setAttribute('aria-disabled', 'false');
+    sub.textContent = 'Débloquée — tu peux continuer.';
+  }
+
+  document.getElementById('btn-prev-lesson').addEventListener('click', () => {
+    location.href = 'lecon-algo-9.html';
+  });
+
+  document.getElementById('btn-next-lesson').addEventListener('click', (e) => {
+    if (e.currentTarget.getAttribute('aria-disabled') === 'true') {
+      if (typeof showToast === 'function') showToast('Valide les 3 exercices pour débloquer');
+      return;
+    }
+    location.href = 'lecon-algo-11.html';
+  });
+
+  if (getProgress().lesson10) unlockNext();
+})();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Leçon 8 — Les conditions multiples (sinon si, sinon) - technophile</title>
+  <link rel="stylesheet" href="../style.css">
+  <link rel="stylesheet" href="../vendor/xterm.css">
+  <link rel="stylesheet" href="../css/lesson.css">
+</head>
+<body>
+
+  <div class="app-layout">
+    <div class="rail"></div>
+
+    <div class="app-main">
+      <header class="app-topbar">
+        <div class="breadcrumb">
+          <span>technophile</span><span>/</span>
+          <span>Logique algorithmique</span><span>/</span>
+          <span style="color:var(--text-hi);font-weight:500;">Leçon 8</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:14px;">
+          <div class="avatar" style="cursor:pointer;" onclick="location.href='../profile.html'">R</div>
+        </div>
+      </header>
+
+      <main class="app-center">
+        <div class="page-wrap">
+
+          <div class="lesson-head">
+            <div class="eyebrow">Structures de contrôle — Leçon 8</div>
+            <h1>Les conditions multiples (sinon si, sinon)</h1>
+            <p>Avec un simple <code>Si… alors</code>, on ne peut gérer que deux cas : la condition est vraie (on fait quelque chose), ou fausse (on ne fait rien). Pour gérer <em>plusieurs</em> cas, il faut <code>Sinon Si</code> et <code>Sinon</code>.</p>
+          </div>
+
+          <div class="lesson-layout">
+          <div class="lesson-main">
+
+          <!-- 1. Pourquoi plusieurs cas -->
+          <div class="lesson-section">
+            <h2><span class="num">1</span>Pourquoi plusieurs cas ?</h2>
+            <p>Beaucoup de situations ne se résument pas à une seule question fermée. Prenons un bulletin scolaire : une note de 17 mérite « Très bien », une note de 12 mérite « Assez bien », une note de 7 mérite « Insuffisant ». Il y a <strong>au moins trois issues</strong>, pas deux.</p>
+            <p class="sub">Avec un simple <code>Si note &gt;= 16 alors…</code>, on ne dit rien aux élèves qui ont moins de 16. On pourrait empiler les <code>Si</code>, mais ça devient vite illisible et fragile : on risque de tester deux fois la même condition, ou de laisser passer un cas.</p>
+
+            <div class="vocab-grid">
+              <div class="vocab-card">
+                <div class="term">Cas mutuellement exclusifs</div>
+                <div class="def">Quand exactement <strong>un seul</strong> cas peut être vrai à la fois. Ex : « majeur » et « mineur » ne sont jamais vrais en même temps.</div>
+              </div>
+              <div class="vocab-card">
+                <div class="term">Ordre des tests</div>
+                <div class="def">Avec <code>Sinon Si</code>, l'ordre compte. On teste du plus restrictif au plus large. <code>note &gt;= 16</code> avant <code>note &gt;= 10</code>, sinon le 16+ serait pris pour un 10+.</div>
+              </div>
+              <div class="vocab-card">
+                <div class="term">Cas par défaut</div>
+                <div class="def">Le <code>Sinon</code> final attrape tout ce qui n'a matché aucun test. Il joue le rôle de « dans tous les autres cas ». Optionnel mais très utile.</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 2. Structure complète -->
+          <div class="lesson-section">
+            <h2><span class="num">2</span>La structure <code>Si / Sinon Si / Sinon</code></h2>
+            <p>Voici la forme complète, à connaître par cœur :</p>
+
+            <div class="exemple-box">  <span class="kw">Si</span> condition1 <span class="kw">alors</span>
+      <span class="cmt">// exécuté si condition1 est vraie</span>
+  <span class="kw">Sinon Si</span> condition2 <span class="kw">alors</span>
+      <span class="cmt">// exécuté si condition1 fausse ET condition2 vraie</span>
+  <span class="kw">Sinon Si</span> condition3 <span class="kw">alors</span>
+      <span class="cmt">// exécuté si condition1 et condition2 fausses ET condition3 vraie</span>
+  <span class="kw">Sinon</span>
+      <span class="cmt">// exécuté si aucune condition n'est vraie</span>
+  <span class="kw">Fin Si</span></div>
+
+            <p>Points clés à retenir :</p>
+            <ul>
+              <li>L'algorithme teste les conditions <strong>de haut en bas</strong>.</li>
+              <li>Dès qu'une condition est vraie, il exécute son bloc puis <strong>saute tout le reste</strong> jusqu'à <code>Fin Si</code>.</li>
+              <li>Les <code>Sinon Si</code> ne sont testés que si tous les <code>Si</code> et <code>Sinon Si</code> précédents étaient faux.</li>
+              <li>Le <code>Sinon</code> final est optionnel — mais s'il est présent, il s'exécute forcément si rien d'autre n'a matché.</li>
+            </ul>
+
+            <div class="diagram-card">
+              <svg viewBox="0 0 620 380" width="620" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                  <marker id="arrowMulti" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+                    <path d="M0,0 L8,4 L0,8 Z" fill="#3ecf8e"/>
+                  </marker>
+                </defs>
+                <g font-family="ui-sans-serif,system-ui,sans-serif" font-size="12" fill="#eceff1">
+                  <text x="310" y="18" text-anchor="middle" font-size="11" fill="#9aa1a6">on entre par le haut, on teste chaque condition dans l'ordre</text>
+
+                  <!-- Losange 1 -->
+                  <polygon points="310,30 400,70 310,110 220,70" fill="#1c1c1c" stroke="#3ecf8e" stroke-width="1.5">
+                    <animate attributeName="stroke-width" values="1.5;3;1.5" dur="2.4s" repeatCount="indefinite"/>
+                  </polygon>
+                  <text x="310" y="68" text-anchor="middle" fill="#3ecf8e">note ≥ 16 ?</text>
+                  <text x="310" y="84" text-anchor="middle" font-size="10" fill="#9aa1a6">test 1</text>
+
+                  <line x1="400" y1="70" x2="470" y2="70" stroke="#3ecf8e" stroke-width="2" marker-end="url(#arrowMulti)"/>
+                  <text x="430" y="60" font-size="10" fill="#3ecf8e">oui</text>
+                  <rect x="475" y="50" width="120" height="40" rx="8" fill="#1c1c1c" stroke="#3ecf8e"/>
+                  <text x="535" y="74" text-anchor="middle" fill="#3ecf8e">"Très bien"</text>
+
+                  <line x1="310" y1="110" x2="310" y2="150" stroke="#9aa1a6" stroke-width="2" marker-end="url(#arrowMulti)"/>
+                  <text x="322" y="132" font-size="10" fill="#9aa1a6">non</text>
+
+                  <!-- Losange 2 -->
+                  <polygon points="310,155 400,195 310,235 220,195" fill="#1c1c1c" stroke="#3ecf8e" stroke-width="1.5">
+                    <animate attributeName="stroke-width" values="1.5;3;1.5" dur="2.4s" begin="0.8s" repeatCount="indefinite"/>
+                  </polygon>
+                  <text x="310" y="193" text-anchor="middle" fill="#3ecf8e">note ≥ 10 ?</text>
+                  <text x="310" y="209" text-anchor="middle" font-size="10" fill="#9aa1a6">test 2</text>
+
+                  <line x1="400" y1="195" x2="470" y2="195" stroke="#3ecf8e" stroke-width="2" marker-end="url(#arrowMulti)"/>
+                  <text x="430" y="185" font-size="10" fill="#3ecf8e">oui</text>
+                  <rect x="475" y="175" width="120" height="40" rx="8" fill="#1c1c1c" stroke="#3ecf8e"/>
+                  <text x="535" y="199" text-anchor="middle" fill="#3ecf8e">"Assez bien"</text>
+
+                  <line x1="310" y1="235" x2="310" y2="275" stroke="#9aa1a6" stroke-width="2" marker-end="url(#arrowMulti)"/>
+                  <text x="322" y="257" font-size="10" fill="#9aa1a6">non</text>
+
+                  <!-- Sinon final -->
+                  <rect x="235" y="285" width="150" height="40" rx="8" fill="#1c1c1c" stroke="#ef4444"/>
+                  <text x="310" y="309" text-anchor="middle" fill="#ef4444">"Insuffisant"</text>
+                  <text x="310" y="345" text-anchor="middle" font-size="10" fill="#9aa1a6">aucune condition vraie → Sinon</text>
+                </g>
+              </svg>
+            </div>
+
+            <p class="sub">Chaque branche "oui" renvoie directement au <code>Fin Si</code> — les tests suivants ne sont <em>pas</em> évalués. C'est ce qui garantit qu'une seule branche s'exécute.</p>
+          </div>
+
+          <!-- 3. Exemples concrets -->
+          <div class="lesson-section">
+            <h2><span class="num">3</span>Trois exemples concrets</h2>
+            <p>Le <code>Sinon Si</code> brille dès qu'on doit classer une valeur dans plusieurs catégories.</p>
+
+            <h3 style="font-size:13.5px;font-weight:600;margin:16px 0 8px;color:var(--accent);">Exemple 1 — Signe d'un nombre</h3>
+            <p class="sub">Un nombre est soit positif, soit négatif, soit nul. Trois cas mutuellement exclusifs.</p>
+            <div class="exemple-box">  Lire n
+  <span class="kw">Si</span> n &gt; 0 <span class="kw">alors</span>
+      Écrire "positif"
+  <span class="kw">Sinon Si</span> n &lt; 0 <span class="kw">alors</span>
+      Écrire "négatif"
+  <span class="kw">Sinon</span>
+      Écrire "zéro"
+  <span class="kw">Fin Si</span></div>
+
+            <h3 style="font-size:13.5px;font-weight:600;margin:16px 0 8px;color:var(--accent);">Exemple 2 — Mention d'un bulletin</h3>
+            <p class="sub">Quatre paliers. L'ordre est crucial : on teste le plus restrictif en premier.</p>
+            <div class="exemple-box">  Lire note
+  <span class="kw">Si</span> note &gt;= 16 <span class="kw">alors</span>
+      Écrire "Très bien"
+  <span class="kw">Sinon Si</span> note &gt;= 14 <span class="kw">alors</span>
+      Écrire "Bien"
+  <span class="kw">Sinon Si</span> note &gt;= 10 <span class="kw">alors</span>
+      Écrire "Assez bien"
+  <span class="kw">Sinon</span>
+      Écrire "Insuffisant"
+  <span class="kw">Fin Si</span></div>
+
+            <h3 style="font-size:13.5px;font-weight:600;margin:16px 0 8px;color:var(--accent);">Exemple 3 — Catégorie d'âge</h3>
+            <p class="sub">Une borne à chaque palier : enfant, adolescent, adulte.</p>
+            <div class="exemple-box">  Lire age
+  <span class="kw">Si</span> age &lt; 13 <span class="kw">alors</span>
+      Écrire "enfant"
+  <span class="kw">Sinon Si</span> age &lt; 18 <span class="kw">alors</span>
+      Écrire "adolescent"
+  <span class="kw">Sinon</span>
+      Écrire "adulte"
+  <span class="kw">Fin Si</span></div>
+
+            <p><strong>Trace d'exécution</strong> — exemple 2, avec trois notes différentes :</p>
+            <table style="width:100%; border-collapse:collapse; font-size:12.5px; margin-top:8px;">
+              <thead>
+                <tr style="text-align:left; color:var(--text-lo);">
+                  <th style="padding:6px 8px; border-bottom:1px solid var(--border);">Note</th>
+                  <th style="padding:6px 8px; border-bottom:1px solid var(--border);">Test 1 (≥16)</th>
+                  <th style="padding:6px 8px; border-bottom:1px solid var(--border);">Test 2 (≥14)</th>
+                  <th style="padding:6px 8px; border-bottom:1px solid var(--border);">Test 3 (≥10)</th>
+                  <th style="padding:6px 8px; border-bottom:1px solid var(--border);">Résultat</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td style="padding:6px 8px; border-bottom:1px solid var(--border);">17</td>
+                  <td style="padding:6px 8px; border-bottom:1px solid var(--border); color:#3ecf8e;">Vrai → stop</td>
+                  <td style="padding:6px 8px; border-bottom:1px solid var(--border);">—</td>
+                  <td style="padding:6px 8px; border-bottom:1px solid var(--border);">—</td>
+                  <td style="padding:6px 8px; border-bottom:1px solid var(--border);">"Très bien"</td>
+                </tr>
+                <tr>
+                  <td style="padding:6px 8px; border-bottom:1px solid var(--border);">14.5</td>
+                  <td style="padding:6px 8px; border-bottom:1px solid var(--border); color:#ef4444;">Faux</td>
+                  <td style="padding:6px 8px; border-bottom:1px solid var(--border); color:#3ecf8e;">Vrai → stop</td>
+                  <td style="padding:6px 8px; border-bottom:1px solid var(--border);">—</td>
+                  <td style="padding:6px 8px; border-bottom:1px solid var(--border);">"Bien"</td>
+                </tr>
+                <tr>
+                  <td style="padding:6px 8px;">6</td>
+                  <td style="padding:6px 8px; color:#ef4444;">Faux</td>
+                  <td style="padding:6px 8px; color:#ef4444;">Faux</td>
+                  <td style="padding:6px 8px; color:#ef4444;">Faux</td>
+                  <td style="padding:6px 8px;">"Insuffisant" (Sinon)</td>
+                </tr>
+              </tbody>
+            </table>
+            <p class="sub">Dès qu'un test passe, on saute directement au <code>Fin Si</code>. Les tests suivants ne sont même pas évalués — gain de temps et garantie qu'une seule branche s'exécute.</p>
+          </div>
+
+          <!-- 4. Pièges -->
+          <div class="lesson-section">
+            <h2><span class="num">4</span>Pièges fréquents</h2>
+            <div class="vocab-grid">
+              <div class="vocab-card">
+                <div class="term">Mauvais ordre des tests</div>
+                <div class="def">Si on teste <code>note &gt;= 10</code> avant <code>note &gt;= 16</code>, un élève qui a 17 sera classé en "Assez bien" et le test suivant ne sera jamais atteint. Toujours du plus restrictif au plus large.</div>
+              </div>
+              <div class="vocab-card">
+                <div class="term">Empiler des <code>Si</code> au lieu d'utiliser <code>Sinon Si</code></div>
+                <div class="def">Écrire deux <code>Si</code> séparés teste les deux conditions dans tous les cas. Avec <code>Sinon Si</code>, on garantit l'exclusivité et on évite les doubles exécutions.</div>
+              </div>
+              <div class="vocab-card">
+                <div class="term">Oublier le <code>Sinon</code></div>
+                <div class="def">Sans <code>Sinon</code>, les cas qui ne matchent rien ne font rien. Parfois c'est voulu (cas silencieux), parfois c'est un bug (on aurait dû prévenir l'utilisateur).</div>
+              </div>
+              <div class="vocab-card">
+                <div class="term">Deux conditions qui se recouvrent</div>
+                <div class="def"><code>note &gt;= 10</code> et <code>note &gt;= 12</code> se recouvrent. Un 15 match les deux. Ce n'est pas faux en soi, mais l'ordre décide de la branche exécutée — à surveiller.</div>
+              </div>
+              <div class="vocab-card">
+                <div class="term">Condition contradictoire</div>
+                <div class="def"><code>Si x &gt; 10</code> puis <code>Sinon Si x &gt; 5</code> puis <code>Sinon Si x &gt; 15</code> : le dernier ne s'exécutera <strong>jamais</strong>, car un x &gt; 15 aurait déjà matché la première. Signe qu'il faut réordonner.</div>
+              </div>
+              <div class="vocab-card">
+                <div class="term">Bloc trop long dans une branche</div>
+                <div class="def">Si une branche fait plus de 5-10 lignes, extraire le contenu en fonction. Le <code>Si / Sinon</code> doit rester lisible d'un coup d'œil.</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 5. Exercice -->
+          <div class="lesson-section">
+            <h2><span class="num">5</span>À toi de jouer</h2>
+            <p class="sub">Trois fonctions qui utilisent <code>if / else if / else</code> en JavaScript. L'ordre des tests est important.</p>
+
+            <div class="exercise-card">
+              <div class="exo-title">Exercice — 3 mini-défis</div>
+              <div class="exo-desc">Enchaîne ces 3 fonctions dans le terminal, dans l'ordre :</div>
+              <ul class="exo-tests">
+                <li>• <code>signe(n)</code> — renvoie <code>"positif"</code>, <code>"négatif"</code> ou <code>"zéro"</code></li>
+                <li>• <code>mention(note)</code> — renvoie <code>"Très bien"</code> (≥16), <code>"Bien"</code> (≥14), <code>"Assez bien"</code> (≥10) ou <code>"Insuffisant"</code></li>
+                <li>• <code>categorieAge(age)</code> — renvoie <code>"enfant"</code> (&lt;13), <code>"adolescent"</code> (&lt;18) ou <code>"adulte"</code></li>
+              </ul>
+              <ul class="exo-tests">
+                <li>• Piège : <code>signe(0)</code> → <code>"zéro"</code> (pas positif, pas négatif)</li>
+                <li>• Piège : <code>mention(16)</code> → <code>"Très bien"</code>, mais <code>mention(15.9)</code> → <code>"Bien"</code></li>
+                <li>• Tape <code>valider</code> après chaque fonction pour débloquer la suivante</li>
+                <li>• Tape <code>aide</code> à tout moment, ou <code>clear</code> pour nettoyer l'écran</li>
+              </ul>
+            </div>
+          </div>
+
+          </div>
+          <!-- /.lesson-main -->
+
+          <aside class="lesson-side">
+            <div class="exercise-card side-text">
+              <div class="exo-title">Objectif</div>
+              <div class="exo-desc" id="side-objective-desc">1/3 — Implémente signe(n) : "positif", "négatif" ou "zéro".</div>
+              <ul class="exo-tests">
+                <li>• <code>valider</code> → lance les tests</li>
+                <li>• <code>aide</code> → revoir la consigne</li>
+                <li>• <code>clear</code> → nettoyer l'écran</li>
+              </ul>
+            </div>
+            <div class="exercise-card side-terminal">
+              <div class="exo-title">&gt;_ Terminal</div>
+              <div id="terminal-wrap">
+                <div id="terminal"></div>
+              </div>
+              <div class="term-toolbar">
+                <button type="button" class="btn btn-outline" id="btn-clear">Effacer</button>
+                <button type="button" class="btn btn-primary" id="btn-valider">Valider</button>
+              </div>
+            </div>
+          </aside>
+
+          </div>
+          <!-- /.lesson-layout -->
+
+          <div class="lock-row unlocked" id="lesson9-row">
+            <div>
+              <div class="lr-title">
+                <svg class="lock-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10" width="16" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>
+                Leçon 9 — Les opérateurs logiques (ET, OU, NON)
+              </div>
+              <div class="lr-sub" id="lesson9-sub">Valide les 3 exercices ci-dessus pour débloquer cette leçon.</div>
+            </div>
+            <div style="display:flex;gap:8px;">
+              <button type="button" class="btn btn-outline" id="btn-prev-lesson">← Précédent</button>
+              <button type="button" class="btn btn-outline" id="btn-next-lesson" aria-disabled="false">Continuer</button>
+            </div>
+          </div>
+
+        </div>
+      </main>
+    </div>
+  </div>
+
+<script src="../vendor/xterm.js"></script>
+<script src="../supabase-js.min.js"></script>
+<script src="../supabase-config.js"></script>
+<script src="../script.js"></script>
+<script src="../app.js"></script>
+<script src="../partials.js"></script>
+
+<script>
+(function () {
+  const PROGRESS_KEY = 'technophile_algo_progress';
+  const globalEval = (0, eval);
+
+  function getProgress() {
+    try { return JSON.parse(localStorage.getItem(PROGRESS_KEY)) || {}; } catch { return {}; }
+  }
+  function setProgress(p) { localStorage.setItem(PROGRESS_KEY, JSON.stringify(p)); }
+
+  const term = new Terminal({
+    theme: {
+      background: '#0a0b0c',
+      foreground: '#eceff1',
+      cursor: '#3ecf8e',
+      green: '#3ecf8e',
+      red: '#ef4444'
+    },
+    fontSize: 13,
+    fontFamily: 'ui-monospace, monospace',
+    cursorBlink: true,
+    convertEol: true,
+    cols: 40,
+    rows: 20
+  });
+  term.open(document.getElementById('terminal'));
+
+  const EXERCISES = [
+    { fn: 'signe', desc: "1/3 — Implémente signe(n) : renvoie 'positif', 'négatif' ou 'zéro'.",
+      cases: [ {args:[7], expected:"positif"}, {args:[-2], expected:"négatif"}, {args:[0], expected:"zéro"}, {args:[0.1], expected:"positif"} ] },
+    { fn: 'mention', desc: "2/3 — Implémente mention(note) : Très bien, Bien, Assez bien ou Insuffisant.",
+      cases: [ {args:[17], expected:"Très bien"}, {args:[16], expected:"Très bien"}, {args:[14.5], expected:"Bien"}, {args:[10], expected:"Assez bien"}, {args:[8], expected:"Insuffisant"} ] },
+    { fn: 'categorieAge', desc: "3/3 — Implémente categorieAge(age) : enfant, adolescent ou adulte.",
+      cases: [ {args:[5], expected:"enfant"}, {args:[12], expected:"enfant"}, {args:[13], expected:"adolescent"}, {args:[17], expected:"adolescent"}, {args:[18], expected:"adulte"} ] }
+  ];
+  let exerciseIndex = 0;
+  function currentExercise() { return EXERCISES[exerciseIndex] || null; }
+
+  function updateSidebarObjective() {
+    const descEl = document.getElementById('side-objective-desc');
+    if (!descEl) return;
+    const ex = currentExercise();
+    descEl.textContent = ex ? ex.desc : 'Tous les exercices sont validés. Bravo !';
+  }
+
+  let buffer = '';
+  const PROMPT = '\x1b[32malgo>\x1b[0m ';
+
+  function prompt() { term.write('\r\n' + PROMPT); }
+
+  function printHelp() {
+    const ex = currentExercise();
+    const msg = ex ? ex.desc : 'Tous les exercices sont validés.';
+    term.write('\r\n' + msg + "\r\nCommandes : 'valider' pour tester, 'clear' pour nettoyer, 'aide' pour revoir ceci.\r\n");
+  }
+
+  function runValidation() {
+    term.write('\r\n');
+    const ex = currentExercise();
+    if (!ex) {
+      term.write('\x1b[32mTout est déjà validé !\x1b[0m\r\n');
+      prompt();
+      return;
+    }
+    const fn = window[ex.fn];
+    if (typeof fn !== 'function') {
+      term.write(`\x1b[31m✗ La fonction ${ex.fn}(...) n'existe pas encore. Écris-la d'abord.\x1b[0m\r\n`);
+      prompt();
+      return;
+    }
+    let allOk = true;
+    ex.cases.forEach(c => {
+      let got, ok;
+      try {
+        got = fn(...c.args);
+        ok = got === c.expected;
+      } catch (e) {
+        got = 'erreur: ' + e.message;
+        ok = false;
+      }
+      if (!ok) allOk = false;
+      const mark = ok ? '\x1b[32m✓\x1b[0m' : '\x1b[31m✗\x1b[0m';
+      term.write(`${mark} ${ex.fn}(${c.args.map(a => JSON.stringify(a)).join(', ')}) → attendu ${JSON.stringify(c.expected)}, obtenu ${JSON.stringify(got)}\r\n`);
+    });
+
+    if (allOk) {
+      exerciseIndex++;
+      if (currentExercise()) {
+        term.write(`\r\n\x1b[32mBravo, exercice ${exerciseIndex}/${EXERCISES.length} validé !\x1b[0m\r\n`);
+        updateSidebarObjective();
+        printHelp();
+      } else {
+        term.write('\r\n\x1b[32mBravo, les 3 exercices sont validés ! La leçon 9 est débloquée.\x1b[0m\r\n');
+        const p = getProgress();
+        p.lesson8 = true;
+        setProgress(p);
+        unlockNext();
+        updateSidebarObjective();
+        if (typeof showToast === 'function') showToast('Leçon 8 validée !');
+      }
+    } else {
+      term.write('\r\n\x1b[31mPas encore bon, corrige et retape "valider".\x1b[0m\r\n');
+    }
+    prompt();
+  }
+
+  function execLine(line) {
+    const trimmed = line.trim();
+    if (trimmed === 'valider') { runValidation(); return; }
+    if (trimmed === 'clear' || trimmed === 'cls') { term.clear(); prompt(); return; }
+    if (trimmed === 'aide' || trimmed === 'help') { printHelp(); prompt(); return; }
+    if (trimmed === '') { prompt(); return; }
+
+    try {
+      const result = globalEval(trimmed);
+      if (result !== undefined) {
+        term.write('\r\n' + JSON.stringify(result));
+      }
+    } catch (e) {
+      term.write('\r\n\x1b[31m' + e.message + '\x1b[0m');
+    }
+    prompt();
+  }
+
+  term.onData(data => {
+    const code = data.charCodeAt(0);
+    if (code === 13) {
+      const line = buffer;
+      buffer = '';
+      execLine(line);
+    } else if (code === 127) {
+      if (buffer.length > 0) {
+        buffer = buffer.slice(0, -1);
+        term.write('\b \b');
+      }
+    } else if (code < 32) {
+      // ignore
+    } else {
+      buffer += data;
+      term.write(data);
+    }
+  });
+
+  term.write('\x1b[32mTerminal algo — technophile\x1b[0m\r\n');
+  printHelp();
+  prompt();
+
+  document.getElementById('btn-clear').addEventListener('click', () => { term.clear(); prompt(); term.focus(); });
+  document.getElementById('btn-valider').addEventListener('click', () => { execLine('valider'); term.focus(); });
+
+  function unlockNext() {
+    const row = document.getElementById('lesson9-row');
+    const btn = document.getElementById('btn-next-lesson');
+    const sub = document.getElementById('lesson9-sub');
+    row.classList.add('unlocked');
+    btn.setAttribute('aria-disabled', 'false');
+    sub.textContent = 'Débloquée — tu peux continuer.';
+  }
+
+  document.getElementById('btn-prev-lesson').addEventListener('click', () => {
+    location.href = 'lecon-algo-7.html';
+  });
+
+  document.getElementById('btn-next-lesson').addEventListener('click', (e) => {
+    if (e.currentTarget.getAttribute('aria-disabled') === 'true') {
+      if (typeof showToast === 'function') showToast('Valide les 3 exercices pour débloquer');
+      return;
+    }
+    location.href = 'lecon-algo-9.html';
+  });
+
+  if (getProgress().lesson8) unlockNext();
+})();
+</script>
+
+</body>
+</html>

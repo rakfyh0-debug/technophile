@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Leçon 14 — Exercices récapitulatifs (Module 2) - technophile</title>
+  <link rel="stylesheet" href="../style.css">
+  <link rel="stylesheet" href="../vendor/xterm.css">
+  <link rel="stylesheet" href="../css/lesson.css">
+</head>
+<body>
+
+  <div class="app-layout">
+    <div class="rail"></div>
+
+    <div class="app-main">
+      <header class="app-topbar">
+        <div class="breadcrumb">
+          <span>technophile</span><span>/</span>
+          <span>Logique algorithmique</span><span>/</span>
+          <span style="color:var(--text-hi);font-weight:500;">Leçon 14</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:14px;">
+          <div class="avatar" style="cursor:pointer;" onclick="location.href='../profile.html'">R</div>
+        </div>
+      </header>
+
+      <main class="app-center">
+        <div class="page-wrap">
+
+          <div class="lesson-head">
+            <div class="eyebrow">Structures de contrôle — Leçon 14</div>
+            <h1>Exercices récapitulatifs du Module 2</h1>
+            <p>Cette leçon ne présente pas de nouveau concept. Elle réunit <strong>tout ce que tu as appris</strong> dans le Module 2 : conditions, opérateurs logiques, boucles, imbrications, break et continue. Cinq défis qui ressemblent à de vrais problèmes.</p>
+          </div>
+
+          <div class="lesson-layout">
+          <div class="lesson-main">
+
+          <!-- 1. Récap du module -->
+          <div class="lesson-section">
+            <h2><span class="num">1</span>Récapitulatif du Module 2</h2>
+            <p>Sept leçons, sept briques. Voici la carte mentale à garder :</p>
+
+            <div class="vocab-grid">
+              <div class="vocab-card">
+                <div class="term">7 — <code>Si… alors</code></div>
+                <div class="def">Exécuter un bloc <strong>seulement si</strong> une condition est vraie. Deux cas : passe ou saute.</div>
+              </div>
+              <div class="vocab-card">
+                <div class="term">8 — <code>Sinon Si / Sinon</code></div>
+                <div class="def">Gérer plusieurs cas mutuellement exclusifs. L'ordre des tests compte.</div>
+              </div>
+              <div class="vocab-card">
+                <div class="term">9 — <code>ET / OU / NON</code></div>
+                <div class="def">Combiner plusieurs conditions. Attention à la priorité et aux parenthèses.</div>
+              </div>
+              <div class="vocab-card">
+                <div class="term">10 — <code>Tant que</code></div>
+                <div class="def">Répéter <strong>tant qu'une condition reste vraie</strong>. Nombre de tours inconnu à l'avance.</div>
+              </div>
+              <div class="vocab-card">
+                <div class="term">11 — <code>Pour</code></div>
+                <div class="def">Répéter un nombre <strong>connu</strong> de fois. Initialisation, condition et pas sur une seule ligne.</div>
+              </div>
+              <div class="vocab-card">
+                <div class="term">12 — Boucles imbriquées</div>
+                <div class="def">Une boucle dans une autre, pour parcourir des grilles 2D. Complexité N².</div>
+              </div>
+              <div class="vocab-card">
+                <div class="term">13 — <code>break</code> / <code>continue</code></div>
+                <div class="def">Sortir ou sauter un tour. Utile pour les recherches, mais à utiliser avec parcimonie.</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 2. Conseils -->
+          <div class="lesson-section">
+            <h2><span class="num">2</span>Comment aborder un problème</h2>
+            <p>Quand tu reçois un énoncé, ne commence pas par écrire du code. Suis cette méthode en 3 étapes :</p>
+
+            <div class="diagram-card">
+              <svg viewBox="0 0 720 180" width="720" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                  <marker id="arrowMethod" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+                    <path d="M0,0 L8,4 L0,8 Z" fill="#3ecf8e"/>
+                  </marker>
+                </defs>
+                <g font-family="ui-sans-serif,system-ui,sans-serif" font-size="11" fill="#eceff1">
+                  <rect x="20" y="50" width="200" height="80" rx="10" fill="#1c1c1c" stroke="#3ecf8e" stroke-width="1.5"/>
+                  <text x="120" y="80" text-anchor="middle" fill="#3ecf8e" font-weight="700" font-size="12">1. Comprendre</text>
+                  <text x="120" y="98" text-anchor="middle" font-size="10" fill="#9aa1a6">Relire l'énoncé, identifier</text>
+                  <text x="120" y="113" text-anchor="middle" font-size="10" fill="#9aa1a6">l'entrée et la sortie</text>
+
+                  <line x1="220" y1="90" x2="260" y2="90" stroke="#3ecf8e" stroke-width="2" marker-end="url(#arrowMethod)"/>
+
+                  <rect x="265" y="50" width="200" height="80" rx="10" fill="#1c1c1c" stroke="#3ecf8e" stroke-width="1.5"/>
+                  <text x="365" y="80" text-anchor="middle" fill="#3ecf8e" font-weight="700" font-size="12">2. Découper</text>
+                  <text x="365" y="98" text-anchor="middle" font-size="10" fill="#9aa1a6">Boucle ou condition ?</text>
+                  <text x="365" y="113" text-anchor="middle" font-size="10" fill="#9aa1a6">Combien de cas ?</text>
+
+                  <line x1="465" y1="90" x2="505" y2="90" stroke="#3ecf8e" stroke-width="2" marker-end="url(#arrowMethod)"/>
+
+                  <rect x="510" y="50" width="200" height="80" rx="10" fill="#1c1c1c" stroke="#3ecf8e" stroke-width="1.5"/>
+                  <text x="610" y="80" text-anchor="middle" fill="#3ecf8e" font-weight="700" font-size="12">3. Coder</text>
+                  <text x="610" y="98" text-anchor="middle" font-size="10" fill="#9aa1a6">Une ligne à la fois</text>
+                  <text x="610" y="113" text-anchor="middle" font-size="10" fill="#9aa1a6">puis tester</text>
+                </g>
+              </svg>
+            </div>
+
+            <p>Règles d'or :</p>
+            <ul>
+              <li><strong>Tester à chaque étape.</strong> Écrire 30 lignes puis lancer, c'est chercher une aiguille dans une botte de foin.</li>
+              <li><strong>Cas limites.</strong> Que se passe-t-il si n = 0 ? Si la liste est vide ? Si l'utilisateur tape n'importe quoi ?</li>
+              <li><strong>Une fonction = une responsabilité.</strong> Si tu ne peux pas expliquer ce que fait ta fonction en une phrase, découpe-la.</li>
+            </ul>
+          </div>
+
+          <!-- 3. Les 5 défis -->
+          <div class="lesson-section">
+            <h2><span class="num">3</span>Cinq défis progressifs</h2>
+            <p>Chaque défi combine plusieurs briques du module. Ils sont ordonnés du plus simple au plus complet.</p>
+
+            <div class="exercise-card" style="margin-bottom:14px;">
+              <div class="exo-title">Défi 1 — Jeu du nombre mystère (conditions + boucle)</div>
+              <div class="exo-desc">L'ordinateur a choisi un nombre secret. Tu dois le deviner en utilisant les indices « trop grand / trop petit ».</div>
+              <ul class="exo-tests">
+                <li>• <code>devinerNombre(secret, essais)</code> — <code>essais</code> est un tableau de propositions</li>
+                <li>• Renvoie un tableau d'indices : <code>"trop grand"</code>, <code>"trop petit"</code>, ou <code>"trouvé"</code></li>
+                <li>• Une fois <code>"trouvé"</code>, les indices suivants sont ignorés (utiliser <code>break</code>)</li>
+              </ul>
+            </div>
+
+            <div class="exercise-card" style="margin-bottom:14px;">
+              <div class="exo-title">Défi 2 — Calcul de moyenne (boucle + condition)</div>
+              <div class="exo-desc">On te donne une liste de notes (les <code>-1</code> marquent la fin des saisies). Calcule la moyenne des notes valides.</div>
+              <ul class="exo-tests">
+                <li>• <code>moyenneNotes(notes)</code> — ignore les notes négatives</li>
+                <li>• Renvoie <code>null</code> si aucune note valide n'est trouvée</li>
+                <li>• Sinon renvoie la moyenne (nombre)</li>
+              </ul>
+            </div>
+
+            <div class="exercise-card" style="margin-bottom:14px;">
+              <div class="exo-title">Défi 3 — Compteur de voyelles et consonnes</div>
+              <div class="exo-desc">Analyse une phrase et compte voyelles / consonnes en sautant les espaces et la ponctuation.</div>
+              <ul class="exo-tests">
+                <li>• <code>analyserTexte(texte)</code> — renvoie <code>{ voyelles: N, consonnes: M }</code></li>
+                <li>• Ignore les caractères non alphabétiques</li>
+              </ul>
+            </div>
+
+            <div class="exercise-card" style="margin-bottom:14px;">
+              <div class="exo-title">Défi 4 — Pyramide d'étoiles (boucles imbriquées)</div>
+              <div class="exo-desc">Affiche une pyramide centrée de hauteur n. Chaque ligne contient un nombre impair d'étoiles (1, 3, 5…).</div>
+              <ul class="exo-tests">
+                <li>• <code>pyramide(n)</code> — renvoie un tableau de chaînes centrées</li>
+                <li>• Ex : <code>pyramide(3)</code> → <code>["  *  ", " *** ", "*****"]</code></li>
+              </ul>
+            </div>
+
+            <div class="exercise-card">
+              <div class="exo-title">Défi 5 — Validation de mot de passe (tout combiné)</div>
+              <div class="exo-desc">Valide un mot de passe selon des règles strictes. Le plus complet du module.</div>
+              <ul class="exo-tests">
+                <li>• <code>validerMotDePasse(mdp)</code> — renvoie <code>true</code> si :</li>
+                <li>• Longueur ≥ 8 ET contient au moins une majuscule ET au moins un chiffre</li>
+                <li>• ET ne contient pas d'espace</li>
+              </ul>
+            </div>
+          </div>
+
+          <!-- 4. Exercice terminal -->
+          <div class="lesson-section">
+            <h2><span class="num">4</span>À toi de jouer</h2>
+            <p class="sub">Les 5 défis sont à implémenter dans le terminal, dans l'ordre. Chaque fonction débloque la suivante. Prends le temps de tester des cas limites à la main entre les défis.</p>
+
+            <div class="exercise-card">
+              <div class="exo-title">Exercice — 5 défis enchaînés</div>
+              <div class="exo-desc">Termine le module en validant les 5 défis :</div>
+              <ul class="exo-tests">
+                <li>• <code>devinerNombre(secret, essais)</code> — indices + break</li>
+                <li>• <code>moyenneNotes(notes)</code> — boucle + condition + null</li>
+                <li>• <code>analyserTexte(texte)</code> — boucle + retour objet</li>
+                <li>• <code>pyramide(n)</code> — boucles imbriquées</li>
+                <li>• <code>validerMotDePasse(mdp)</code> — tout combiné</li>
+              </ul>
+              <ul class="exo-tests">
+                <li>• Indices : <code>break</code>, <code>continue</code>, <code>Math.floor</code>, <code>.repeat()</code>, regex simple</li>
+                <li>• Tape <code>valider</code> après chaque fonction pour débloquer la suivante</li>
+                <li>• Tape <code>aide</code> à tout moment, ou <code>clear</code> pour nettoyer l'écran</li>
+              </ul>
+            </div>
+          </div>
+
+          </div>
+          <!-- /.lesson-main -->
+
+          <aside class="lesson-side">
+            <div class="exercise-card side-text">
+              <div class="exo-title">Objectif</div>
+              <div class="exo-desc" id="side-objective-desc">1/5 — Implémente devinerNombre(secret, essais) : indices + break.</div>
+              <ul class="exo-tests">
+                <li>• <code>valider</code> → lance les tests</li>
+                <li>• <code>aide</code> → revoir la consigne</li>
+                <li>• <code>clear</code> → nettoyer l'écran</li>
+              </ul>
+            </div>
+            <div class="exercise-card side-terminal">
+              <div class="exo-title">&gt;_ Terminal</div>
+              <div id="terminal-wrap">
+                <div id="terminal"></div>
+              </div>
+              <div class="term-toolbar">
+                <button type="button" class="btn btn-outline" id="btn-clear">Effacer</button>
+                <button type="button" class="btn btn-primary" id="btn-valider">Valider</button>
+              </div>
+            </div>
+          </aside>
+
+          </div>
+          <!-- /.lesson-layout -->
+
+          <div class="lock-row unlocked" id="module3-row">
+            <div>
+              <div class="lr-title">
+                <svg class="lock-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10" width="16" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>
+                🎓 Fin du Module 2 — Structures de contrôle
+              </div>
+              <div class="lr-sub" id="module3-sub">Valide les 5 défis ci-dessus pour terminer le module.</div>
+            </div>
+            <div style="display:flex;gap:8px;">
+              <button type="button" class="btn btn-outline" id="btn-prev-lesson">← Précédent</button>
+              <button type="button" class="btn btn-primary" id="btn-next-lesson" aria-disabled="false">Terminer le module</button>
+            </div>
+          </div>
+
+        </div>
+      </main>
+    </div>
+  </div>
+
+<script src="../vendor/xterm.js"></script>
+<script src="../supabase-js.min.js"></script>
+<script src="../supabase-config.js"></script>
+<script src="../script.js"></script>
+<script src="../app.js"></script>
+<script src="../partials.js"></script>
+
+<script>
+(function () {
+  const PROGRESS_KEY = 'technophile_algo_progress';
+  const globalEval = (0, eval);
+
+  function getProgress() {
+    try { return JSON.parse(localStorage.getItem(PROGRESS_KEY)) || {}; } catch { return {}; }
+  }
+  function setProgress(p) { localStorage.setItem(PROGRESS_KEY, JSON.stringify(p)); }
+
+  const term = new Terminal({
+    theme: {
+      background: '#0a0b0c',
+      foreground: '#eceff1',
+      cursor: '#3ecf8e',
+      green: '#3ecf8e',
+      red: '#ef4444'
+    },
+    fontSize: 13,
+    fontFamily: 'ui-monospace, monospace',
+    cursorBlink: true,
+    convertEol: true,
+    cols: 40,
+    rows: 20
+  });
+  term.open(document.getElementById('terminal'));
+
+  const EXERCISES = [
+    { fn: 'devinerNombre', desc: "1/5 — devinerNombre(secret, essais) : indices + break après trouvé.",
+      cases: [
+        {args:[42, [50, 25, 42, 10]], expected:["trop grand","trop petit","trouvé"]},
+        {args:[7, [5, 10, 7]], expected:["trop petit","trop grand","trouvé"]},
+        {args:[3, [3, 5]], expected:["trouvé"]}
+      ] },
+    { fn: 'moyenneNotes', desc: "2/5 — moyenneNotes(notes) : ignore les négatifs, null si aucune note valide.",
+      cases: [
+        {args:[[10, 15, 12]], expected:12.333333333333334},
+        {args:[[20, -1]], expected:20},
+        {args:[[-5, -3]], expected:null},
+        {args:[[]], expected:null}
+      ] },
+    { fn: 'analyserTexte', desc: "3/5 — analyserTexte(texte) : { voyelles, consonnes }, ignore non-alpha.",
+      cases: [
+        {args:["bonjour"], expected:{voyelles:3, consonnes:4}},
+        {args:["xyz"], expected:{voyelles:0, consonnes:3}},
+        {args:["a b!"], expected:{voyelles:1, consonnes:1}}
+      ] },
+    { fn: 'pyramide', desc: "4/5 — pyramide(n) : tableau de lignes centrées d'étoiles impaires.",
+      cases: [
+        {args:[1], expected:["*"]},
+        {args:[2], expected:[" * ","***"]},
+        {args:[3], expected:["  *  "," *** ","*****"]}
+      ] },
+    { fn: 'validerMotDePasse', desc: "5/5 — validerMotDePasse(mdp) : ≥8, 1 majuscule, 1 chiffre, pas d'espace.",
+      cases: [
+        {args:["Abc12345"], expected:true},
+        {args:["abc12345"], expected:false},
+        {args:["Abc12"], expected:false},
+        {args:["Abc 12345"], expected:false},
+        {args:["Abcdefg1"], expected:true}
+      ] }
+  ];
+  let exerciseIndex = 0;
+  function currentExercise() { return EXERCISES[exerciseIndex] || null; }
+
+  function updateSidebarObjective() {
+    const descEl = document.getElementById('side-objective-desc');
+    if (!descEl) return;
+    const ex = currentExercise();
+    descEl.textContent = ex ? ex.desc : 'Tous les défis sont validés. Bravo !';
+  }
+
+  let buffer = '';
+  const PROMPT = '\x1b[32malgo>\x1b[0m ';
+
+  function prompt() { term.write('\r\n' + PROMPT); }
+
+  function printHelp() {
+    const ex = currentExercise();
+    const msg = ex ? ex.desc : 'Tous les défis sont validés.';
+    term.write('\r\n' + msg + "\r\nCommandes : 'valider' pour tester, 'clear' pour nettoyer, 'aide' pour revoir ceci.\r\n");
+  }
+
+  function deepEqual(a, b) {
+    if (a === b) return true;
+    if (typeof a !== typeof b) return false;
+    if (a === null || b === null) return a === b;
+    if (Array.isArray(a) && Array.isArray(b)) {
+      if (a.length !== b.length) return false;
+      for (let i = 0; i < a.length; i++) if (!deepEqual(a[i], b[i])) return false;
+      return true;
+    }
+    if (typeof a === 'object' && typeof b === 'object') {
+      const ka = Object.keys(a), kb = Object.keys(b);
+      if (ka.length !== kb.length) return false;
+      for (const k of ka) if (!deepEqual(a[k], b[k])) return false;
+      return true;
+    }
+    return false;
+  }
+
+  function runValidation() {
+    term.write('\r\n');
+    const ex = currentExercise();
+    if (!ex) {
+      term.write('\x1b[32mTout est déjà validé !\x1b[0m\r\n');
+      prompt();
+      return;
+    }
+    const fn = window[ex.fn];
+    if (typeof fn !== 'function') {
+      term.write(`\x1b[31m✗ La fonction ${ex.fn}(...) n'existe pas encore. Écris-la d'abord.\x1b[0m\r\n`);
+      prompt();
+      return;
+    }
+    let allOk = true;
+    ex.cases.forEach(c => {
+      let got, ok;
+      try {
+        got = fn(...c.args);
+        ok = deepEqual(got, c.expected);
+      } catch (e) {
+        got = 'erreur: ' + e.message;
+        ok = false;
+      }
+      if (!ok) allOk = false;
+      const mark = ok ? '\x1b[32m✓\x1b[0m' : '\x1b[31m✗\x1b[0m';
+      term.write(`${mark} ${ex.fn}(${c.args.map(a => JSON.stringify(a)).join(', ')}) → attendu ${JSON.stringify(c.expected)}, obtenu ${JSON.stringify(got)}\r\n`);
+    });
+
+    if (allOk) {
+      exerciseIndex++;
+      if (currentExercise()) {
+        term.write(`\r\n\x1b[32mBravo, défi ${exerciseIndex}/${EXERCISES.length} validé !\x1b[0m\r\n`);
+        updateSidebarObjective();
+        printHelp();
+      } else {
+        term.write('\r\n\x1b[32m🎓 Bravo, les 5 défis sont validés ! Le Module 2 est terminé.\x1b[0m\r\n');
+        const p = getProgress();
+        p.lesson14 = true;
+        p.module2_complete = true;
+        setProgress(p);
+        unlockNext();
+        updateSidebarObjective();
+        if (typeof showToast === 'function') showToast('Module 2 terminé !');
+      }
+    } else {
+      term.write('\r\n\x1b[31mPas encore bon, corrige et retape "valider".\x1b[0m\r\n');
+    }
+    prompt();
+  }
+
+  function execLine(line) {
+    const trimmed = line.trim();
+    if (trimmed === 'valider') { runValidation(); return; }
+    if (trimmed === 'clear' || trimmed === 'cls') { term.clear(); prompt(); return; }
+    if (trimmed === 'aide' || trimmed === 'help') { printHelp(); prompt(); return; }
+    if (trimmed === '') { prompt(); return; }
+
+    try {
+      const result = globalEval(trimmed);
+      if (result !== undefined) {
+        term.write('\r\n' + JSON.stringify(result));
+      }
+    } catch (e) {
+      term.write('\r\n\x1b[31m' + e.message + '\x1b[0m');
+    }
+    prompt();
+  }
+
+  term.onData(data => {
+    const code = data.charCodeAt(0);
+    if (code === 13) {
+      const line = buffer;
+      buffer = '';
+      execLine(line);
+    } else if (code === 127) {
+      if (buffer.length > 0) {
+        buffer = buffer.slice(0, -1);
+        term.write('\b \b');
+      }
+    } else if (code < 32) {
+      // ignore
+    } else {
+      buffer += data;
+      term.write(data);
+    }
+  });
+
+  term.write('\x1b[32mTerminal algo — technophile\x1b[0m\r\n');
+  printHelp();
+  prompt();
+
+  document.getElementById('btn-clear').addEventListener('click', () => { term.clear(); prompt(); term.focus(); });
+  document.getElementById('btn-valider').addEventListener('click', () => { execLine('valider'); term.focus(); });
+
+  function unlockNext() {
+    const row = document.getElementById('module3-row');
+    const btn = document.getElementById('btn-next-lesson');
+    const sub = document.getElementById('module3-sub');
+    row.classList.add('unlocked');
+    btn.setAttribute('aria-disabled', 'false');
+    sub.textContent = 'Module 2 validé — en route vers le Module 3.';
+  }
+
+  document.getElementById('btn-prev-lesson').addEventListener('click', () => {
+    location.href = 'lecon-algo-13.html';
+  });
+
+  document.getElementById('btn-next-lesson').addEventListener('click', (e) => {
+    if (e.currentTarget.getAttribute('aria-disabled') === 'true') {
+      if (typeof showToast === 'function') showToast('Valide les 5 défis pour terminer');
+      return;
+    }
+    if (typeof showToast === 'function') showToast('🎓 Module 2 terminé — Module 3 en préparation');
+  });
+
+  if (getProgress().lesson14) unlockNext();
+})();
+</script>
+
+</body>
+</html>

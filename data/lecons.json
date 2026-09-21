@@ -7,12 +7,90 @@
       {
         "nom": "Fondations",
         "lecons": [
-          { "numero": 1, "titre": "Qu'est-ce qu'un algorithme ?", "fichier": "lecon-algo-1.html", "cle": "lesson1" },
-          { "numero": 2, "titre": "Les 5 qualités d'un bon algorithme", "fichier": "lecon-algo-2.html", "cle": "lesson2" },
-          { "numero": 3, "titre": "Les données : variables, constantes, types", "fichier": "lecon-algo-3.html", "cle": "lesson3" },
-          { "numero": 4, "titre": "Lire et écrire (entrées / sorties)", "fichier": "lecon-algo-4.html", "cle": "lesson4" },
-          { "numero": 5, "titre": "Les opérateurs arithmétiques", "fichier": "lecon-algo-5.html", "cle": "lesson5" },
-          { "numero": 6, "titre": "Les opérateurs de comparaison et logiques", "fichier": "lecon-algo-6.html", "cle": "lesson6" }
+          {
+            "numero": 1,
+            "titre": "Qu'est-ce qu'un algorithme ?",
+            "fichier": "lecon-algo-1.html",
+            "cle": "lesson1"
+          },
+          {
+            "numero": 2,
+            "titre": "Les 5 qualités d'un bon algorithme",
+            "fichier": "lecon-algo-2.html",
+            "cle": "lesson2"
+          },
+          {
+            "numero": 3,
+            "titre": "Les données : variables, constantes, types",
+            "fichier": "lecon-algo-3.html",
+            "cle": "lesson3"
+          },
+          {
+            "numero": 4,
+            "titre": "Lire et écrire (entrées / sorties)",
+            "fichier": "lecon-algo-4.html",
+            "cle": "lesson4"
+          },
+          {
+            "numero": 5,
+            "titre": "Les opérateurs arithmétiques",
+            "fichier": "lecon-algo-5.html",
+            "cle": "lesson5"
+          },
+          {
+            "numero": 6,
+            "titre": "Les opérateurs de comparaison et logiques",
+            "fichier": "lecon-algo-6.html",
+            "cle": "lesson6"
+          },
+          {
+            "numero": 7,
+            "titre": "Les conditions simples (si… alors)",
+            "fichier": "lecon-algo-7.html",
+            "cle": "lesson7"
+          },
+          {
+            "numero": 8,
+            "titre": "Les conditions multiples (sinon si, sinon)",
+            "fichier": "lecon-algo-8.html",
+            "cle": "lesson8"
+          },
+          {
+            "numero": 9,
+            "titre": "Les opérateurs logiques (ET, OU, NON)",
+            "fichier": "lecon-algo-9.html",
+            "cle": "lesson9"
+          },
+          {
+            "numero": 10,
+            "titre": "Les boucles « tant que » (while)",
+            "fichier": "lecon-algo-10.html",
+            "cle": "lesson10"
+          },
+          {
+            "numero": 11,
+            "titre": "Les boucles « pour » (for)",
+            "fichier": "lecon-algo-11.html",
+            "cle": "lesson11"
+          },
+          {
+            "numero": 12,
+            "titre": "Les boucles imbriquées",
+            "fichier": "lecon-algo-12.html",
+            "cle": "lesson12"
+          },
+          {
+            "numero": 13,
+            "titre": "Break, continue et contrôle de flux",
+            "fichier": "lecon-algo-13.html",
+            "cle": "lesson13"
+          },
+          {
+            "numero": 14,
+            "titre": "Exercices récapitulatifs (Module 2)",
+            "fichier": "lecon-algo-14.html",
+            "cle": "lesson14"
+          }
         ]
       }
     ]

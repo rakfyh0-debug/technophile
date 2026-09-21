@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Leçon 12 — Les boucles imbriquées - technophile</title>
+  <link rel="stylesheet" href="../style.css">
+  <link rel="stylesheet" href="../vendor/xterm.css">
+  <link rel="stylesheet" href="../css/lesson.css">
+</head>
+<body>
+
+  <div class="app-layout">
+    <div class="rail"></div>
+
+    <div class="app-main">
+      <header class="app-topbar">
+        <div class="breadcrumb">
+          <span>technophile</span><span>/</span>
+          <span>Logique algorithmique</span><span>/</span>
+          <span style="color:var(--text-hi);font-weight:500;">Leçon 12</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:14px;">
+          <div class="avatar" style="cursor:pointer;" onclick="location.href='../profile.html'">R</div>
+        </div>
+      </header>
+
+      <main class="app-center">
+        <div class="page-wrap">
+
+          <div class="lesson-head">
+            <div class="eyebrow">Structures de contrôle — Leçon 12</div>
+            <h1>Les boucles imbriquées</h1>
+            <p>Une boucle peut en contenir une autre. C'est indispensable pour parcourir des <strong>tableaux à deux dimensions</strong>, afficher des motifs, générer des tables — mais ça demande de la rigueur.</p>
+          </div>
+
+          <div class="lesson-layout">
+          <div class="lesson-main">
+
+          <!-- 1. Pourquoi imbriquer -->
+          <div class="lesson-section">
+            <h2><span class="num">1</span>Pourquoi imbriquer des boucles ?</h2>
+            <p>Quand on doit parcourir deux dimensions à la fois — une grille, un tableau à double entrée, un calendrier — une seule boucle ne suffit pas. Il en faut deux : une pour les <strong>lignes</strong>, une pour les <strong>colonnes</strong>.</p>
+            <p class="sub">Exemple concret : afficher une table de multiplication. Pour chaque ligne (1 à 10), on parcourt chaque colonne (1 à 10). Deux boucles imbriquées.</p>
+
+            <div class="vocab-grid">
+              <div class="vocab-card">
+                <div class="term">Boucle externe</div>
+                <div class="def">La boucle qui contient l'autre. Elle contrôle la dimension « extérieure » (ex : les lignes). Elle change <strong>lentement</strong>.</div>
+              </div>
+              <div class="vocab-card">
+                <div class="term">Boucle interne</div>
+                <div class="def">La boucle à l'intérieur. Elle parcourt la dimension « intérieure » (ex : les colonnes). Elle change <strong>rapidement</strong> — elle fait tous ses tours pour chaque tour de la boucle externe.</div>
+              </div>
+              <div class="vocab-card">
+                <div class="term">Compteurs indépendants</div>
+                <div class="def">Chaque boucle utilise sa propre variable de compteur (<code>i</code> pour l'externe, <code>j</code> pour l'interne). Ne jamais réutiliser le même nom, sinon conflit.</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 2. Structure -->
+          <div class="lesson-section">
+            <h2><span class="num">2</span>La structure imbriquée</h2>
+            <p>On met une boucle complète <strong>à l'intérieur</strong> du corps d'une autre boucle :</p>
+
+            <div class="exemple-box">  <span class="kw">Pour</span> i <span class="kw">de</span> 1 <span class="kw">à</span> 3 <span class="kw">faire</span>
+      <span class="kw">Pour</span> j <span class="kw">de</span> 1 <span class="kw">à</span> 3 <span class="kw">faire</span>
+          Écrire i, " x ", j, " = ", i * j
+      <span class="kw">Fin Pour</span>
+  <span class="kw">Fin Pour</span></div>
+
+            <p>Ce qui se passe :</p>
+            <ul>
+              <li>i = 1 : le corps s'exécute une fois pour <strong>chaque</strong> valeur de j (1, 2, 3).</li>
+              <li>i = 2 : idem, j reprend à 1.</li>
+              <li>i = 3 : idem.</li>
+              <li>Nombre total d'exécutions du corps : <strong>3 × 3 = 9</strong>.</li>
+            </ul>
+
+            <div class="diagram-card">
+              <svg viewBox="0 0 620 300" width="620" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                  <marker id="arrowImb" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+                    <path d="M0,0 L8,4 L0,8 Z" fill="#3ecf8e"/>
+                  </marker>
+                  <marker id="arrowImbBlue" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+                    <path d="M0,0 L8,4 L0,8 Z" fill="#3b82f6"/>
+                  </marker>
+                </defs>
+                <g font-family="ui-sans-serif,system-ui,sans-serif" font-size="11" fill="#eceff1">
+                  <text x="310" y="18" text-anchor="middle" font-size="11" fill="#9aa1a6">pour chaque i, la boucle interne fait tous ses j</text>
+
+                  <!-- Boucle externe -->
+                  <rect x="40" y="40" width="540" height="40" rx="8" fill="#1c1c1c" stroke="#3ecf8e" stroke-width="1.5"/>
+                  <text x="60" y="65" fill="#3ecf8e" font-weight="700">i = 1</text>
+                  <text x="250" y="65" font-size="10" fill="#9aa1a6">boucle externe</text>
+
+                  <!-- Boucle interne pour i=1 -->
+                  <rect x="80" y="95" width="460" height="35" rx="8" fill="#1c1c1c" stroke="#3b82f6"/>
+                  <text x="100" y="118" fill="#3b82f6">j = 1</text>
+                  <text x="180" y="118" fill="#3b82f6">j = 2</text>
+                  <text x="260" y="118" fill="#3b82f6">j = 3</text>
+                  <text x="440" y="118" font-size="10" fill="#9aa1a6">3 itérations internes</text>
+
+                  <!-- i=2 -->
+                  <rect x="40" y="145" width="540" height="40" rx="8" fill="#1c1c1c" stroke="#3ecf8e" stroke-width="1.5"/>
+                  <text x="60" y="170" fill="#3ecf8e" font-weight="700">i = 2</text>
+
+                  <rect x="80" y="200" width="460" height="35" rx="8" fill="#1c1c1c" stroke="#3b82f6"/>
+                  <text x="100" y="223" fill="#3b82f6">j = 1</text>
+                  <text x="180" y="223" fill="#3b82f6">j = 2</text>
+                  <text x="260" y="223" fill="#3b82f6">j = 3</text>
+
+                  <!-- i=3 -->
+                  <rect x="40" y="245" width="540" height="40" rx="8" fill="#1c1c1c" stroke="#3ecf8e" stroke-width="1.5"/>
+                  <text x="60" y="270" fill="#3ecf8e" font-weight="700">i = 3</text>
+                  <text x="540" y="270" font-size="10" fill="#9aa1a6">boucle externe : 3 tours</text>
+                </g>
+              </svg>
+            </div>
+
+            <p class="sub">À chaque tour de la boucle externe, la boucle interne <strong>recommence de zéro</strong>. C'est ce qui distingue vraiment les deux boucles : elles ne tournent pas en parallèle, elles tournent <em>l'une dans l'autre</em>.</p>
+          </div>
+
+          <!-- 3. Exemples -->
+          <div class="lesson-section">
+            <h2><span class="num">3</span>Trois exemples concrets</h2>
+
+            <h3 style="font-size:13.5px;font-weight:600;margin:16px 0 8px;color:var(--accent);">Exemple 1 — Table de multiplication 3×3</h3>
+            <div class="exemple-box">  <span class="kw">Pour</span> i <span class="kw">de</span> 1 <span class="kw">à</span> 3 <span class="kw">faire</span>
+      <span class="kw">Pour</span> j <span class="kw">de</span> 1 <span class="kw">à</span> 3 <span class="kw">faire</span>
+          Écrire i * j
+      <span class="kw">Fin Pour</span>
+  <span class="kw">Fin Pour</span></div>
+
+            <h3 style="font-size:13.5px;font-weight:600;margin:16px 0 8px;color:var(--accent);">Exemple 2 — Carré d'étoiles</h3>
+            <p class="sub">Afficher un carré de N lignes × N colonnes d'étoiles.</p>
+            <div class="exemple-box">  Lire N
+  <span class="kw">Pour</span> i <span class="kw">de</span> 1 <span class="kw">à</span> N <span class="kw">faire</span>
+      ligne <span class="cmt">←</span> ""
+      <span class="kw">Pour</span> j <span class="kw">de</span> 1 <span class="kw">à</span> N <span class="kw">faire</span>
+          ligne <span class="cmt">←</span> ligne + "*"
+      <span class="kw">Fin Pour</span>
+      Écrire ligne
+  <span class="kw">Fin Pour</span></div>
+
+            <h3 style="font-size:13.5px;font-weight:600;margin:16px 0 8px;color:var(--accent);">Exemple 3 — Triangle d'étoiles</h3>
+            <p class="sub">La boucle interne dépend de la boucle externe : à la ligne i, on affiche i étoiles.</p>
+            <div class="exemple-box">  Lire N
+  <span class="kw">Pour</span> i <span class="kw">de</span> 1 <span class="kw">à</span> N <span class="kw">faire</span>
+      ligne <span class="cmt">←</span> ""
+      <span class="kw">Pour</span> j <span class="kw">de</span> 1 <span class="kw">à</span> i <span class="kw">faire</span>
+          ligne <span class="cmt">←</span> ligne + "*"
+      <span class="kw">Fin Pour</span>
+      Écrire ligne
+  <span class="kw">Fin Pour</span>
+  <span class="cmt">// affiche :</span>
+  <span class="cmt">// *</span>
+  <span class="cmt">// **</span>
+  <span class="cmt">// ***</span>
+  <span class="cmt">// ****</span></div>
+
+            <p><strong>Trace d'exécution</strong> — carré de 3×3, ordre des affichages :</p>
+            <table style="width:100%; border-collapse:collapse; font-size:12.5px; margin-top:8px;">
+              <thead>
+                <tr style="text-align:left; color:var(--text-lo);">
+                  <th style="padding:6px 8px; border-bottom:1px solid var(--border);">i</th>
+                  <th style="padding:6px 8px; border-bottom:1px solid var(--border);">j</th>
+                  <th style="padding:6px 8px; border-bottom:1px solid var(--border);">Écrire i × j</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td style="padding:6px 8px; border-bottom:1px solid var(--border);">1</td><td style="padding:6px 8px; border-bottom:1px solid var(--border);">1</td><td style="padding:6px 8px; border-bottom:1px solid var(--border);">1</td></tr>
+                <tr><td style="padding:6px 8px; border-bottom:1px solid var(--border);">1</td><td style="padding:6px 8px; border-bottom:1px solid var(--border);">2</td><td style="padding:6px 8px; border-bottom:1px solid var(--border);">2</td></tr>
+                <tr><td style="padding:6px 8px; border-bottom:1px solid var(--border);">1</td><td style="padding:6px 8px; border-bottom:1px solid var(--border);">3</td><td style="padding:6px 8px; border-bottom:1px solid var(--border);">3</td></tr>
+                <tr><td style="padding:6px 8px; border-bottom:1px solid var(--border);">2</td><td style="padding:6px 8px; border-bottom:1px solid var(--border);">1</td><td style="padding:6px 8px; border-bottom:1px solid var(--border);">2</td></tr>
+                <tr><td style="padding:6px 8px; border-bottom:1px solid var(--border);">2</td><td style="padding:6px 8px; border-bottom:1px solid var(--border);">2</td><td style="padding:6px 8px; border-bottom:1px solid var(--border);">4</td></tr>
+                <tr><td style="padding:6px 8px; border-bottom:1px solid var(--border);">2</td><td style="padding:6px 8px; border-bottom:1px solid var(--border);">3</td><td style="padding:6px 8px; border-bottom:1px solid var(--border);">6</td></tr>
+                <tr><td style="padding:6px 8px; border-bottom:1px solid var(--border);">3</td><td style="padding:6px 8px; border-bottom:1px solid var(--border);">1</td><td style="padding:6px 8px; border-bottom:1px solid var(--border);">3</td></tr>
+                <tr><td style="padding:6px 8px; border-bottom:1px solid var(--border);">3</td><td style="padding:6px 8px; border-bottom:1px solid var(--border);">2</td><td style="padding:6px 8px; border-bottom:1px solid var(--border);">6</td></tr>
+                <tr><td style="padding:6px 8px;">3</td><td style="padding:6px 8px;">3</td><td style="padding:6px 8px;">9</td></tr>
+              </tbody>
+            </table>
+            <p class="sub">La boucle interne va jusqu'au bout avant que la boucle externe passe à la valeur suivante. C'est ce qu'on appelle un <strong>parcours en profondeur</strong>.</p>
+          </div>
+
+          <!-- 4. Pièges -->
+          <div class="lesson-section">
+            <h2><span class="num">4</span>Pièges fréquents</h2>
+            <div class="vocab-grid">
+              <div class="vocab-card">
+                <div class="term">Réutiliser le même compteur</div>
+                <div class="def">Écrire <code>Pour i</code> à l'extérieur et <code>Pour i</code> à l'intérieur casse tout : la boucle externe perd son compteur. Toujours utiliser un nom différent (<code>i</code> / <code>j</code>).</div>
+              </div>
+              <div class="vocab-card">
+                <div class="term">Mélanger les bornes</div>
+                <div class="def">« Pour i de 1 à N » à l'extérieur, « Pour j de 1 à N » à l'intérieur = carré. « Pour j de 1 à i » = triangle. Bien choisir.</div>
+              </div>
+              <div class="vocab-card">
+                <div class="term">Complexité cachée</div>
+                <div class="def">Deux boucles imbriquées de N tours chacune = N² opérations. Pour N = 1000, ça fait 1 million. Attention aux performances.</div>
+              </div>
+              <div class="vocab-card">
+                <div class="term">Trois niveaux ou plus</div>
+                <div class="def">Au-delà de 2 niveaux, le code devient difficile à lire. Si on a besoin de 3 boucles imbriquées, on devrait probablement extraire le corps en fonction.</div>
+              </div>
+              <div class="vocab-card">
+                <div class="term">Oublier <code>Fin Pour</code></div>
+                <div class="def">Chaque boucle doit avoir son <code>Fin Pour</code>. Un <code>Fin Pour</code> manquant fait que la boucle interne contient la fin de la boucle externe — bug silencieux.</div>
+              </div>
+              <div class="vocab-card">
+                <div class="term">Indentation plate</div>
+                <div class="def">La boucle interne doit être indentée <strong>d'un cran de plus</strong> que la boucle externe. C'est ce qui permet de lire l'imbrication d'un coup d'œil.</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 5. Exercice -->
+          <div class="lesson-section">
+            <h2><span class="num">5</span>À toi de jouer</h2>
+            <p class="sub">Trois fonctions qui utilisent deux boucles imbriquées.</p>
+
+            <div class="exercise-card">
+              <div class="exo-title">Exercice — 3 mini-défis</div>
+              <div class="exo-desc">Enchaîne ces 3 fonctions dans le terminal, dans l'ordre :</div>
+              <ul class="exo-tests">
+                <li>• <code>tableComplete(n)</code> — renvoie un tableau de N tableaux <code>[i×1, i×2, …, i×N]</code> pour i de 1 à N</li>
+                <li>• <code>triangleEtoiles(n)</code> — renvoie un tableau de chaînes : <code>["*", "**", "***", …]</code></li>
+                <li>• <code>sommeGrille(n)</code> — renvoie la somme de tous les <code>i*j</code> pour i et j de 1 à n</li>
+              </ul>
+              <ul class="exo-tests">
+                <li>• Indices : <code>for (let i = 1; i &lt;= n; i++) { const row = []; for (let j = 1; j &lt;= n; j++) { ... } }</code></li>
+                <li>• <code>tableComplete(2)</code> → <code>[[1,2],[2,4]]</code>, <code>triangleEtoiles(3)</code> → <code>["*","**","***"]</code></li>
+                <li>• Tape <code>valider</code> après chaque fonction pour débloquer la suivante</li>
+                <li>• Tape <code>aide</code> à tout moment, ou <code>clear</code> pour nettoyer l'écran</li>
+              </ul>
+            </div>
+          </div>
+
+          </div>
+          <!-- /.lesson-main -->
+
+          <aside class="lesson-side">
+            <div class="exercise-card side-text">
+              <div class="exo-title">Objectif</div>
+              <div class="exo-desc" id="side-objective-desc">1/3 — Implémente tableComplete(n) : tableau 2D de multiplications.</div>
+              <ul class="exo-tests">
+                <li>• <code>valider</code> → lance les tests</li>
+                <li>• <code>aide</code> → revoir la consigne</li>
+                <li>• <code>clear</code> → nettoyer l'écran</li>
+              </ul>
+            </div>
+            <div class="exercise-card side-terminal">
+              <div class="exo-title">&gt;_ Terminal</div>
+              <div id="terminal-wrap">
+                <div id="terminal"></div>
+              </div>
+              <div class="term-toolbar">
+                <button type="button" class="btn btn-outline" id="btn-clear">Effacer</button>
+                <button type="button" class="btn btn-primary" id="btn-valider">Valider</button>
+              </div>
+            </div>
+          </aside>
+
+          </div>
+          <!-- /.lesson-layout -->
+
+          <div class="lock-row unlocked" id="lesson13-row">
+            <div>
+              <div class="lr-title">
+                <svg class="lock-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10" width="16" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>
+                Leçon 13 — Break, continue et contrôle de flux
+              </div>
+              <div class="lr-sub" id="lesson13-sub">Valide les 3 exercices ci-dessus pour débloquer cette leçon.</div>
+            </div>
+            <div style="display:flex;gap:8px;">
+              <button type="button" class="btn btn-outline" id="btn-prev-lesson">← Précédent</button>
+              <button type="button" class="btn btn-outline" id="btn-next-lesson" aria-disabled="false">Continuer</button>
+            </div>
+          </div>
+
+        </div>
+      </main>
+    </div>
+  </div>
+
+<script src="../vendor/xterm.js"></script>
+<script src="../supabase-js.min.js"></script>
+<script src="../supabase-config.js"></script>
+<script src="../script.js"></script>
+<script src="../app.js"></script>
+<script src="../partials.js"></script>
+
+<script>
+(function () {
+  const PROGRESS_KEY = 'technophile_algo_progress';
+  const globalEval = (0, eval);
+
+  function getProgress() {
+    try { return JSON.parse(localStorage.getItem(PROGRESS_KEY)) || {}; } catch { return {}; }
+  }
+  function setProgress(p) { localStorage.setItem(PROGRESS_KEY, JSON.stringify(p)); }
+
+  const term = new Terminal({
+    theme: {
+      background: '#0a0b0c',
+      foreground: '#eceff1',
+      cursor: '#3ecf8e',
+      green: '#3ecf8e',
+      red: '#ef4444'
+    },
+    fontSize: 13,
+    fontFamily: 'ui-monospace, monospace',
+    cursorBlink: true,
+    convertEol: true,
+    cols: 40,
+    rows: 20
+  });
+  term.open(document.getElementById('terminal'));
+
+  const EXERCISES = [
+    { fn: 'tableComplete', desc: "1/3 — Implémente tableComplete(n) : tableau 2D [i×j] pour i,j de 1 à n.",
+      cases: [ {args:[2], expected:[[1,2],[2,4]]}, {args:[1], expected:[[1]]}, {args:[3], expected:[[1,2,3],[2,4,6],[3,6,9]]} ] },
+    { fn: 'triangleEtoiles', desc: "2/3 — Implémente triangleEtoiles(n) : ['*', '**', '***', …].",
+      cases: [ {args:[1], expected:["*"]}, {args:[3], expected:["*","**","***"]}, {args:[5], expected:["*","**","***","****","*****"]} ] },
+    { fn: 'sommeGrille', desc: "3/3 — Implémente sommeGrille(n) : somme de tous les i*j pour i,j de 1 à n.",
+      cases: [ {args:[1], expected:1}, {args:[2], expected:9}, {args:[3], expected:36} ] }
+  ];
+  let exerciseIndex = 0;
+  function currentExercise() { return EXERCISES[exerciseIndex] || null; }
+
+  function updateSidebarObjective() {
+    const descEl = document.getElementById('side-objective-desc');
+    if (!descEl) return;
+    const ex = currentExercise();
+    descEl.textContent = ex ? ex.desc : 'Tous les exercices sont validés. Bravo !';
+  }
+
+  let buffer = '';
+  const PROMPT = '\x1b[32malgo>\x1b[0m ';
+
+  function prompt() { term.write('\r\n' + PROMPT); }
+
+  function printHelp() {
+    const ex = currentExercise();
+    const msg = ex ? ex.desc : 'Tous les exercices sont validés.';
+    term.write('\r\n' + msg + "\r\nCommandes : 'valider' pour tester, 'clear' pour nettoyer, 'aide' pour revoir ceci.\r\n");
+  }
+
+  function deepEqual(a, b) {
+    if (a === b) return true;
+    if (typeof a !== typeof b) return false;
+    if (Array.isArray(a) && Array.isArray(b)) {
+      if (a.length !== b.length) return false;
+      for (let i = 0; i < a.length; i++) if (!deepEqual(a[i], b[i])) return false;
+      return true;
+    }
+    return false;
+  }
+
+  function runValidation() {
+    term.write('\r\n');
+    const ex = currentExercise();
+    if (!ex) {
+      term.write('\x1b[32mTout est déjà validé !\x1b[0m\r\n');
+      prompt();
+      return;
+    }
+    const fn = window[ex.fn];
+    if (typeof fn !== 'function') {
+      term.write(`\x1b[31m✗ La fonction ${ex.fn}(...) n'existe pas encore. Écris-la d'abord.\x1b[0m\r\n`);
+      prompt();
+      return;
+    }
+    let allOk = true;
+    ex.cases.forEach(c => {
+      let got, ok;
+      try {
+        got = fn(...c.args);
+        ok = deepEqual(got, c.expected);
+      } catch (e) {
+        got = 'erreur: ' + e.message;
+        ok = false;
+      }
+      if (!ok) allOk = false;
+      const mark = ok ? '\x1b[32m✓\x1b[0m' : '\x1b[31m✗\x1b[0m';
+      term.write(`${mark} ${ex.fn}(${c.args.map(a => JSON.stringify(a)).join(', ')}) → attendu ${JSON.stringify(c.expected)}, obtenu ${JSON.stringify(got)}\r\n`);
+    });
+
+    if (allOk) {
+      exerciseIndex++;
+      if (currentExercise()) {
+        term.write(`\r\n\x1b[32mBravo, exercice ${exerciseIndex}/${EXERCISES.length} validé !\x1b[0m\r\n`);
+        updateSidebarObjective();
+        printHelp();
+      } else {
+        term.write('\r\n\x1b[32mBravo, les 3 exercices sont validés ! La leçon 13 est débloquée.\x1b[0m\r\n');
+        const p = getProgress();
+        p.lesson12 = true;
+        setProgress(p);
+        unlockNext();
+        updateSidebarObjective();
+        if (typeof showToast === 'function') showToast('Leçon 12 validée !');
+      }
+    } else {
+      term.write('\r\n\x1b[31mPas encore bon, corrige et retape "valider".\x1b[0m\r\n');
+    }
+    prompt();
+  }
+
+  function execLine(line) {
+    const trimmed = line.trim();
+    if (trimmed === 'valider') { runValidation(); return; }
+    if (trimmed === 'clear' || trimmed === 'cls') { term.clear(); prompt(); return; }
+    if (trimmed === 'aide' || trimmed === 'help') { printHelp(); prompt(); return; }
+    if (trimmed === '') { prompt(); return; }
+
+    try {
+      const result = globalEval(trimmed);
+      if (result !== undefined) {
+        term.write('\r\n' + JSON.stringify(result));
+      }
+    } catch (e) {
+      term.write('\r\n\x1b[31m' + e.message + '\x1b[0m');
+    }
+    prompt();
+  }
+
+  term.onData(data => {
+    const code = data.charCodeAt(0);
+    if (code === 13) {
+      const line = buffer;
+      buffer = '';
+      execLine(line);
+    } else if (code === 127) {
+      if (buffer.length > 0) {
+        buffer = buffer.slice(0, -1);
+        term.write('\b \b');
+      }
+    } else if (code < 32) {
+      // ignore
+    } else {
+      buffer += data;
+      term.write(data);
+    }
+  });
+
+  term.write('\x1b[32mTerminal algo — technophile\x1b[0m\r\n');
+  printHelp();
+  prompt();
+
+  document.getElementById('btn-clear').addEventListener('click', () => { term.clear(); prompt(); term.focus(); });
+  document.getElementById('btn-valider').addEventListener('click', () => { execLine('valider'); term.focus(); });
+
+  function unlockNext() {
+    const row = document.getElementById('lesson13-row');
+    const btn = document.getElementById('btn-next-lesson');
+    const sub = document.getElementById('lesson13-sub');
+    row.classList.add('unlocked');
+    btn.setAttribute('aria-disabled', 'false');
+    sub.textContent = 'Débloquée — tu peux continuer.';
+  }
+
+  document.getElementById('btn-prev-lesson').addEventListener('click', () => {
+    location.href = 'lecon-algo-11.html';
+  });
+
+  document.getElementById('btn-next-lesson').addEventListener('click', (e) => {
+    if (e.currentTarget.getAttribute('aria-disabled') === 'true') {
+      if (typeof showToast === 'function') showToast('Valide les 3 exercices pour débloquer');
+      return;
+    }
+    location.href = 'lecon-algo-13.html';
+  });
+
+  if (getProgress().lesson12) unlockNext();
+})();
+</script>
+
+</body>
+</html>
