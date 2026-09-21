@@ -16,6 +16,30 @@
   const mk = (href, svg, active) =>
     `<div class="rail-icon${active ? ' active' : ''}"${href ? ` style="cursor:pointer;" onclick="location.href='${location.pathname.includes('/logique-algo/') ? '../' : ''}${href}'"` : ''}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">${svg}</svg></div>`;
 
+  function injectTopbar() {
+    document.querySelectorAll('.app-topbar[data-title]').forEach(el => {
+      if (el.dataset.injected) return;
+      const title = el.dataset.title || '';
+      const withSearch = el.dataset.search === 'true';
+      const searchHtml = withSearch
+        ? `<div class="search-pill" style="min-width:170px;padding:5px 10px;font-size:12px;">
+             Recherche... <span class="search-shortcut"><kbd>Ctrl K</kbd></span>
+           </div>`
+        : '';
+      el.innerHTML = `
+        <div class="breadcrumb">
+          <span>technophile</span><span>/</span>
+          <span style="color:var(--text-hi);font-weight:500;">${title}</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:14px;">
+          ${searchHtml}
+          <div class="avatar" style="cursor:pointer;" onclick="location.href='${location.pathname.includes('/logique-algo/') ? '../' : ''}profile.html'">R</div>
+        </div>
+      `;
+      el.dataset.injected = '1';
+    });
+  }
+
   function injectRail() {
     const page = (location.pathname.split('/').pop() || 'index.html').replace('.html', '') || 'index';
     const activeId = { index: 'home', login: 'home', signup: 'home' }[page] || page;
@@ -29,7 +53,8 @@
       el.dataset.injected = '1';
     });
   }
+  function injectAll() { injectRail(); injectTopbar(); }
   document.readyState === 'loading'
-    ? document.addEventListener('DOMContentLoaded', injectRail)
-    : injectRail();
+    ? document.addEventListener('DOMContentLoaded', injectAll)
+    : injectAll();
 })();
