@@ -185,7 +185,6 @@
                 <h2 id="profile-username"></h2>
                 <p id="profile-email"></p>
                 <div class="badges">
-                  <span class="badge badge-gray">ADMINISTRATEUR</span>
                   <span class="badge badge-green">GRATUIT</span>
                 </div>
               </div>
@@ -242,15 +241,15 @@
 
           <div class="detail-row">
             <span>ID Utilisateur</span>
-            <span class="id-badge">usr_8f9a2b</span>
+            <span class="id-badge" id="profile-user-id">—</span>
           </div>
           <div class="detail-row">
             <span>Membre depuis</span>
-            <span>14 Sept. 2026</span>
+            <span id="profile-joined">—</span>
           </div>
           <div class="detail-row">
             <span>Dernière connexion</span>
-            <span>Aujourd'hui à 16:34</span>
+            <span id="profile-last-login">—</span>
           </div>
 
           <div class="danger-zone">
@@ -279,7 +278,7 @@
     };
   </script>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabase-js.min.js"></script>
 <script src="supabase-config.js"></script>
 <script src="app.js"></script>
 <script src="partials.js"></script>
@@ -300,6 +299,9 @@ document.addEventListener('DOMContentLoaded', async () => {
           .single();
 
         u = {
+          id: session.user.id,
+          createdAt: profile?.created_at || null,
+          lastLogin: session.user.last_sign_in_at || null,
           email: session.user.email,
           username: profile?.username || session.user.email.split('@')[0],
           bio: profile?.bio || '',
@@ -340,6 +342,31 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   setText('profile-username', u.username);
   setText('profile-email', u.email);
+
+  // Détails du compte (panneau droit)
+  const idEl = document.getElementById('profile-user-id');
+  if (idEl) idEl.textContent = u.id ? u.id.slice(0, 8) : '—';
+
+  const joinedEl = document.getElementById('profile-joined');
+  if (joinedEl) {
+    joinedEl.textContent = u.createdAt
+      ? new Date(u.createdAt).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' })
+      : '—';
+  }
+
+  const lastLoginEl = document.getElementById('profile-last-login');
+  if (lastLoginEl) {
+    if (u.lastLogin) {
+      const d = new Date(u.lastLogin);
+      const today = new Date();
+      const sameDay = d.toDateString() === today.toDateString();
+      lastLoginEl.textContent = sameDay
+        ? "Aujourd'hui à " + d.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })
+        : d.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' });
+    } else {
+      lastLoginEl.textContent = '—';
+    }
+  }
   setVal('edit-username', u.username);
   setVal('edit-email', u.email);
   setVal('edit-bio', u.bio);
