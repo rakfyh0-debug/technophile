@@ -1,0 +1,20 @@
+{
+  "logique-algo": {
+    "titre": "Logique algorithmique",
+    "description": "Katas de code et énigmes logiques, validés automatiquement par des tests.",
+    "dossier": "logique-algo",
+    "modules": [
+      {
+        "nom": "Fondations",
+        "lecons": [
+          { "numero": 1, "titre": "Qu'est-ce qu'un algorithme ?", "fichier": "lecon-algo-1.html", "cle": "lesson1" },
+          { "numero": 2, "titre": "Les 5 qualités d'un bon algorithme", "fichier": "lecon-algo-2.html", "cle": "lesson2" },
+          { "numero": 3, "titre": "Les données : variables, constantes, types", "fichier": "lecon-algo-3.html", "cle": "lesson3" },
+          { "numero": 4, "titre": "Lire et écrire (entrées / sorties)", "fichier": "lecon-algo-4.html", "cle": "lesson4" },
+          { "numero": 5, "titre": "Les opérateurs arithmétiques", "fichier": "lecon-algo-5.html", "cle": "lesson5" },
+          { "numero": 6, "titre": "Les opérateurs de comparaison et logiques", "fichier": "lecon-algo-6.html", "cle": "lesson6" }
+        ]
+      }
+    ]
+  }
+}
