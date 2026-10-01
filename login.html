@@ -10,8 +10,9 @@
 
   <div class="auth-card">
     <div class="auth-logo">
-      <svg viewBox="0 0 24 24" fill="currentColor">
-        <path d="M21.36 12.5l-7.9-9.6a1.5 1.5 0 00-2.6.9v7.2H3.5a1.5 1.5 0 00-1.1 2.5l7.9 9.6a1.5 1.5 0 002.6-.9v-7.2h7.3a1.5 1.5 0 001.1-2.5z"/>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="4 7 9 12 4 17"/>
+        <line x1="13" y1="17" x2="20" y2="17"/>
       </svg>
     </div>
 
@@ -38,16 +39,58 @@
   </div>
 
   <script>
-    document.getElementById('login-form').addEventListener('submit', function(e) {
+    document.getElementById('login-form').addEventListener('submit', async function(e) {
       e.preventDefault();
-      // Pour l'instant on redirige simplement
-      const u = localStorage.getItem('technophile_user');
-      if (!u) {
-        alert('Aucun compte trouvé. Inscris-toi d\'abord.');
+
+      const email = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value;
+
+      if (!email || !password) {
+        showToast('Email et mot de passe sont requis');
         return;
       }
-      window.location.href = 'index.html';
 
+      const client = typeof initSupabase === 'function' ? initSupabase() : null;
+      if (!client) {
+        showToast('Supabase indisponible');
+        return;
+      }
+
+      const submitBtn = e.target.querySelector('button[type="submit"]');
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Connexion...';
+
+      const { data, error } = await client.auth.signInWithPassword({ email, password });
+
+      if (error) {
+        console.error('signIn error:', error);
+        showToast('Erreur : ' + error.message);
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Se connecter';
+        return;
+      }
+
+      // Sync localStorage pour le reste de l'app
+      const { data: profile } = await client
+        .from('profiles')
+        .select('*')
+        .eq('id', data.user.id)
+        .single();
+
+      localStorage.setItem('technophile_user', JSON.stringify({
+        id: data.user.id,
+        email: data.user.email,
+        username: profile?.username || data.user.email.split('@')[0],
+        bio: profile?.bio || '',
+        avatar: profile?.avatar_animal ? {
+          animal: profile.avatar_animal,
+          gradient: profile.avatar_gradient
+        } : null,
+        createdAt: Date.now()
+      }));
+
+      showToast('Connecté !');
+      setTimeout(() => { window.location.href = 'index.html'; }, 400);
     });
   </script>
 
