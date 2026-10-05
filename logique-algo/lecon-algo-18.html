@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Leçon 18 — Les dictionnaires (objets clé-valeur) - technophile</title>
+  <link rel="stylesheet" href="../style.css">
+  <link rel="stylesheet" href="../vendor/xterm.css">
+  <link rel="stylesheet" href="../css/lesson.css">
+</head>
+<body>
+
+  <div class="app-layout">
+    <div class="rail"></div>
+
+    <div class="app-main">
+      <header class="app-topbar">
+        <div class="breadcrumb">
+          <span>technophile</span><span>/</span>
+          <span>Logique algorithmique</span><span>/</span>
+          <span style="color:var(--text-hi);font-weight:500;">Leçon 18</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:14px;">
+          <div class="avatar" style="cursor:pointer;" onclick="location.href='../profile.html'">R</div>
+        </div>
+      </header>
+
+      <main class="app-center">
+        <div class="page-wrap">
+
+          <div class="lesson-head">
+            <div class="eyebrow">Structures de données — Leçon 18</div>
+            <h1>Les dictionnaires (objets clé-valeur)</h1>
+            <p>Un tableau range ses valeurs par position (index 0, 1, 2…). Un <strong>dictionnaire</strong> les range par <strong>nom</strong>. Au lieu de dire « la 3ᵉ valeur », on dit « la valeur associée à la clé <code>age</code> ». C'est bien plus expressif.</p>
+          </div>
+
+          <div class="lesson-layout">
+          <div class="lesson-main">
+
+          <!-- 1. Le problème des index numériques -->
+          <div class="lesson-section">
+            <h2><span class="num">1</span>Pourquoi un dictionnaire ?</h2>
+            <p>Imaginez stocker les informations d'un utilisateur dans un tableau : <code>["Alice", "alice@mail.com", 25, "Paris"]</code>. Pour retrouver l'âge, il faut se souvenir que c'est à l'index 2. Fragile, et illisible.</p>
+            <p class="sub">Avec un dictionnaire : <code>{ nom: "Alice", email: "alice@mail.com", age: 25, ville: "Paris" }</code>. On accède directement à <code>utilisateur.age</code>. Le code parle de lui-même.</p>
+
+            <div class="vocab-grid">
+              <div class="vocab-card">
+                <div class="term">Dictionnaire (objet)</div>
+                <div class="def">Une collection de paires <strong>clé → valeur</strong>. Chaque clé est unique dans le dictionnaire. En JS : <code>{ }</code>.</div>
+              </div>
+              <div class="vocab-card">
+                <div class="term">Clé</div>
+                <div class="def">Le nom qui identifie une valeur. Souvent une chaîne : <code>"nom"</code>, <code>"age"</code>. Doit être unique.</div>
+              </div>
+              <div class="vocab-card">
+                <div class="term">Valeur</div>
+                <div class="def">Ce qui est stocké sous une clé. Peut être n'importe quel type : nombre, chaîne, tableau, autre dictionnaire…</div>
+              </div>
+              <div class="vocab-card">
+                <div class="term">Propriété</div>
+                <div class="def">Autre nom pour « paire clé-valeur » quand on parle d'un objet. <code>user.age</code> lit la propriété <code>age</code>.</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 2. Créer et lire -->
+          <div class="lesson-section">
+            <h2><span class="num">2</span>Créer, lire, modifier</h2>
+
+            <div class="exemple-box">  <span class="cmt">// Déclaration</span>
+  user <span class="cmt">←</span> {
+      nom: "Alice",
+      email: "alice@mail.com",
+      age: 25
+  }
+
+  <span class="cmt">// Lire une valeur (deux notations équivalentes)</span>
+  Écrire user.nom             <span class="cmt">// "Alice"</span>
+  Écrire user["email"]        <span class="cmt">// "alice@mail.com"</span>
+
+  <span class="cmt">// Modifier une valeur existante</span>
+  user.age <span class="cmt">←</span> 26
+  Écrire user.age             <span class="cmt">// 26</span>
+
+  <span class="cmt">// Ajouter une nouvelle propriété</span>
+  user.ville <span class="cmt">←</span> "Paris"
+  Écrire user.ville           <span class="cmt">// "Paris"</span></div>
+
+            <div class="diagram-card">
+              <svg viewBox="0 0 620 200" width="620" xmlns="http://www.w3.org/2000/svg">
+                <g font-family="ui-sans-serif,system-ui,sans-serif" font-size="12" fill="#eceff1">
+                  <text x="310" y="18" text-anchor="middle" font-size="11" fill="#9aa1a6">user = { nom, email, age }</text>
+
+                  <rect x="60" y="50" width="160" height="40" rx="6" fill="#1c1c1c" stroke="#3ecf8e" stroke-width="1.5"/>
+                  <text x="140" y="75" text-anchor="middle" fill="#3ecf8e" font-weight="700">nom</text>
+                  <rect x="230" y="50" width="200" height="40" rx="6" fill="#1c1c1c" stroke="#2a2d30"/>
+                  <text x="330" y="75" text-anchor="middle">"Alice"</text>
+
+                  <rect x="60" y="100" width="160" height="40" rx="6" fill="#1c1c1c" stroke="#3ecf8e" stroke-width="1.5"/>
+                  <text x="140" y="125" text-anchor="middle" fill="#3ecf8e" font-weight="700">email</text>
+                  <rect x="230" y="100" width="200" height="40" rx="6" fill="#1c1c1c" stroke="#2a2d30"/>
+                  <text x="330" y="125" text-anchor="middle">"alice@mail.com"</text>
+
+                  <rect x="60" y="150" width="160" height="40" rx="6" fill="#1c1c1c" stroke="#3ecf8e" stroke-width="1.5"/>
+                  <text x="140" y="175" text-anchor="middle" fill="#3ecf8e" font-weight="700">age</text>
+                  <rect x="230" y="150" width="200" height="40" rx="6" fill="#1c1c1c" stroke="#2a2d30"/>
+                  <text x="330" y="175" text-anchor="middle">25</text>
+
+                  <text x="475" y="75" font-size="10" fill="#9aa1a6">← clé</text>
+                  <text x="475" y="125" font-size="10" fill="#9aa1a6">← clé</text>
+                  <text x="475" y="175" font-size="10" fill="#9aa1a6">← clé</text>
+
+                  <text x="500" y="75" font-size="10" fill="#3ecf8e">valeur</text>
+                  <text x="500" y="125" font-size="10" fill="#3ecf8e">valeur</text>
+                  <text x="500" y="175" font-size="10" fill="#3ecf8e">valeur</text>
+                </g>
+              </svg>
+            </div>
+          </div>
+
+          <!-- 3. Parcourir -->
+          <div class="lesson-section">
+            <h2><span class="num">3</span>Parcourir un dictionnaire</h2>
+            <p>On ne parcourt pas un dictionnaire par index (0, 1, 2…) mais par <strong>clés</strong>. En JavaScript, deux méthodes principales :</p>
+
+            <div class="exemple-box">  user <span class="cmt">←</span> { nom: "Alice", age: 25, ville: "Paris" }
+
+  <span class="cmt">// 1) Parcourir les clés</span>
+  <span class="kw">Pour chaque</span> cle <span class="kw">dans</span> cles(user) <span class="kw">faire</span>
+      Écrire cle, " : ", user[cle]
+  <span class="kw">Fin Pour</span>
+  <span class="cmt">// nom : Alice</span>
+  <span class="cmt">// age : 25</span>
+  <span class="cmt">// ville : Paris</span>
+
+  <span class="cmt">// En JavaScript :</span>
+  <span class="kw">for</span> (const cle <span class="kw">in</span> user) {
+      console.log(cle, " : ", user[cle]);
+  }</div>
+
+            <p class="sub">Pour tester si une clé existe, on utilise <code>"age" in user</code> (renvoie <code>true</code> ou <code>false</code>). Et <code>Object.keys(user)</code> renvoie un tableau de toutes les clés.</p>
+          </div>
+
+          <!-- 4. Exemples concrets -->
+          <div class="lesson-section">
+            <h2><span class="num">4</span>Trois exemples concrets</h2>
+
+            <h3 style="font-size:13.5px;font-weight:600;margin:16px 0 8px;color:var(--accent);">Exemple 1 — Fiche de contact</h3>
+            <div class="exemple-box">  contact <span class="cmt">←</span> {
+      nom: "Alice Dupont",
+      tel: "06 12 34 56 78",
+      email: "alice@mail.com",
+      entreprise: "ACME"
+  }
+  Écrire "Contacter ", contact.nom, " au ", contact.tel</div>
+
+            <h3 style="font-size:13.5px;font-weight:600;margin:16px 0 8px;color:var(--accent);">Exemple 2 — Compteur de fréquences</h3>
+            <p class="sub">Un dictionnaire qui compte combien de fois chaque mot apparaît.</p>
+            <div class="exemple-box">  mots <span class="cmt">←</span> ["pomme", "banane", "pomme", "cerise", "pomme"]
+  compteur <span class="cmt">←</span> {}
+
+  <span class="kw">Pour</span> i <span class="kw">de</span> 0 <span class="kw">à</span> longueur(mots) - 1 <span class="kw">faire</span>
+      m <span class="cmt">←</span> mots[i]
+      <span class="kw">Si</span> m <span class="kw">dans</span> compteur <span class="kw">alors</span>
+          compteur[m] <span class="cmt">←</span> compteur[m] + 1
+      <span class="kw">Sinon</span>
+          compteur[m] <span class="cmt">←</span> 1
+      <span class="kw">Fin Si</span>
+  <span class="kw">Fin Pour</span>
+
+  Écrire compteur   <span class="cmt">// { pomme: 3, banane: 1, cerise: 1 }</span></div>
+
+            <h3 style="font-size:13.5px;font-weight:600;margin:16px 0 8px;color:var(--accent);">Exemple 3 — Config d'application</h3>
+            <div class="exemple-box">  config <span class="cmt">←</span> {
+      theme: "dark",
+      langue: "fr",
+      notifications: Vrai
+  }
+  Écrire "Thème : ", config.theme</div>
+          </div>
+
+          <!-- 5. Pièges -->
+          <div class="lesson-section">
+            <h2><span class="num">5</span>Pièges fréquents</h2>
+            <div class="vocab-grid">
+              <div class="vocab-card">
+                <div class="term">Clé inexistante</div>
+                <div class="def">Lire <code>user.telephone</code> sur un objet sans cette clé renvoie <code>undefined</code> (pas d'erreur). Il faut tester avant.</div>
+              </div>
+              <div class="vocab-card">
+                <div class="term">Confondre <code>.</code> et <code>[ ]</code></div>
+                <div class="def"><code>user.nom</code> et <code>user["nom"]</code> sont équivalents. Mais si la clé contient un espace ou un tiret, il faut <code>[ ]</code> : <code>user["nom complet"]</code>.</div>
+              </div>
+              <div class="vocab-card">
+                <div class="term">Confondre <code>{ }</code> et <code>[ ]</code></div>
+                <div class="def"><code>{ }</code> = dictionnaire (clés nommées). <code>[ ]</code> = tableau (index numériques). Deux structures très différentes.</div>
+              </div>
+              <div class="vocab-card">
+                <div class="term">Clé dupliquée</div>
+                <div class="def">Si on déclare deux fois la même clé dans un objet littéral, la seconde écrase la première. Pas d'erreur, mais une perte silencieuse.</div>
+              </div>
+              <div class="vocab-card">
+                <div class="term">Copie par référence</div>
+                <div class="def">Comme les tableaux, <code>user2 ← user1</code> ne copie pas : les deux pointent vers le même objet. Modifier l'un modifie l'autre.</div>
+              </div>
+              <div class="vocab-card">
+                <div class="term">Parcourir avec <code>for…in</code></div>
+                <div class="def"><code>for (k in obj)</code> parcourt <strong>toutes</strong> les propriétés, y compris celles héritées. Pour un objet propre, préférer <code>Object.keys(obj)</code>.</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 6. Exercice -->
+          <div class="lesson-section">
+            <h2><span class="num">6</span>À toi de jouer</h2>
+            <p class="sub">Trois fonctions qui manipulent des dictionnaires : accès, test de clé, et parcours.</p>
+
+            <div class="exercise-card">
+              <div class="exo-title">Exercice — 3 mini-défis</div>
+              <div class="exo-desc">Enchaîne ces 3 fonctions dans le terminal, dans l'ordre :</div>
+              <ul class="exo-tests">
+                <li>• <code>getValeur(obj, cle)</code> — renvoie la valeur associée à <code>cle</code>, ou <code>null</code> si absente</li>
+                <li>• <code>aLaCle(obj, cle)</code> — renvoie <code>true</code> si la clé existe, sinon <code>false</code></li>
+                <li>• <code>sommeValeurs(obj)</code> — renvoie la somme de toutes les valeurs numériques de l'objet</li>
+              </ul>
+              <ul class="exo-tests">
+                <li>• Indices : <code>obj[cle]</code>, <code>cle in obj</code>, <code>Object.values(obj)</code></li>
+                <li>• <code>getValeur({a:1,b:2}, "a")</code> → <code>1</code>, <code>aLaCle({a:1}, "z")</code> → <code>false</code></li>
+                <li>• <code>sommeValeurs({x:5, y:10})</code> → <code>15</code></li>
+                <li>• Tape <code>valider</code> après chaque fonction pour débloquer la suivante</li>
+                <li>• Tape <code>aide</code> à tout moment, ou <code>clear</code> pour nettoyer l'écran</li>
+              </ul>
+            </div>
+          </div>
+
+          </div>
+          <!-- /.lesson-main -->
+
+          <aside class="lesson-side">
+            <div class="exercise-card side-text">
+              <div class="exo-title">Objectif</div>
+              <div class="exo-desc" id="side-objective-desc">1/3 — Implémente getValeur(obj, cle) : valeur associée ou null.</div>
+              <ul class="exo-tests">
+                <li>• <code>valider</code> → lance les tests</li>
+                <li>• <code>aide</code> → revoir la consigne</li>
+                <li>• <code>clear</code> → nettoyer l'écran</li>
+              </ul>
+            </div>
+            <div class="exercise-card side-terminal">
+              <div class="exo-title">&gt;_ Terminal</div>
+              <div id="terminal-wrap">
+                <div id="terminal"></div>
+              </div>
+              <div class="term-toolbar">
+                <button type="button" class="btn btn-outline" id="btn-clear">Effacer</button>
+                <button type="button" class="btn btn-primary" id="btn-valider">Valider</button>
+              </div>
+            </div>
+          </aside>
+
+          </div>
+          <!-- /.lesson-layout -->
+
+          <div class="lock-row unlocked" id="lesson19-row">
+            <div>
+              <div class="lr-title">
+                <svg class="lock-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10" width="16" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>
+                Leçon 19 — Les ensembles (sets) et dédoublonnage
+              </div>
+              <div class="lr-sub" id="lesson19-sub">Valide les 3 exercices ci-dessus pour débloquer cette leçon.</div>
+            </div>
+            <div style="display:flex;gap:8px;">
+              <button type="button" class="btn btn-outline" id="btn-prev-lesson">← Précédent</button>
+              <button type="button" class="btn btn-outline" id="btn-next-lesson" aria-disabled="false">Continuer</button>
+            </div>
+          </div>
+
+        </div>
+      </main>
+    </div>
+  </div>
+
+<script src="../vendor/xterm.js"></script>
+<script src="../supabase-js.min.js"></script>
+<script src="../supabase-config.js"></script>
+<script src="../script.js"></script>
+<script src="../app.js"></script>
+<script src="../partials.js"></script>
+
+<script>
+(function () {
+  const PROGRESS_KEY = 'technophile_algo_progress';
+  const globalEval = (0, eval);
+
+  function getProgress() {
+    try { return JSON.parse(localStorage.getItem(PROGRESS_KEY)) || {}; } catch { return {}; }
+  }
+  function setProgress(p) { localStorage.setItem(PROGRESS_KEY, JSON.stringify(p)); }
+
+  const term = new Terminal({
+    theme: {
+      background: '#0a0b0c',
+      foreground: '#eceff1',
+      cursor: '#3ecf8e',
+      green: '#3ecf8e',
+      red: '#ef4444'
+    },
+    fontSize: 13,
+    fontFamily: 'ui-monospace, monospace',
+    cursorBlink: true,
+    convertEol: true,
+    cols: 40,
+    rows: 20
+  });
+  term.open(document.getElementById('terminal'));
+
+  const EXERCISES = [
+    { fn: 'getValeur', desc: "1/3 — Implémente getValeur(obj, cle) : valeur ou null si absente.",
+      cases: [
+        {args:[{a:1, b:2}, "a"], expected:1},
+        {args:[{a:1}, "z"], expected:null},
+        {args:[{x:"hi"}, "x"], expected:"hi"}
+      ] },
+    { fn: 'aLaCle', desc: "2/3 — Implémente aLaCle(obj, cle) : true si la clé existe.",
+      cases: [
+        {args:[{a:1, b:2}, "a"], expected:true},
+        {args:[{a:1}, "z"], expected:false},
+        {args:[{}, "x"], expected:false}
+      ] },
+    { fn: 'sommeValeurs', desc: "3/3 — Implémente sommeValeurs(obj) : somme des valeurs.",
+      cases: [
+        {args:[{x:5, y:10}], expected:15},
+        {args:[{a:1, b:2, c:3}], expected:6},
+        {args:[{}], expected:0}
+      ] }
+  ];
+  let exerciseIndex = 0;
+  function currentExercise() { return EXERCISES[exerciseIndex] || null; }
+
+  function updateSidebarObjective() {
+    const descEl = document.getElementById('side-objective-desc');
+    if (!descEl) return;
+    const ex = currentExercise();
+    descEl.textContent = ex ? ex.desc : 'Tous les exercices sont validés. Bravo !';
+  }
+
+  let buffer = '';
+  const PROMPT = '\x1b[32malgo>\x1b[0m ';
+
+  function prompt() { term.write('\r\n' + PROMPT); }
+
+  function printHelp() {
+    const ex = currentExercise();
+    const msg = ex ? ex.desc : 'Tous les exercices sont validés.';
+    term.write('\r\n' + msg + "\r\nCommandes : 'valider' pour tester, 'clear' pour nettoyer, 'aide' pour revoir ceci.\r\n");
+  }
+
+  function runValidation() {
+    term.write('\r\n');
+    const ex = currentExercise();
+    if (!ex) {
+      term.write('\x1b[32mTout est déjà validé !\x1b[0m\r\n');
+      prompt();
+      return;
+    }
+    const fn = window[ex.fn];
+    if (typeof fn !== 'function') {
+      term.write(`\x1b[31m✗ La fonction ${ex.fn}(...) n'existe pas encore. Écris-la d'abord.\x1b[0m\r\n`);
+      prompt();
+      return;
+    }
+    let allOk = true;
+    ex.cases.forEach(c => {
+      let got, ok;
+      try {
+        got = fn(...c.args);
+        ok = got === c.expected;
+      } catch (e) {
+        got = 'erreur: ' + e.message;
+        ok = false;
+      }
+      if (!ok) allOk = false;
+      const mark = ok ? '\x1b[32m✓\x1b[0m' : '\x1b[31m✗\x1b[0m';
+      term.write(`${mark} ${ex.fn}(${c.args.map(a => JSON.stringify(a)).join(', ')}) → attendu ${JSON.stringify(c.expected)}, obtenu ${JSON.stringify(got)}\r\n`);
+    });
+
+    if (allOk) {
+      exerciseIndex++;
+      if (currentExercise()) {
+        term.write(`\r\n\x1b[32mBravo, exercice ${exerciseIndex}/${EXERCISES.length} validé !\x1b[0m\r\n`);
+        updateSidebarObjective();
+        printHelp();
+      } else {
+        term.write('\r\n\x1b[32mBravo, les 3 exercices sont validés ! La leçon 19 est débloquée.\x1b[0m\r\n');
+        const p = getProgress();
+        p.lesson18 = true;
+        setProgress(p);
+        unlockNext();
+        updateSidebarObjective();
+        if (typeof showToast === 'function') showToast('Leçon 18 validée !');
+      }
+    } else {
+      term.write('\r\n\x1b[31mPas encore bon, corrige et retape "valider".\x1b[0m\r\n');
+    }
+    prompt();
+  }
+
+  function execLine(line) {
+    const trimmed = line.trim();
+    if (trimmed === 'valider') { runValidation(); return; }
+    if (trimmed === 'clear' || trimmed === 'cls') { term.clear(); prompt(); return; }
+    if (trimmed === 'aide' || trimmed === 'help') { printHelp(); prompt(); return; }
+    if (trimmed === '') { prompt(); return; }
+
+    try {
+      const result = globalEval(trimmed);
+      if (result !== undefined) {
+        term.write('\r\n' + JSON.stringify(result));
+      }
+    } catch (e) {
+      term.write('\r\n\x1b[31m' + e.message + '\x1b[0m');
+    }
+    prompt();
+  }
+
+  term.onData(data => {
+    const code = data.charCodeAt(0);
+    if (code === 13) {
+      const line = buffer;
+      buffer = '';
+      execLine(line);
+    } else if (code === 127) {
+      if (buffer.length > 0) {
+        buffer = buffer.slice(0, -1);
+        term.write('\b \b');
+      }
+    } else if (code < 32) {
+      // ignore
+    } else {
+      buffer += data;
+      term.write(data);
+    }
+  });
+
+  term.write('\x1b[32mTerminal algo — technophile\x1b[0m\r\n');
+  printHelp();
+  prompt();
+
+  document.getElementById('btn-clear').addEventListener('click', () => { term.clear(); prompt(); term.focus(); });
+  document.getElementById('btn-valider').addEventListener('click', () => { execLine('valider'); term.focus(); });
+
+  function unlockNext() {
+    const row = document.getElementById('lesson19-row');
+    const btn = document.getElementById('btn-next-lesson');
+    const sub = document.getElementById('lesson19-sub');
+    row.classList.add('unlocked');
+    btn.setAttribute('aria-disabled', 'false');
+    sub.textContent = 'Débloquée — tu peux continuer.';
+  }
+
+  document.getElementById('btn-prev-lesson').addEventListener('click', () => {
+    location.href = 'lecon-algo-17.html';
+  });
+
+  document.getElementById('btn-next-lesson').addEventListener('click', (e) => {
+    if (e.currentTarget.getAttribute('aria-disabled') === 'true') {
+      if (typeof showToast === 'function') showToast('Valide les 3 exercices pour débloquer');
+      return;
+    }
+    if (typeof showToast === 'function') showToast('Leçon 19 en préparation');
+  });
+
+  if (getProgress().lesson18) unlockNext();
+})();
+</script>
+
+</body>
+</html>

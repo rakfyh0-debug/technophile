@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Leçon 16 — Parcourir un tableau - technophile</title>
+  <link rel="stylesheet" href="../style.css">
+  <link rel="stylesheet" href="../vendor/xterm.css">
+  <link rel="stylesheet" href="../css/lesson.css">
+</head>
+<body>
+
+  <div class="app-layout">
+    <div class="rail"></div>
+
+    <div class="app-main">
+      <header class="app-topbar">
+        <div class="breadcrumb">
+          <span>technophile</span><span>/</span>
+          <span>Logique algorithmique</span><span>/</span>
+          <span style="color:var(--text-hi);font-weight:500;">Leçon 16</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:14px;">
+          <div class="avatar" style="cursor:pointer;" onclick="location.href='../profile.html'">R</div>
+        </div>
+      </header>
+
+      <main class="app-center">
+        <div class="page-wrap">
+
+          <div class="lesson-head">
+            <div class="eyebrow">Structures de données — Leçon 16</div>
+            <h1>Parcourir un tableau</h1>
+            <p>Savoir créer un tableau ne suffit pas : il faut aussi savoir le <strong>parcourir</strong> — additionner ses éléments, chercher le plus grand, compter les occurrences. C'est là que les boucles rencontrent les tableaux.</p>
+          </div>
+
+          <div class="lesson-layout">
+          <div class="lesson-main">
+
+          <!-- 1. Pourquoi parcourir -->
+          <div class="lesson-section">
+            <h2><span class="num">1</span>Pourquoi parcourir un tableau ?</h2>
+            <p>Imagine un tableau de 100 notes. Pour calculer la moyenne, on ne va pas écrire <code>notes[0] + notes[1] + … + notes[99]</code>. On utilise une <strong>boucle</strong> qui parcourt le tableau élément par élément, du premier au dernier.</p>
+            <p class="sub">Le parcours est l'opération la plus courante sur un tableau. C'est un mariage naturel entre les boucles (Module 2) et les tableaux (Module 3).</p>
+
+            <div class="vocab-grid">
+              <div class="vocab-card">
+                <div class="term">Parcours</div>
+                <div class="def">Visiter chaque élément du tableau une fois, dans l'ordre. On utilise une boucle <code>Pour i de 0 à longueur-1</code>.</div>
+              </div>
+              <div class="vocab-card">
+                <div class="term">Accumulateur</div>
+                <div class="def">Une variable initialisée <strong>avant</strong> la boucle, qu'on met à jour à chaque tour. Ex : <code>somme ← somme + tab[i]</code>.</div>
+              </div>
+              <div class="vocab-card">
+                <div class="term">Indice de parcours</div>
+                <div class="def">La variable <code>i</code> de la boucle, qui prend successivement les valeurs 0, 1, 2, …, longueur-1.</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 2. Le parcours classique -->
+          <div class="lesson-section">
+            <h2><span class="num">2</span>Le parcours classique avec <code>Pour</code></h2>
+            <p>La structure canonique — à connaître par cœur — utilise une boucle <code>Pour</code> avec un index qui va de 0 à <code>longueur - 1</code> :</p>
+
+            <div class="exemple-box">  notes <span class="cmt">←</span> [12, 15, 8, 17, 10]
+
+  <span class="kw">Pour</span> i <span class="kw">de</span> 0 <span class="kw">à</span> longueur(notes) - 1 <span class="kw">faire</span>
+      Écrire notes[i]
+  <span class="kw">Fin Pour</span>
+
+  <span class="cmt">// Affiche : 12, 15, 8, 17, 10</span></div>
+
+            <div class="diagram-card">
+              <svg viewBox="0 0 620 200" width="620" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                  <marker id="arrowParcours" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+                    <path d="M0,0 L8,4 L0,8 Z" fill="#3ecf8e"/>
+                  </marker>
+                </defs>
+                <g font-family="ui-sans-serif,system-ui,sans-serif" font-size="11" fill="#eceff1">
+                  <text x="310" y="18" text-anchor="middle" font-size="11" fill="#9aa1a6">la boucle visite chaque case, de gauche à droite</text>
+
+                  <rect x="30" y="50" width="90" height="50" rx="6" fill="#1c1c1c" stroke="#3ecf8e" stroke-width="2"/>
+                  <text x="75" y="80" text-anchor="middle" fill="#3ecf8e" font-size="16" font-weight="700">12</text>
+                  <text x="75" y="120" text-anchor="middle" font-size="10" fill="#9aa1a6">i = 0</text>
+
+                  <rect x="130" y="50" width="90" height="50" rx="6" fill="#1c1c1c" stroke="#2a2d30"/>
+                  <text x="175" y="80" text-anchor="middle" font-size="16">15</text>
+                  <text x="175" y="120" text-anchor="middle" font-size="10" fill="#9aa1a6">i = 1</text>
+
+                  <rect x="230" y="50" width="90" height="50" rx="6" fill="#1c1c1c" stroke="#2a2d30"/>
+                  <text x="275" y="80" text-anchor="middle" font-size="16">8</text>
+                  <text x="275" y="120" text-anchor="middle" font-size="10" fill="#9aa1a6">i = 2</text>
+
+                  <rect x="330" y="50" width="90" height="50" rx="6" fill="#1c1c1c" stroke="#2a2d30"/>
+                  <text x="375" y="80" text-anchor="middle" font-size="16">17</text>
+                  <text x="375" y="120" text-anchor="middle" font-size="10" fill="#9aa1a6">i = 3</text>
+
+                  <rect x="430" y="50" width="90" height="50" rx="6" fill="#1c1c1c" stroke="#2a2d30"/>
+                  <text x="475" y="80" text-anchor="middle" font-size="16">10</text>
+                  <text x="475" y="120" text-anchor="middle" font-size="10" fill="#9aa1a6">i = 4</text>
+
+                  <circle r="6" fill="#3ecf8e">
+                    <animate attributeName="cx" values="75;75;175;175;275;275;375;375;475;475;75" keyTimes="0;0.08;0.2;0.28;0.4;0.48;0.6;0.68;0.8;0.88;1" dur="6s" repeatCount="indefinite"/>
+                    <animate attributeName="cy" values="75" dur="6s" repeatCount="indefinite"/>
+                  </circle>
+
+                  <text x="310" y="165" text-anchor="middle" font-size="10" fill="#9aa1a6">à chaque tour, i avance de 1 ; le corps utilise tab[i]</text>
+                </g>
+              </svg>
+            </div>
+
+            <p class="sub">En JavaScript, la même boucle s'écrit <code>for (let i = 0; i &lt; tab.length; i++)</code>. Les deux formes sont équivalentes.</p>
+          </div>
+
+          <!-- 3. Accumulateurs -->
+          <div class="lesson-section">
+            <h2><span class="num">3</span>Les accumulateurs — additionner, multiplier</h2>
+            <p>Pour additionner tous les éléments, on utilise une variable <code>somme</code> initialisée à 0 <strong>avant</strong> la boucle, qu'on incrémente à chaque tour.</p>
+
+            <div class="exemple-box">  notes <span class="cmt">←</span> [12, 15, 8, 17, 10]
+  somme <span class="cmt">←</span> 0
+
+  <span class="kw">Pour</span> i <span class="kw">de</span> 0 <span class="kw">à</span> longueur(notes) - 1 <span class="kw">faire</span>
+      somme <span class="cmt">←</span> somme + notes[i]
+  <span class="kw">Fin Pour</span>
+
+  moyenne <span class="cmt">←</span> somme / longueur(notes)
+  Écrire "Moyenne : ", moyenne   <span class="cmt">// 12.4</span></div>
+
+            <p>On peut faire la même chose pour un <strong>produit</strong> (initialisé à 1) ou pour un <strong>compteur</strong> (initialisé à 0) :</p>
+            <div class="exemple-box">  <span class="cmt">// Produit de tous les éléments</span>
+  produit <span class="cmt">←</span> 1
+  <span class="kw">Pour</span> i <span class="kw">de</span> 0 <span class="kw">à</span> longueur(tab) - 1 <span class="kw">faire</span>
+      produit <span class="cmt">←</span> produit * tab[i]
+  <span class="kw">Fin Pour</span>
+
+  <span class="cmt">// Compter les éléments pairs</span>
+  compteur <span class="cmt">←</span> 0
+  <span class="kw">Pour</span> i <span class="kw">de</span> 0 <span class="kw">à</span> longueur(tab) - 1 <span class="kw">faire</span>
+      <span class="kw">Si</span> tab[i] % 2 == 0 <span class="kw">alors</span>
+          compteur <span class="cmt">←</span> compteur + 1
+      <span class="kw">Fin Si</span>
+  <span class="kw">Fin Pour</span></div>
+          </div>
+
+          <!-- 4. Recherche de max/min -->
+          <div class="lesson-section">
+            <h2><span class="num">4</span>Trouver le maximum ou le minimum</h2>
+            <p>Pour trouver le plus grand élément d'un tableau, on initialise une variable <code>max</code> avec le <strong>premier</strong> élément, puis on compare chaque autre élément.</p>
+
+            <div class="exemple-box">  notes <span class="cmt">←</span> [12, 15, 8, 17, 10]
+  max <span class="cmt">←</span> notes[0]          <span class="cmt">// on suppose que le premier est le plus grand</span>
+
+  <span class="kw">Pour</span> i <span class="kw">de</span> 1 <span class="kw">à</span> longueur(notes) - 1 <span class="kw">faire</span>
+      <span class="kw">Si</span> notes[i] &gt; max <span class="kw">alors</span>
+          max <span class="cmt">←</span> notes[i]
+      <span class="kw">Fin Si</span>
+  <span class="kw">Fin Pour</span>
+
+  Écrire "Maximum : ", max   <span class="cmt">// 17</span></div>
+
+            <p class="sub">On commence à <code>i = 1</code> car on a déjà lu le premier élément pour initialiser <code>max</code>. Pour le minimum, même principe avec <code>&lt;</code> à la place de <code>&gt;</code>.</p>
+          </div>
+
+          <!-- 5. Pièges -->
+          <div class="lesson-section">
+            <h2><span class="num">5</span>Pièges fréquents</h2>
+            <div class="vocab-grid">
+              <div class="vocab-card">
+                <div class="term">Boucle jusqu'à <code>longueur</code></div>
+                <div class="def"><code>Pour i de 0 à longueur(tab)</code> va déborder — le dernier index valide est <code>longueur - 1</code>. Erreur classique.</div>
+              </div>
+              <div class="vocab-card">
+                <div class="term">Oublier d'initialiser l'accumulateur</div>
+                <div class="def">Si <code>somme</code> n'est pas initialisée à 0 avant la boucle, on ajoute à <code>undefined</code>, ce qui donne <code>NaN</code>.</div>
+              </div>
+              <div class="vocab-card">
+                <div class="term">Initialiser <code>max</code> à 0</div>
+                <div class="def">Si tous les éléments sont négatifs, <code>max = 0</code> serait retourné à tort. Toujours initialiser <code>max</code> au premier élément.</div>
+              </div>
+              <div class="vocab-card">
+                <div class="term">Tableau vide</div>
+                <div class="def">Un tableau vide a une longueur de 0. La boucle ne fait aucun tour. <code>max ← tab[0]</code> renverrait <code>undefined</code> — à protéger avec <code>Si longueur(tab) &gt; 0 alors…</code>.</div>
+              </div>
+              <div class="vocab-card">
+                <div class="term">Modifier le tableau en le parcourant</div>
+                <div class="def">Si on ajoute ou retire des éléments pendant un parcours, la longueur change et on saute des éléments. Dangereux.</div>
+              </div>
+              <div class="vocab-card">
+                <div class="term">Confondre index et valeur</div>
+                <div class="def">Dans <code>tab[i]</code>, <code>i</code> est l'index (0, 1, 2…) et <code>tab[i]</code> est la valeur. Ne pas faire <code>tab[tab[i]]</code> sans réfléchir.</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 6. Exercice -->
+          <div class="lesson-section">
+            <h2><span class="num">6</span>À toi de jouer</h2>
+            <p class="sub">Trois fonctions classiques de parcours de tableau : somme, maximum, comptage.</p>
+
+            <div class="exercise-card">
+              <div class="exo-title">Exercice — 3 mini-défis</div>
+              <div class="exo-desc">Enchaîne ces 3 fonctions dans le terminal, dans l'ordre :</div>
+              <ul class="exo-tests">
+                <li>• <code>sommeTableau(tab)</code> — renvoie la somme de tous les éléments</li>
+                <li>• <code>maximum(tab)</code> — renvoie le plus grand élément (sans utiliser <code>Math.max</code>)</li>
+                <li>• <code>compterOccurrences(tab, valeur)</code> — renvoie combien de fois <code>valeur</code> apparaît dans le tableau</li>
+              </ul>
+              <ul class="exo-tests">
+                <li>• Indices : <code>for (let i = 0; i &lt; tab.length; i++) { ... }</code></li>
+                <li>• <code>sommeTableau([1,2,3,4])</code> → <code>10</code>, <code>maximum([5,3,9,1])</code> → <code>9</code></li>
+                <li>• <code>compterOccurrences([1,2,1,3,1], 1)</code> → <code>3</code></li>
+                <li>• Tape <code>valider</code> après chaque fonction pour débloquer la suivante</li>
+                <li>• Tape <code>aide</code> à tout moment, ou <code>clear</code> pour nettoyer l'écran</li>
+              </ul>
+            </div>
+          </div>
+
+          </div>
+          <!-- /.lesson-main -->
+
+          <aside class="lesson-side">
+            <div class="exercise-card side-text">
+              <div class="exo-title">Objectif</div>
+              <div class="exo-desc" id="side-objective-desc">1/3 — Implémente sommeTableau(tab) : renvoie la somme des éléments.</div>
+              <ul class="exo-tests">
+                <li>• <code>valider</code> → lance les tests</li>
+                <li>• <code>aide</code> → revoir la consigne</li>
+                <li>• <code>clear</code> → nettoyer l'écran</li>
+              </ul>
+            </div>
+            <div class="exercise-card side-terminal">
+              <div class="exo-title">&gt;_ Terminal</div>
+              <div id="terminal-wrap">
+                <div id="terminal"></div>
+              </div>
+              <div class="term-toolbar">
+                <button type="button" class="btn btn-outline" id="btn-clear">Effacer</button>
+                <button type="button" class="btn btn-primary" id="btn-valider">Valider</button>
+              </div>
+            </div>
+          </aside>
+
+          </div>
+          <!-- /.lesson-layout -->
+
+          <div class="lock-row unlocked" id="lesson17-row">
+            <div>
+              <div class="lr-title">
+                <svg class="lock-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10" width="16" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>
+                Leçon 17 — Ajouter, retirer, modifier
+              </div>
+              <div class="lr-sub" id="lesson17-sub">Valide les 3 exercices ci-dessus pour débloquer cette leçon.</div>
+            </div>
+            <div style="display:flex;gap:8px;">
+              <button type="button" class="btn btn-outline" id="btn-prev-lesson">← Précédent</button>
+              <button type="button" class="btn btn-outline" id="btn-next-lesson" aria-disabled="false">Continuer</button>
+            </div>
+          </div>
+
+        </div>
+      </main>
+    </div>
+  </div>
+
+<script src="../vendor/xterm.js"></script>
+<script src="../supabase-js.min.js"></script>
+<script src="../supabase-config.js"></script>
+<script src="../script.js"></script>
+<script src="../app.js"></script>
+<script src="../partials.js"></script>
+
+<script>
+(function () {
+  const PROGRESS_KEY = 'technophile_algo_progress';
+  const globalEval = (0, eval);
+
+  function getProgress() {
+    try { return JSON.parse(localStorage.getItem(PROGRESS_KEY)) || {}; } catch { return {}; }
+  }
+  function setProgress(p) { localStorage.setItem(PROGRESS_KEY, JSON.stringify(p)); }
+
+  const term = new Terminal({
+    theme: {
+      background: '#0a0b0c',
+      foreground: '#eceff1',
+      cursor: '#3ecf8e',
+      green: '#3ecf8e',
+      red: '#ef4444'
+    },
+    fontSize: 13,
+    fontFamily: 'ui-monospace, monospace',
+    cursorBlink: true,
+    convertEol: true,
+    cols: 40,
+    rows: 20
+  });
+  term.open(document.getElementById('terminal'));
+
+  const EXERCISES = [
+    { fn: 'sommeTableau', desc: "1/3 — Implémente sommeTableau(tab) : renvoie la somme des éléments.",
+      cases: [ {args:[[1,2,3,4]], expected:10}, {args:[[10,20,30]], expected:60}, {args:[[]], expected:0}, {args:[[-5,5]], expected:0} ] },
+    { fn: 'maximum', desc: "2/3 — Implémente maximum(tab) : renvoie le plus grand élément.",
+      cases: [ {args:[[5,3,9,1]], expected:9}, {args:[[-3,-7,-1]], expected:-1}, {args:[[42]], expected:42}, {args:[[1,1,1]], expected:1} ] },
+    { fn: 'compterOccurrences', desc: "3/3 — Implémente compterOccurrences(tab, valeur) : combien de fois valeur apparaît.",
+      cases: [
+        {args:[[1,2,1,3,1], 1], expected:3},
+        {args:[[5,5,5], 5], expected:3},
+        {args:[[1,2,3], 9], expected:0},
+        {args:[["a","b","a"], "a"], expected:2}
+      ] }
+  ];
+  let exerciseIndex = 0;
+  function currentExercise() { return EXERCISES[exerciseIndex] || null; }
+
+  function updateSidebarObjective() {
+    const descEl = document.getElementById('side-objective-desc');
+    if (!descEl) return;
+    const ex = currentExercise();
+    descEl.textContent = ex ? ex.desc : 'Tous les exercices sont validés. Bravo !';
+  }
+
+  let buffer = '';
+  const PROMPT = '\x1b[32malgo>\x1b[0m ';
+
+  function prompt() { term.write('\r\n' + PROMPT); }
+
+  function printHelp() {
+    const ex = currentExercise();
+    const msg = ex ? ex.desc : 'Tous les exercices sont validés.';
+    term.write('\r\n' + msg + "\r\nCommandes : 'valider' pour tester, 'clear' pour nettoyer, 'aide' pour revoir ceci.\r\n");
+  }
+
+  function runValidation() {
+    term.write('\r\n');
+    const ex = currentExercise();
+    if (!ex) {
+      term.write('\x1b[32mTout est déjà validé !\x1b[0m\r\n');
+      prompt();
+      return;
+    }
+    const fn = window[ex.fn];
+    if (typeof fn !== 'function') {
+      term.write(`\x1b[31m✗ La fonction ${ex.fn}(...) n'existe pas encore. Écris-la d'abord.\x1b[0m\r\n`);
+      prompt();
+      return;
+    }
+    let allOk = true;
+    ex.cases.forEach(c => {
+      let got, ok;
+      try {
+        got = fn(...c.args);
+        ok = got === c.expected;
+      } catch (e) {
+        got = 'erreur: ' + e.message;
+        ok = false;
+      }
+      if (!ok) allOk = false;
+      const mark = ok ? '\x1b[32m✓\x1b[0m' : '\x1b[31m✗\x1b[0m';
+      term.write(`${mark} ${ex.fn}(${c.args.map(a => JSON.stringify(a)).join(', ')}) → attendu ${JSON.stringify(c.expected)}, obtenu ${JSON.stringify(got)}\r\n`);
+    });
+
+    if (allOk) {
+      exerciseIndex++;
+      if (currentExercise()) {
+        term.write(`\r\n\x1b[32mBravo, exercice ${exerciseIndex}/${EXERCISES.length} validé !\x1b[0m\r\n`);
+        updateSidebarObjective();
+        printHelp();
+      } else {
+        term.write('\r\n\x1b[32mBravo, les 3 exercices sont validés ! La leçon 17 est débloquée.\x1b[0m\r\n');
+        const p = getProgress();
+        p.lesson16 = true;
+        setProgress(p);
+        unlockNext();
+        updateSidebarObjective();
+        if (typeof showToast === 'function') showToast('Leçon 16 validée !');
+      }
+    } else {
+      term.write('\r\n\x1b[31mPas encore bon, corrige et retape "valider".\x1b[0m\r\n');
+    }
+    prompt();
+  }
+
+  function execLine(line) {
+    const trimmed = line.trim();
+    if (trimmed === 'valider') { runValidation(); return; }
+    if (trimmed === 'clear' || trimmed === 'cls') { term.clear(); prompt(); return; }
+    if (trimmed === 'aide' || trimmed === 'help') { printHelp(); prompt(); return; }
+    if (trimmed === '') { prompt(); return; }
+
+    try {
+      const result = globalEval(trimmed);
+      if (result !== undefined) {
+        term.write('\r\n' + JSON.stringify(result));
+      }
+    } catch (e) {
+      term.write('\r\n\x1b[31m' + e.message + '\x1b[0m');
+    }
+    prompt();
+  }
+
+  term.onData(data => {
+    const code = data.charCodeAt(0);
+    if (code === 13) {
+      const line = buffer;
+      buffer = '';
+      execLine(line);
+    } else if (code === 127) {
+      if (buffer.length > 0) {
+        buffer = buffer.slice(0, -1);
+        term.write('\b \b');
+      }
+    } else if (code < 32) {
+      // ignore
+    } else {
+      buffer += data;
+      term.write(data);
+    }
+  });
+
+  term.write('\x1b[32mTerminal algo — technophile\x1b[0m\r\n');
+  printHelp();
+  prompt();
+
+  document.getElementById('btn-clear').addEventListener('click', () => { term.clear(); prompt(); term.focus(); });
+  document.getElementById('btn-valider').addEventListener('click', () => { execLine('valider'); term.focus(); });
+
+  function unlockNext() {
+    const row = document.getElementById('lesson17-row');
+    const btn = document.getElementById('btn-next-lesson');
+    const sub = document.getElementById('lesson17-sub');
+    row.classList.add('unlocked');
+    btn.setAttribute('aria-disabled', 'false');
+    sub.textContent = 'Débloquée — tu peux continuer.';
+  }
+
+  document.getElementById('btn-prev-lesson').addEventListener('click', () => {
+    location.href = 'lecon-algo-15.html';
+  });
+
+  document.getElementById('btn-next-lesson').addEventListener('click', (e) => {
+    if (e.currentTarget.getAttribute('aria-disabled') === 'true') {
+      if (typeof showToast === 'function') showToast('Valide les 3 exercices pour débloquer');
+      return;
+    }
+    if (typeof showToast === 'function') showToast('Leçon 17 en préparation');
+  });
+
+  if (getProgress().lesson16) unlockNext();
+})();
+</script>
+
+</body>
+</html>
