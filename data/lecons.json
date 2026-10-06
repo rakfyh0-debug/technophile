@@ -90,6 +90,42 @@
             "titre": "Exercices récapitulatifs (Module 2)",
             "fichier": "lecon-algo-14.html",
             "cle": "lesson14"
+          },
+          {
+            "numero": 15,
+            "titre": "Les tableaux (introduction)",
+            "fichier": "lecon-algo-15.html",
+            "cle": "lesson15"
+          },
+          {
+            "numero": 16,
+            "titre": "Parcourir un tableau",
+            "fichier": "lecon-algo-16.html",
+            "cle": "lesson16"
+          },
+          {
+            "numero": 17,
+            "titre": "Ajouter, retirer, modifier",
+            "fichier": "lecon-algo-17.html",
+            "cle": "lesson17"
+          },
+          {
+            "numero": 18,
+            "titre": "Les dictionnaires (objets clé-valeur)",
+            "fichier": "lecon-algo-18.html",
+            "cle": "lesson18"
+          },
+          {
+            "numero": 19,
+            "titre": "Les ensembles (sets) et dédoublonnage",
+            "fichier": "lecon-algo-19.html",
+            "cle": "lesson19"
+          },
+          {
+            "numero": 20,
+            "titre": "Exercices récapitulatifs (Module 3)",
+            "fichier": "lecon-algo-20.html",
+            "cle": "lesson20"
           }
         ]
       }
