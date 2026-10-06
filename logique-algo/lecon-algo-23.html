@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Leçon 23 — Trier — tri par sélection et insertion - technophile</title>
+  <link rel="stylesheet" href="../style.css">
+  <link rel="stylesheet" href="../vendor/xterm.css">
+  <link rel="stylesheet" href="../css/lesson.css">
+</head>
+<body>
+
+  <div class="app-layout">
+    <div class="rail"></div>
+
+    <div class="app-main">
+      <header class="app-topbar">
+        <div class="breadcrumb">
+          <span>technophile</span><span>/</span>
+          <span>Logique algorithmique</span><span>/</span>
+          <span style="color:var(--text-hi);font-weight:500;">Leçon 23</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:14px;">
+          <div class="avatar" style="cursor:pointer;" onclick="location.href='../profile.html'">R</div>
+        </div>
+      </header>
+
+      <main class="app-center">
+        <div class="page-wrap">
+
+          <div class="lesson-head">
+            <div class="eyebrow">Algorithmes classiques — Leçon 23</div>
+            <h1>Trier — tri par sélection et insertion</h1>
+            <p>Deux autres algorithmes de tri classiques. Le <strong>tri par sélection</strong> cherche le plus petit à chaque tour et le place au début. Le <strong>tri par insertion</strong> insère chaque élément à sa bonne place, comme on trie des cartes à jouer.</p>
+          </div>
+
+          <div class="lesson-layout">
+          <div class="lesson-main">
+
+          <!-- 1. Le paysage des tris -->
+          <div class="lesson-section">
+            <h2><span class="num">1</span>Trois algorithmes, trois idées</h2>
+            <p>Le tri à bulles échange les voisins. Le tri par sélection cherche le minimum. Le tri par insertion insère au bon endroit. Tous les trois sont en <strong>O(n²)</strong>, mais leurs comportements diffèrent selon les données.</p>
+            <p class="sub">En pratique, on n'utilise presque jamais ces trois algorithmes directement — les langages modernes ont des tris bien plus efficaces (<code>Array.sort()</code> est en O(n log n)). Mais les comprendre aide à raisonner sur les algorithmes, et l'insertion reste excellent sur de très petits tableaux presque triés.</p>
+
+            <div class="vocab-grid">
+              <div class="vocab-card">
+                <div class="term">Tri par sélection</div>
+                <div class="def">À chaque tour, on cherche le minimum de la zone non triée et on l'échange avec le premier élément de cette zone. Simple, mais fait toujours n² comparaisons.</div>
+              </div>
+              <div class="vocab-card">
+                <div class="term">Tri par insertion</div>
+                <div class="def">On prend chaque élément et on l'insère à la bonne place dans la partie déjà triée. Très efficace quand le tableau est <strong>presque trié</strong>.</div>
+              </div>
+              <div class="vocab-card">
+                <div class="term">En place (in place)</div>
+                <div class="def">Le tri se fait dans le tableau lui-même, sans créer de tableau auxiliaire. Sélection et insertion sont en place ; le tri fusion ne l'est pas.</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 2. Tri par sélection -->
+          <div class="lesson-section">
+            <h2><span class="num">2</span>Le tri par sélection</h2>
+            <p>Pour un tableau <code>[5, 1, 4, 2, 8]</code> :</p>
+            <ul>
+              <li>Tour 1 : trouver le minimum de tout le tableau (1), l'échanger avec la position 0.</li>
+              <li>Tour 2 : trouver le minimum à partir de la position 1 (2), l'échanger avec la position 1.</li>
+              <li>Tour 3 : trouver le minimum à partir de la position 2 (4), l'échanger avec la position 2.</li>
+              <li>Etc.</li>
+            </ul>
+
+            <div class="exemple-box">  <span class="kw">fonction</span> triSelection(tab)
+      n <span class="cmt">←</span> longueur(tab)
+      <span class="kw">Pour</span> i <span class="kw">de</span> 0 <span class="kw">à</span> n - 2 <span class="kw">faire</span>
+          minIdx <span class="cmt">←</span> i
+          <span class="kw">Pour</span> j <span class="kw">de</span> i + 1 <span class="kw">à</span> n - 1 <span class="kw">faire</span>
+              <span class="kw">Si</span> tab[j] &lt; tab[minIdx] <span class="kw">alors</span>
+                  minIdx <span class="cmt">←</span> j
+              <span class="kw">Fin Si</span>
+          <span class="kw">Fin Pour</span>
+          <span class="cmt">// échange tab[i] et tab[minIdx]</span>
+          <span class="kw">Si</span> minIdx != i <span class="kw">alors</span>
+              temp <span class="cmt">←</span> tab[i]
+              tab[i] <span class="cmt">←</span> tab[minIdx]
+              tab[minIdx] <span class="cmt">←</span> temp
+          <span class="kw">Fin Si</span>
+      <span class="kw">Fin Pour</span>
+      <span class="kw">Retourner</span> tab
+  <span class="kw">Fin fonction</span></div>
+
+            <div class="diagram-card">
+              <svg viewBox="0 0 720 260" width="720" xmlns="http://www.w3.org/2000/svg">
+                <g font-family="ui-sans-serif,system-ui,sans-serif" font-size="12" fill="#eceff1">
+                  <text x="360" y="20" text-anchor="middle" font-size="11" fill="#9aa1a6">recherche du minimum puis échange</text>
+
+                  <!-- État de départ -->
+                  <text x="30" y="60" font-size="10" fill="#9aa1a6">départ</text>
+                  <g transform="translate(90, 42)">
+                    <rect x="0" y="0" width="70" height="40" rx="5" fill="#1c1c1c" stroke="#3b82f6" stroke-width="2"/>
+                    <text x="35" y="25" text-anchor="middle" font-size="14" fill="#3b82f6">5</text>
+                    <rect x="75" y="0" width="70" height="40" rx="5" fill="#1c1c1c" stroke="#ef4444" stroke-width="2"/>
+                    <text x="105" y="25" text-anchor="middle" font-size="14" fill="#ef4444">1</text>
+                    <rect x="150" y="0" width="70" height="40" rx="5" fill="#1c1c1c" stroke="#2a2d30"/>
+                    <text x="185" y="25" text-anchor="middle" font-size="14">4</text>
+                    <rect x="225" y="0" width="70" height="40" rx="5" fill="#1c1c1c" stroke="#2a2d30"/>
+                    <text x="260" y="25" text-anchor="middle" font-size="14">2</text>
+                    <rect x="300" y="0" width="70" height="40" rx="5" fill="#1c1c1c" stroke="#2a2d30"/>
+                    <text x="335" y="25" text-anchor="middle" font-size="14">8</text>
+                    <text x="35" y="58" text-anchor="middle" font-size="9" fill="#3b82f6">i=0</text>
+                    <text x="105" y="58" text-anchor="middle" font-size="9" fill="#ef4444">min trouvé</text>
+                  </g>
+
+                  <!-- Après échange -->
+                  <text x="30" y="135" font-size="10" fill="#9aa1a6">échange 5 ↔ 1</text>
+                  <g transform="translate(90, 117)">
+                    <rect x="0" y="0" width="70" height="40" rx="5" fill="#1c1c1c" stroke="#3ecf8e" stroke-width="2"/>
+                    <text x="35" y="25" text-anchor="middle" font-size="14" fill="#3ecf8e">1</text>
+                    <rect x="75" y="0" width="70" height="40" rx="5" fill="#1c1c1c" stroke="#3b82f6" stroke-width="2"/>
+                    <text x="105" y="25" text-anchor="middle" font-size="14" fill="#3b82f6">5</text>
+                    <rect x="150" y="0" width="70" height="40" rx="5" fill="#1c1c1c" stroke="#2a2d30"/>
+                    <text x="185" y="25" text-anchor="middle" font-size="14">4</text>
+                    <rect x="225" y="0" width="70" height="40" rx="5" fill="#1c1c1c" stroke="#2a2d30"/>
+                    <text x="260" y="25" text-anchor="middle" font-size="14">2</text>
+                    <rect x="300" y="0" width="70" height="40" rx="5" fill="#1c1c1c" stroke="#2a2d30"/>
+                    <text x="335" y="25" text-anchor="middle" font-size="14">8</text>
+                    <text x="35" y="58" text-anchor="middle" font-size="9" fill="#3ecf8e">trié</text>
+                    <text x="105" y="58" text-anchor="middle" font-size="9" fill="#3b82f6">i=1</text>
+                  </g>
+
+                  <!-- Après tour 2 -->
+                  <text x="30" y="210" font-size="10" fill="#9aa1a6">échange 5 ↔ 2</text>
+                  <g transform="translate(90, 192)">
+                    <rect x="0" y="0" width="70" height="40" rx="5" fill="#1c1c1c" stroke="#3ecf8e" stroke-width="2"/>
+                    <text x="35" y="25" text-anchor="middle" font-size="14" fill="#3ecf8e">1</text>
+                    <rect x="75" y="0" width="70" height="40" rx="5" fill="#1c1c1c" stroke="#3ecf8e" stroke-width="2"/>
+                    <text x="105" y="25" text-anchor="middle" font-size="14" fill="#3ecf8e">2</text>
+                    <rect x="150" y="0" width="70" height="40" rx="5" fill="#1c1c1c" stroke="#2a2d30"/>
+                    <text x="185" y="25" text-anchor="middle" font-size="14">4</text>
+                    <rect x="225" y="0" width="70" height="40" rx="5" fill="#1c1c1c" stroke="#2a2d30"/>
+                    <text x="260" y="25" text-anchor="middle" font-size="14">5</text>
+                    <rect x="300" y="0" width="70" height="40" rx="5" fill="#1c1c1c" stroke="#2a2d30"/>
+                    <text x="335" y="25" text-anchor="middle" font-size="14">8</text>
+                    <text x="35" y="58" text-anchor="middle" font-size="9" fill="#3ecf8e">trié</text>
+                    <text x="105" y="58" text-anchor="middle" font-size="9" fill="#3ecf8e">trié</text>
+                  </g>
+                </g>
+              </svg>
+            </div>
+
+            <p class="sub">Après <code>i</code> tours, les <code>i + 1</code> premiers éléments sont à leur place définitive. La zone triée grandit de gauche à droite.</p>
+          </div>
+
+          <!-- 3. Tri par insertion -->
+          <div class="lesson-section">
+            <h2><span class="num">3</span>Le tri par insertion</h2>
+            <p>Plus subtil : on parcourt le tableau de gauche à droite, et pour chaque élément, on le fait <strong>remonter</strong> vers la gauche tant que ses voisins sont plus grands que lui.</p>
+            <p class="sub">C'est exactement ce qu'on fait quand on trie des cartes à jouer : on prend une carte et on l'insère dans la main déjà triée, au bon endroit.</p>
+
+            <div class="exemple-box">  <span class="kw">fonction</span> triInsertion(tab)
+      n <span class="cmt">←</span> longueur(tab)
+      <span class="kw">Pour</span> i <span class="kw">de</span> 1 <span class="kw">à</span> n - 1 <span class="kw">faire</span>
+          valeur <span class="cmt">←</span> tab[i]
+          j <span class="cmt">←</span> i - 1
+          <span class="cmt">// tant que le voisin de gauche est plus grand</span>
+          <span class="kw">Tant que</span> j &gt;= 0 <span class="kw">ET</span> tab[j] &gt; valeur <span class="kw">faire</span>
+              tab[j + 1] <span class="cmt">←</span> tab[j]      <span class="cmt">// décaler à droite</span>
+              j <span class="cmt">←</span> j - 1
+          <span class="kw">Fin Tant que</span>
+          tab[j + 1] <span class="cmt">←</span> valeur         <span class="cmt">// insérer à sa place</span>
+      <span class="kw">Fin Pour</span>
+      <span class="kw">Retourner</span> tab
+  <span class="kw">Fin fonction</span></div>
+
+            <div class="diagram-card">
+              <svg viewBox="0 0 720 240" width="720" xmlns="http://www.w3.org/2000/svg">
+                <g font-family="ui-sans-serif,system-ui,sans-serif" font-size="12" fill="#eceff1">
+                  <text x="360" y="20" text-anchor="middle" font-size="11" fill="#9aa1a6">insérer 4 dans [1, 5 | 4, 2, 8] → remonter 4 avant 5</text>
+
+                  <g transform="translate(90, 50)">
+                    <rect x="0" y="0" width="70" height="40" rx="5" fill="#0d2818" stroke="#3ecf8e" stroke-width="2"/>
+                    <text x="35" y="25" text-anchor="middle" font-size="14" fill="#3ecf8e">1</text>
+                    <rect x="75" y="0" width="70" height="40" rx="5" fill="#0d2818" stroke="#3ecf8e" stroke-width="2"/>
+                    <text x="105" y="25" text-anchor="middle" font-size="14" fill="#3ecf8e">5</text>
+                    <rect x="150" y="0" width="70" height="40" rx="5" fill="#1c1c1c" stroke="#3b82f6" stroke-width="2.5">
+                      <animate attributeName="stroke-opacity" values="1;0.4;1" dur="1.5s" repeatCount="indefinite"/>
+                    </rect>
+                    <text x="185" y="25" text-anchor="middle" font-size="14" fill="#3b82f6">4</text>
+                    <rect x="225" y="0" width="70" height="40" rx="5" fill="#1c1c1c" stroke="#2a2d30"/>
+                    <text x="260" y="25" text-anchor="middle" font-size="14">2</text>
+                    <rect x="300" y="0" width="70" height="40" rx="5" fill="#1c1c1c" stroke="#2a2d30"/>
+                    <text x="335" y="25" text-anchor="middle" font-size="14">8</text>
+                    <text x="105" y="58" text-anchor="middle" font-size="9" fill="#3ecf8e">déjà trié</text>
+                    <text x="185" y="58" text-anchor="middle" font-size="9" fill="#3b82f6">à insérer</text>
+                    <text x="260" y="58" text-anchor="middle" font-size="9" fill="#6b7280">reste à traiter</text>
+                  </g>
+
+                  <text x="360" y="140" text-anchor="middle" font-size="10" fill="#9aa1a6">5 est plus grand que 4 → on décale 5 à droite</text>
+
+                  <g transform="translate(90, 160)">
+                    <rect x="0" y="0" width="70" height="40" rx="5" fill="#0d2818" stroke="#3ecf8e" stroke-width="2"/>
+                    <text x="35" y="25" text-anchor="middle" font-size="14" fill="#3ecf8e">1</text>
+                    <rect x="75" y="0" width="70" height="40" rx="5" fill="#1c1c1c" stroke="#3b82f6" stroke-width="2.5">
+                      <animate attributeName="stroke-opacity" values="1;0.4;1" dur="1.5s" repeatCount="indefinite"/>
+                    </rect>
+                    <text x="105" y="25" text-anchor="middle" font-size="14" fill="#3b82f6">4</text>
+                    <rect x="150" y="0" width="70" height="40" rx="5" fill="#0d2818" stroke="#3ecf8e" stroke-width="2"/>
+                    <text x="185" y="25" text-anchor="middle" font-size="14" fill="#3ecf8e">5</text>
+                    <rect x="225" y="0" width="70" height="40" rx="5" fill="#1c1c1c" stroke="#2a2d30"/>
+                    <text x="260" y="25" text-anchor="middle" font-size="14">2</text>
+                    <rect x="300" y="0" width="70" height="40" rx="5" fill="#1c1c1c" stroke="#2a2d30"/>
+                    <text x="335" y="25" text-anchor="middle" font-size="14">8</text>
+                    <text x="35" y="58" text-anchor="middle" font-size="9" fill="#3ecf8e">trié</text>
+                    <text x="105" y="58" text-anchor="middle" font-size="9" fill="#3b82f6">inséré</text>
+                    <text x="185" y="58" text-anchor="middle" font-size="9" fill="#3ecf8e">trié</text>
+                  </g>
+                </g>
+              </svg>
+            </div>
+          </div>
+
+          <!-- 4. Comparaison -->
+          <div class="lesson-section">
+            <h2><span class="num">4</span>Lesquels utiliser ?</h2>
+
+            <table style="width:100%; border-collapse:collapse; font-size:12.5px; margin-top:8px;">
+              <thead>
+                <tr style="text-align:left; color:var(--text-lo);">
+                  <th style="padding:6px 8px; border-bottom:1px solid var(--border);">Critère</th>
+                  <th style="padding:6px 8px; border-bottom:1px solid var(--border);">Sélection</th>
+                  <th style="padding:6px 8px; border-bottom:1px solid var(--border);">Insertion</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td style="padding:6px 8px; border-bottom:1px solid var(--border);">Complexité (pire cas)</td>
+                  <td style="padding:6px 8px; border-bottom:1px solid var(--border);">O(n²)</td>
+                  <td style="padding:6px 8px; border-bottom:1px solid var(--border);">O(n²)</td>
+                </tr>
+                <tr>
+                  <td style="padding:6px 8px; border-bottom:1px solid var(--border);">Complexité (tableau trié)</td>
+                  <td style="padding:6px 8px; border-bottom:1px solid var(--border); color:#ef4444;">Toujours O(n²)</td>
+                  <td style="padding:6px 8px; border-bottom:1px solid var(--border); color:#3ecf8e;">O(n) — excellent !</td>
+                </tr>
+                <tr>
+                  <td style="padding:6px 8px; border-bottom:1px solid var(--border);">Nombre d'échanges</td>
+                  <td style="padding:6px 8px; border-bottom:1px solid var(--border); color:#3ecf8e;">Au plus n-1</td>
+                  <td style="padding:6px 8px; border-bottom:1px solid var(--border);">Jusqu'à n²/2</td>
+                </tr>
+                <tr>
+                  <td style="padding:6px 8px;">Quand préférer</td>
+                  <td style="padding:6px 8px;">Tableau quelconque, peu importe l'ordre</td>
+                  <td style="padding:6px 8px;">Tableau <strong>presque trié</strong>, ou petit</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- 5. Pièges -->
+          <div class="lesson-section">
+            <h2><span class="num">5</span>Pièges fréquents</h2>
+            <div class="vocab-grid">
+              <div class="vocab-card">
+                <div class="term">Échanger inutilement en sélection</div>
+                <div class="def">Si <code>minIdx == i</code>, inutile de faire l'échange. Le test <code>Si minIdx != i</code> évite un swap inutile.</div>
+              </div>
+              <div class="vocab-card">
+                <div class="term">Oublier <code>j &gt;= 0</code> en insertion</div>
+                <div class="def">Sans la borne <code>j &gt;= 0</code>, le <code>j - 1</code> peut devenir négatif et provoquer un accès hors limites.</div>
+              </div>
+              <div class="vocab-card">
+                <div class="term">Ne pas sauvegarder <code>tab[i]</code></div>
+                <div class="def">En insertion, on <strong>décale</strong> les voisins, donc <code>tab[i]</code> est écrasé. Il faut sauvegarder la valeur dans une variable temporaire avant.</div>
+              </div>
+              <div class="vocab-card">
+                <div class="term">Croire que sélection est meilleur</div>
+                <div class="def">Sélection fait moins d'échanges, mais toujours autant de comparaisons. Insertion est bien meilleur sur les tableaux presque triés.</div>
+              </div>
+              <div class="vocab-card">
+                <div class="term">Confondre tri et recherche</div>
+                <div class="def">Trier = réordonner. Rechercher = trouver. Un tableau trié permet la recherche binaire (leçon 21), mais trier coûte O(n²) ou O(n log n) selon l'algo.</div>
+              </div>
+              <div class="vocab-card">
+                <div class="term">Appliquer sur des gros volumes</div>
+                <div class="def">Les deux sont en O(n²). Pour 100 000 éléments, c'est irréaliste. Utiliser <code>Array.sort()</code> qui est en O(n log n).</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 6. Exercice -->
+          <div class="lesson-section">
+            <h2><span class="num">6</span>À toi de jouer</h2>
+            <p class="sub">Trois fonctions : les deux algorithmes de tri et un compteur d'échanges pour comparer leurs comportements.</p>
+
+            <div class="exercise-card">
+              <div class="exo-title">Exercice — 3 mini-défis</div>
+              <div class="exo-desc">Enchaîne ces 3 fonctions dans le terminal, dans l'ordre :</div>
+              <ul class="exo-tests">
+                <li>• <code>triSelection(tab)</code> — renvoie une <strong>copie</strong> triée croissante par sélection</li>
+                <li>• <code>triInsertion(tab)</code> — renvoie une <strong>copie</strong> triée croissante par insertion</li>
+                <li>• <code>compterEchangesInsertion(tab)</code> — renvoie le nombre de décalages effectués par l'algorithme d'insertion</li>
+              </ul>
+              <ul class="exo-tests">
+                <li>• Indices : <code>[...tab]</code>, double boucle, boucle <code>while</code> interne</li>
+                <li>• <code>triSelection([5,1,4,2,8])</code> → <code>[1,2,4,5,8]</code></li>
+                <li>• Un tableau déjà trié <code>[1,2,3]</code> fait 0 échange en insertion</li>
+                <li>• Tape <code>valider</code> après chaque fonction pour débloquer la suivante</li>
+                <li>• Tape <code>aide</code> à tout moment, ou <code>clear</code> pour nettoyer l'écran</li>
+              </ul>
+            </div>
+          </div>
+
+          </div>
+          <!-- /.lesson-main -->
+
+          <aside class="lesson-side">
+            <div class="exercise-card side-text">
+              <div class="exo-title">Objectif</div>
+              <div class="exo-desc" id="side-objective-desc">1/3 — Implémente triSelection(tab) : copie triée par sélection.</div>
+              <ul class="exo-tests">
+                <li>• <code>valider</code> → lance les tests</li>
+                <li>• <code>aide</code> → revoir la consigne</li>
+                <li>• <code>clear</code> → nettoyer l'écran</li>
+              </ul>
+            </div>
+            <div class="exercise-card side-terminal">
+              <div class="exo-title">&gt;_ Terminal</div>
+              <div id="terminal-wrap">
+                <div id="terminal"></div>
+              </div>
+              <div class="term-toolbar">
+                <button type="button" class="btn btn-outline" id="btn-clear">Effacer</button>
+                <button type="button" class="btn btn-primary" id="btn-valider">Valider</button>
+              </div>
+            </div>
+          </aside>
+
+          </div>
+          <!-- /.lesson-layout -->
+
+          <div class="lock-row unlocked" id="lesson24-row">
+            <div>
+              <div class="lr-title">
+                <svg class="lock-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10" width="16" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>
+                Leçon 24 — La récursivité (introduction)
+              </div>
+              <div class="lr-sub" id="lesson24-sub">Valide les 3 exercices ci-dessus pour débloquer cette leçon.</div>
+            </div>
+            <div style="display:flex;gap:8px;">
+              <button type="button" class="btn btn-outline" id="btn-prev-lesson">← Précédent</button>
+              <button type="button" class="btn btn-outline" id="btn-next-lesson" aria-disabled="false">Continuer</button>
+            </div>
+          </div>
+
+        </div>
+      </main>
+    </div>
+  </div>
+
+<script src="../vendor/xterm.js"></script>
+<script src="../supabase-js.min.js"></script>
+<script src="../supabase-config.js"></script>
+<script src="../script.js"></script>
+<script src="../app.js"></script>
+<script src="../partials.js"></script>
+
+<script>
+(function () {
+  const PROGRESS_KEY = 'technophile_algo_progress';
+  const globalEval = (0, eval);
+
+  function getProgress() {
+    try { return JSON.parse(localStorage.getItem(PROGRESS_KEY)) || {}; } catch { return {}; }
+  }
+  function setProgress(p) { localStorage.setItem(PROGRESS_KEY, JSON.stringify(p)); }
+
+  const term = new Terminal({
+    theme: {
+      background: '#0a0b0c',
+      foreground: '#eceff1',
+      cursor: '#3ecf8e',
+      green: '#3ecf8e',
+      red: '#ef4444'
+    },
+    fontSize: 13,
+    fontFamily: 'ui-monospace, monospace',
+    cursorBlink: true,
+    convertEol: true,
+    cols: 40,
+    rows: 20
+  });
+  term.open(document.getElementById('terminal'));
+
+  const EXERCISES = [
+    { fn: 'triSelection', desc: "1/3 — Implémente triSelection(tab) : copie triée par sélection.",
+      cases: [
+        {args:[[5,1,4,2,8]], expected:[1,2,4,5,8]},
+        {args:[[3,2,1]], expected:[1,2,3]},
+        {args:[[1]], expected:[1]},
+        {args:[[]], expected:[]},
+        {args:[[2,2,1]], expected:[1,2,2]}
+      ] },
+    { fn: 'triInsertion', desc: "2/3 — Implémente triInsertion(tab) : copie triée par insertion.",
+      cases: [
+        {args:[[5,1,4,2,8]], expected:[1,2,4,5,8]},
+        {args:[[3,2,1]], expected:[1,2,3]},
+        {args:[[1,2,3]], expected:[1,2,3]},
+        {args:[[9,8,7,6,5,4,3,2,1]], expected:[1,2,3,4,5,6,7,8,9]}
+      ] },
+    { fn: 'compterEchangesInsertion', desc: "3/3 — Implémente compterEchangesInsertion(tab) : nombre de décalages.",
+      cases: [
+        {args:[[1,2,3]], expected:0},
+        {args:[[3,2,1]], expected:3},
+        {args:[[2,1]], expected:1},
+        {args:[[1]], expected:0},
+        {args:[[]], expected:0}
+      ] }
+  ];
+  let exerciseIndex = 0;
+  function currentExercise() { return EXERCISES[exerciseIndex] || null; }
+
+  function updateSidebarObjective() {
+    const descEl = document.getElementById('side-objective-desc');
+    if (!descEl) return;
+    const ex = currentExercise();
+    descEl.textContent = ex ? ex.desc : 'Tous les exercices sont validés. Bravo !';
+  }
+
+  let buffer = '';
+  const PROMPT = '\x1b[32malgo>\x1b[0m ';
+
+  function prompt() { term.write('\r\n' + PROMPT); }
+
+  function printHelp() {
+    const ex = currentExercise();
+    const msg = ex ? ex.desc : 'Tous les exercices sont validés.';
+    term.write('\r\n' + msg + "\r\nCommandes : 'valider' pour tester, 'clear' pour nettoyer, 'aide' pour revoir ceci.\r\n");
+  }
+
+  function arraysEqual(a, b) {
+    if (!Array.isArray(a) || !Array.isArray(b)) return false;
+    if (a.length !== b.length) return false;
+    for (let i = 0; i < a.length; i++) if (a[i] !== b[i]) return false;
+    return true;
+  }
+
+  function runValidation() {
+    term.write('\r\n');
+    const ex = currentExercise();
+    if (!ex) {
+      term.write('\x1b[32mTout est déjà validé !\x1b[0m\r\n');
+      prompt();
+      return;
+    }
+    const fn = window[ex.fn];
+    if (typeof fn !== 'function') {
+      term.write(`\x1b[31m✗ La fonction ${ex.fn}(...) n'existe pas encore. Écris-la d'abord.\x1b[0m\r\n`);
+      prompt();
+      return;
+    }
+    let allOk = true;
+    ex.cases.forEach(c => {
+      let got, ok;
+      try {
+        got = fn(...c.args);
+        ok = Array.isArray(c.expected) ? arraysEqual(got, c.expected) : got === c.expected;
+      } catch (e) {
+        got = 'erreur: ' + e.message;
+        ok = false;
+      }
+      if (!ok) allOk = false;
+      const mark = ok ? '\x1b[32m✓\x1b[0m' : '\x1b[31m✗\x1b[0m';
+      term.write(`${mark} ${ex.fn}(${c.args.map(a => JSON.stringify(a)).join(', ')}) → attendu ${JSON.stringify(c.expected)}, obtenu ${JSON.stringify(got)}\r\n`);
+    });
+
+    if (allOk) {
+      exerciseIndex++;
+      if (currentExercise()) {
+        term.write(`\r\n\x1b[32mBravo, exercice ${exerciseIndex}/${EXERCISES.length} validé !\x1b[0m\r\n`);
+        updateSidebarObjective();
+        printHelp();
+      } else {
+        term.write('\r\n\x1b[32mBravo, les 3 exercices sont validés ! La leçon 24 est débloquée.\x1b[0m\r\n');
+        const p = getProgress();
+        p.lesson23 = true;
+        setProgress(p);
+        unlockNext();
+        updateSidebarObjective();
+        if (typeof showToast === 'function') showToast('Leçon 23 validée !');
+      }
+    } else {
+      term.write('\r\n\x1b[31mPas encore bon, corrige et retape "valider".\x1b[0m\r\n');
+    }
+    prompt();
+  }
+
+  function execLine(line) {
+    const trimmed = line.trim();
+    if (trimmed === 'valider') { runValidation(); return; }
+    if (trimmed === 'clear' || trimmed === 'cls') { term.clear(); prompt(); return; }
+    if (trimmed === 'aide' || trimmed === 'help') { printHelp(); prompt(); return; }
+    if (trimmed === '') { prompt(); return; }
+
+    try {
+      const result = globalEval(trimmed);
+      if (result !== undefined) {
+        term.write('\r\n' + JSON.stringify(result));
+      }
+    } catch (e) {
+      term.write('\r\n\x1b[31m' + e.message + '\x1b[0m');
+    }
+    prompt();
+  }
+
+  term.onData(data => {
+    const code = data.charCodeAt(0);
+    if (code === 13) {
+      const line = buffer;
+      buffer = '';
+      execLine(line);
+    } else if (code === 127) {
+      if (buffer.length > 0) {
+        buffer = buffer.slice(0, -1);
+        term.write('\b \b');
+      }
+    } else if (code < 32) {
+      // ignore
+    } else {
+      buffer += data;
+      term.write(data);
+    }
+  });
+
+  term.write('\x1b[32mTerminal algo — technophile\x1b[0m\r\n');
+  printHelp();
+  prompt();
+
+  document.getElementById('btn-clear').addEventListener('click', () => { term.clear(); prompt(); term.focus(); });
+  document.getElementById('btn-valider').addEventListener('click', () => { execLine('valider'); term.focus(); });
+
+  function unlockNext() {
+    const row = document.getElementById('lesson24-row');
+    const btn = document.getElementById('btn-next-lesson');
+    const sub = document.getElementById('lesson24-sub');
+    row.classList.add('unlocked');
+    btn.setAttribute('aria-disabled', 'false');
+    sub.textContent = 'Débloquée — tu peux continuer.';
+  }
+
+  document.getElementById('btn-prev-lesson').addEventListener('click', () => {
+    location.href = 'lecon-algo-22.html';
+  });
+
+  document.getElementById('btn-next-lesson').addEventListener('click', (e) => {
+    if (e.currentTarget.getAttribute('aria-disabled') === 'true') {
+      if (typeof showToast === 'function') showToast('Valide les 3 exercices pour débloquer');
+      return;
+    }
+    if (typeof showToast === 'function') showToast('Leçon 24 en préparation');
+  });
+
+  if (getProgress().lesson23) unlockNext();
+})();
+</script>
+
+</body>
+</html>

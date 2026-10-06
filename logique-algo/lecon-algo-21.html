@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Leçon 21 — Rechercher dans un tableau - technophile</title>
+  <link rel="stylesheet" href="../style.css">
+  <link rel="stylesheet" href="../vendor/xterm.css">
+  <link rel="stylesheet" href="../css/lesson.css">
+</head>
+<body>
+
+  <div class="app-layout">
+    <div class="rail"></div>
+
+    <div class="app-main">
+      <header class="app-topbar">
+        <div class="breadcrumb">
+          <span>technophile</span><span>/</span>
+          <span>Logique algorithmique</span><span>/</span>
+          <span style="color:var(--text-hi);font-weight:500;">Leçon 21</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:14px;">
+          <div class="avatar" style="cursor:pointer;" onclick="location.href='../profile.html'">R</div>
+        </div>
+      </header>
+
+      <main class="app-center">
+        <div class="page-wrap">
+
+          <div class="lesson-head">
+            <div class="eyebrow">Algorithmes classiques — Leçon 21</div>
+            <h1>Rechercher dans un tableau</h1>
+            <p>Trouver une valeur dans une collection est l'une des opérations les plus fréquentes. Il existe deux grandes stratégies : la <strong>recherche linéaire</strong> (simple mais lente) et la <strong>recherche binaire</strong> (rapide mais conditionnelle). Choisir la bonne fait toute la différence.</p>
+          </div>
+
+          <div class="lesson-layout">
+          <div class="lesson-main">
+
+          <!-- 1. Le problème -->
+          <div class="lesson-section">
+            <h2><span class="num">1</span>Pourquoi chercher ?</h2>
+            <p>Imaginez un annuaire de 10 000 contacts, ou un catalogue de 50 000 produits. À chaque fois qu'un utilisateur fait une recherche, il faut retrouver une entrée précise. La méthode utilisée détermine si la réponse arrive en 1 milliseconde ou en 30 secondes.</p>
+            <p class="sub">Pour de petits tableaux, peu importe. Pour de grands tableaux, la différence entre un mauvais algorithme et un bon peut être un facteur 1000 en performance.</p>
+
+            <div class="vocab-grid">
+              <div class="vocab-card">
+                <div class="term">Recherche linéaire</div>
+                <div class="def">On parcourt chaque élément un par un jusqu'à trouver la valeur. Fonctionne <strong>toujours</strong>, mais devient lent pour les grands tableaux.</div>
+              </div>
+              <div class="vocab-card">
+                <div class="term">Recherche binaire</div>
+                <div class="def">On divise l'espace de recherche en deux à chaque étape. Ultra-rapide, mais <strong>exige</strong> que le tableau soit déjà <strong>trié</strong>.</div>
+              </div>
+              <div class="vocab-card">
+                <div class="term">Sentinel / valeur cible</div>
+                <div class="def">La valeur qu'on cherche. Par convention, une recherche qui échoue renvoie <code>-1</code> (index invalide) plutôt qu'une erreur.</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 2. Recherche linéaire -->
+          <div class="lesson-section">
+            <h2><span class="num">2</span>La recherche linéaire</h2>
+            <p>L'idée la plus simple possible : on parcourt le tableau de gauche à droite, on compare chaque élément à la cible, et on s'arrête dès qu'on la trouve (ou à la fin si on ne la trouve pas).</p>
+
+            <div class="exemple-box">  <span class="kw">fonction</span> chercherLineaire(tab, cible)
+      <span class="kw">Pour</span> i <span class="kw">de</span> 0 <span class="kw">à</span> longueur(tab) - 1 <span class="kw">faire</span>
+          <span class="kw">Si</span> tab[i] == cible <span class="kw">alors</span>
+              <span class="kw">Retourner</span> i     <span class="cmt">// trouvé à l'index i</span>
+          <span class="kw">Fin Si</span>
+      <span class="kw">Fin Pour</span>
+      <span class="kw">Retourner</span> -1          <span class="cmt">// pas trouvé</span>
+  <span class="kw">Fin fonction</span>
+
+  <span class="cmt">// Utilisation</span>
+  chercherLineaire([10, 25, 3, 47, 8], 47)  <span class="cmt">// → 3</span>
+  chercherLineaire([10, 25, 3, 47, 8], 99)  <span class="cmt">// → -1</span></div>
+
+            <div class="diagram-card">
+              <svg viewBox="0 0 620 220" width="620" xmlns="http://www.w3.org/2000/svg">
+                <g font-family="ui-sans-serif,system-ui,sans-serif" font-size="11" fill="#eceff1">
+                  <text x="310" y="20" text-anchor="middle" font-size="11" fill="#9aa1a6">on avance un par un jusqu'à trouver 47</text>
+
+                  <rect x="20" y="60" width="100" height="50" rx="6" fill="#1c1c1c" stroke="#2a2d30"/>
+                  <text x="70" y="90" text-anchor="middle" font-size="15">10</text>
+                  <text x="70" y="128" text-anchor="middle" font-size="10" fill="#9aa1a6">i=0</text>
+                  <text x="70" y="145" text-anchor="middle" font-size="10" fill="#ef4444">≠</text>
+
+                  <rect x="130" y="60" width="100" height="50" rx="6" fill="#1c1c1c" stroke="#2a2d30"/>
+                  <text x="180" y="90" text-anchor="middle" font-size="15">25</text>
+                  <text x="180" y="128" text-anchor="middle" font-size="10" fill="#9aa1a6">i=1</text>
+                  <text x="180" y="145" text-anchor="middle" font-size="10" fill="#ef4444">≠</text>
+
+                  <rect x="240" y="60" width="100" height="50" rx="6" fill="#1c1c1c" stroke="#2a2d30"/>
+                  <text x="290" y="90" text-anchor="middle" font-size="15">3</text>
+                  <text x="290" y="128" text-anchor="middle" font-size="10" fill="#9aa1a6">i=2</text>
+                  <text x="290" y="145" text-anchor="middle" font-size="10" fill="#ef4444">≠</text>
+
+                  <rect x="350" y="60" width="100" height="50" rx="6" fill="#1c1c1c" stroke="#3ecf8e" stroke-width="2.5">
+                    <animate attributeName="stroke-opacity" values="1;0.5;1" dur="1.5s" repeatCount="indefinite"/>
+                  </rect>
+                  <text x="400" y="90" text-anchor="middle" font-size="15" fill="#3ecf8e" font-weight="700">47</text>
+                  <text x="400" y="128" text-anchor="middle" font-size="10" fill="#3ecf8e">i=3</text>
+                  <text x="400" y="145" text-anchor="middle" font-size="10" fill="#3ecf8e">✓</text>
+
+                  <rect x="460" y="60" width="100" height="50" rx="6" fill="#1c1c1c" stroke="#2a2d30" opacity="0.35"/>
+                  <text x="510" y="90" text-anchor="middle" font-size="15" opacity="0.35">8</text>
+                  <text x="510" y="128" text-anchor="middle" font-size="10" fill="#9aa1a6" opacity="0.5">ignoré</text>
+
+                  <text x="310" y="185" text-anchor="middle" font-size="10" fill="#9aa1a6">4 comparaisons avant de trouver — on s'arrête là</text>
+                </g>
+              </svg>
+            </div>
+
+            <p class="sub">Le <code>Retourner</code> dans la boucle est essentiel : dès qu'on a trouvé, on sort immédiatement. Sans lui, on continuerait inutilement le reste du parcours.</p>
+          </div>
+
+          <!-- 3. Recherche binaire -->
+          <div class="lesson-section">
+            <h2><span class="num">3</span>La recherche binaire</h2>
+            <p>Si le tableau est <strong>trié</strong>, on peut faire beaucoup mieux. On regarde l'élément du <em>milieu</em> :</p>
+            <ul>
+              <li>Si c'est la cible → trouvé !</li>
+              <li>Si la cible est plus petite → elle est dans la moitié gauche.</li>
+              <li>Si la cible est plus grande → elle est dans la moitié droite.</li>
+            </ul>
+            <p>On recommence sur la moitié retenue. À chaque étape, on élimine la moitié des éléments restants.</p>
+
+            <div class="exemple-box">  <span class="kw">fonction</span> chercherBinaire(tab, cible)
+      gauche <span class="cmt">←</span> 0
+      droite <span class="cmt">←</span> longueur(tab) - 1
+
+      <span class="kw">Tant que</span> gauche &lt;= droite <span class="kw">faire</span>
+          milieu <span class="cmt">←</span> (gauche + droite) / 2
+          <span class="kw">Si</span> tab[milieu] == cible <span class="kw">alors</span>
+              <span class="kw">Retourner</span> milieu
+          <span class="kw">Sinon Si</span> tab[milieu] &lt; cible <span class="kw">alors</span>
+              gauche <span class="cmt">←</span> milieu + 1    <span class="cmt">// cherche à droite</span>
+          <span class="kw">Sinon</span>
+              droite <span class="cmt">←</span> milieu - 1    <span class="cmt">// cherche à gauche</span>
+          <span class="kw">Fin Si</span>
+      <span class="kw">Fin Tant que</span>
+
+      <span class="kw">Retourner</span> -1
+  <span class="kw">Fin fonction</span>
+
+  <span class="cmt">// Le tableau DOIT être trié</span>
+  chercherBinaire([3, 8, 10, 25, 47], 25)  <span class="cmt">// → 3</span></div>
+
+            <div class="diagram-card">
+              <svg viewBox="0 0 720 300" width="720" xmlns="http://www.w3.org/2000/svg">
+                <g font-family="ui-sans-serif,system-ui,sans-serif" font-size="11" fill="#eceff1">
+                  <text x="360" y="20" text-anchor="middle" font-size="11" fill="#9aa1a6">chercher 25 dans [3, 8, 10, 25, 47, 60, 89]</text>
+
+                  <!-- Étape 1 -->
+                  <text x="30" y="60" font-size="10" fill="#9aa1a6">Étape 1</text>
+                  <g transform="translate(90, 40)">
+                    <rect x="0" y="0" width="60" height="40" rx="4" fill="#1c1c1c" stroke="#2a2d30"/>
+                    <text x="30" y="25" text-anchor="middle" font-size="13">3</text>
+                    <rect x="65" y="0" width="60" height="40" rx="4" fill="#1c1c1c" stroke="#2a2d30"/>
+                    <text x="95" y="25" text-anchor="middle" font-size="13">8</text>
+                    <rect x="130" y="0" width="60" height="40" rx="4" fill="#1c1c1c" stroke="#2a2d30"/>
+                    <text x="160" y="25" text-anchor="middle" font-size="13">10</text>
+                    <rect x="195" y="0" width="60" height="40" rx="4" fill="#1c1c1c" stroke="#3b82f6" stroke-width="2"/>
+                    <text x="225" y="25" text-anchor="middle" font-size="13" fill="#3b82f6">25</text>
+                    <rect x="260" y="0" width="60" height="40" rx="4" fill="#1c1c1c" stroke="#2a2d30"/>
+                    <text x="290" y="25" text-anchor="middle" font-size="13">47</text>
+                    <rect x="325" y="0" width="60" height="40" rx="4" fill="#1c1c1c" stroke="#2a2d30"/>
+                    <text x="355" y="25" text-anchor="middle" font-size="13">60</text>
+                    <rect x="390" y="0" width="60" height="40" rx="4" fill="#1c1c1c" stroke="#2a2d30"/>
+                    <text x="420" y="25" text-anchor="middle" font-size="13">89</text>
+                    <text x="225" y="58" text-anchor="middle" font-size="9" fill="#3b82f6">milieu (index 3) → 25, c'est trouvé !</text>
+                  </g>
+
+                  <text x="360" y="130" text-anchor="middle" font-size="10" fill="#9aa1a6">avec un seul test, on a trouvé — la recherche linéaire aurait fait 4 tests</text>
+
+                  <!-- Exemple 2 : chercher 89 -->
+                  <text x="30" y="170" font-size="10" fill="#9aa1a6">Exemple : chercher 89</text>
+
+                  <!-- Étape 1 -->
+                  <text x="30" y="200" font-size="10" fill="#6b7280">1/3</text>
+                  <g transform="translate(80, 185)" font-size="11">
+                    <rect x="0" y="0" width="40" height="26" rx="3" fill="#1c1c1c" stroke="#6b7280" opacity="0.4"/>
+                    <text x="20" y="17" text-anchor="middle" fill="#6b7280" opacity="0.5">3</text>
+                    <rect x="45" y="0" width="40" height="26" rx="3" fill="#1c1c1c" stroke="#6b7280" opacity="0.4"/>
+                    <text x="65" y="17" text-anchor="middle" fill="#6b7280" opacity="0.5">8</text>
+                    <rect x="90" y="0" width="40" height="26" rx="3" fill="#1c1c1c" stroke="#6b7280" opacity="0.4"/>
+                    <text x="110" y="17" text-anchor="middle" fill="#6b7280" opacity="0.5">10</text>
+                    <rect x="135" y="0" width="40" height="26" rx="3" fill="#1c1c1c" stroke="#3b82f6" stroke-width="2"/>
+                    <text x="155" y="17" text-anchor="middle" fill="#3b82f6">25</text>
+                    <rect x="180" y="0" width="40" height="26" rx="3" fill="#1c1c1c" stroke="#3ecf8e"/>
+                    <text x="200" y="17" text-anchor="middle">47</text>
+                    <rect x="225" y="0" width="40" height="26" rx="3" fill="#1c1c1c" stroke="#3ecf8e"/>
+                    <text x="245" y="17" text-anchor="middle">60</text>
+                    <rect x="270" y="0" width="40" height="26" rx="3" fill="#1c1c1c" stroke="#3ecf8e"/>
+                    <text x="290" y="17" text-anchor="middle">89</text>
+                    <text x="330" y="17" font-size="9" fill="#3b82f6">milieu=25 &lt; 89 → cherche à droite</text>
+                  </g>
+
+                  <!-- Étape 2 -->
+                  <text x="30" y="245" font-size="10" fill="#6b7280">2/3</text>
+                  <g transform="translate(80, 230)" font-size="11">
+                    <rect x="180" y="0" width="40" height="26" rx="3" fill="#1c1c1c" stroke="#6b7280" opacity="0.4"/>
+                    <text x="200" y="17" text-anchor="middle" fill="#6b7280" opacity="0.5">47</text>
+                    <rect x="225" y="0" width="40" height="26" rx="3" fill="#1c1c1c" stroke="#6b7280" opacity="0.4"/>
+                    <text x="245" y="17" text-anchor="middle" fill="#6b7280" opacity="0.5">60</text>
+                    <rect x="270" y="0" width="40" height="26" rx="3" fill="#1c1c1c" stroke="#3b82f6" stroke-width="2"/>
+                    <text x="290" y="17" text-anchor="middle" fill="#3b82f6">89</text>
+                    <text x="330" y="17" font-size="9" fill="#3b82f6">milieu=89 → trouvé !</text>
+                  </g>
+                </g>
+              </svg>
+            </div>
+
+            <p class="sub">Trouver une valeur dans 1000 éléments triés : recherche linéaire fait jusqu'à 1000 tests, recherche binaire en fait au plus 10 (car 2¹⁰ ≈ 1000). Le gain est spectaculaire.</p>
+          </div>
+
+          <!-- 4. Comparaison -->
+          <div class="lesson-section">
+            <h2><span class="num">4</span>Laquelle choisir ?</h2>
+
+            <table style="width:100%; border-collapse:collapse; font-size:12.5px; margin-top:8px;">
+              <thead>
+                <tr style="text-align:left; color:var(--text-lo);">
+                  <th style="padding:6px 8px; border-bottom:1px solid var(--border);">Critère</th>
+                  <th style="padding:6px 8px; border-bottom:1px solid var(--border);">Recherche linéaire</th>
+                  <th style="padding:6px 8px; border-bottom:1px solid var(--border);">Recherche binaire</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td style="padding:6px 8px; border-bottom:1px solid var(--border);">Tableau trié requis ?</td>
+                  <td style="padding:6px 8px; border-bottom:1px solid var(--border); color:#3ecf8e;">Non</td>
+                  <td style="padding:6px 8px; border-bottom:1px solid var(--border); color:#ef4444;">Oui, obligatoire</td>
+                </tr>
+                <tr>
+                  <td style="padding:6px 8px; border-bottom:1px solid var(--border);">Complexité (taille n)</td>
+                  <td style="padding:6px 8px; border-bottom:1px solid var(--border);">O(n) — linéaire</td>
+                  <td style="padding:6px 8px; border-bottom:1px solid var(--border);">O(log n) — logarithmique</td>
+                </tr>
+                <tr>
+                  <td style="padding:6px 8px; border-bottom:1px solid var(--border);">1000 éléments — pire cas</td>
+                  <td style="padding:6px 8px; border-bottom:1px solid var(--border);">1000 tests</td>
+                  <td style="padding:6px 8px; border-bottom:1px solid var(--border);">10 tests</td>
+                </tr>
+                <tr>
+                  <td style="padding:6px 8px;">Quand l'utiliser</td>
+                  <td style="padding:6px 8px;">Petit tableau, ou non trié</td>
+                  <td style="padding:6px 8px;">Grand tableau, déjà trié</td>
+                </tr>
+              </tbody>
+            </table>
+
+            <p class="sub">En pratique : si tu dois faire <strong>une seule</strong> recherche sur un tableau non trié, utilise la recherche linéaire. Si tu dois faire <strong>beaucoup</strong> de recherches, trie d'abord le tableau (coût unique) puis utilise la binaire (gain à chaque recherche).</p>
+          </div>
+
+          <!-- 5. Pièges -->
+          <div class="lesson-section">
+            <h2><span class="num">5</span>Pièges fréquents</h2>
+            <div class="vocab-grid">
+              <div class="vocab-card">
+                <div class="term">Utiliser la binaire sur un tableau non trié</div>
+                <div class="def">Le résultat est <strong>imprévisible</strong> — parfois bon, souvent faux. La recherche binaire suppose que le tableau est trié, sans exception.</div>
+              </div>
+              <div class="vocab-card">
+                <div class="term">Oublier <code>&lt;=</code> dans le while</div>
+                <div class="def"><code>Tant que gauche &lt; droite</code> au lieu de <code>&lt;=</code> rate le cas où la cible est exactement au milieu. Bug silencieux.</div>
+              </div>
+              <div class="vocab-card">
+                <div class="term">Dépassement d'entier</div>
+                <div class="def">Sur de très grands tableaux, <code>(gauche + droite) / 2</code> peut dépasser la capacité des entiers. En pratique en JS on utilise <code>Math.floor((g + d) / 2)</code>.</div>
+              </div>
+              <div class="vocab-card">
+                <div class="term">Retourner <code>-1</code> sans le documenter</div>
+                <div class="def">La convention <code>-1</code> = « pas trouvé » est très répandue mais pas universelle. Toujours documenter ce que renvoie ta fonction.</div>
+              </div>
+              <div class="vocab-card">
+                <div class="term">Continuer après avoir trouvé</div>
+                <div class="def">Dans la recherche linéaire, si on ne <code>Retourne</code> pas dès qu'on trouve, on continue inutilement (et on peut écraser le résultat).</div>
+              </div>
+              <div class="vocab-card">
+                <div class="term">Tester avec un seul cas</div>
+                <div class="def">Toujours tester avec : la cible au début, à la fin, au milieu, absente, tableau vide. Ces cas révèlent 90 % des bugs.</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 6. Exercice -->
+          <div class="lesson-section">
+            <h2><span class="num">6</span>À toi de jouer</h2>
+            <p class="sub">Trois fonctions qui implémentent les deux stratégies de recherche et une variante utile.</p>
+
+            <div class="exercise-card">
+              <div class="exo-title">Exercice — 3 mini-défis</div>
+              <div class="exo-desc">Enchaîne ces 3 fonctions dans le terminal, dans l'ordre :</div>
+              <ul class="exo-tests">
+                <li>• <code>chercherLineaire(tab, cible)</code> — renvoie l'index de <code>cible</code>, ou <code>-1</code></li>
+                <li>• <code>chercherBinaire(tab, cible)</code> — même chose, mais suppose que <code>tab</code> est <strong>trié</strong></li>
+                <li>• <code>contientDoublon(tab)</code> — renvoie <code>true</code> si le tableau contient au moins une valeur en double</li>
+              </ul>
+              <ul class="exo-tests">
+                <li>• Indices : <code>while (g &lt;= d)</code>, <code>Math.floor</code>, <code>new Set(tab).size !== tab.length</code></li>
+                <li>• <code>chercherBinaire([3, 8, 10, 25, 47], 25)</code> → <code>3</code>, <code>chercherBinaire([3, 8, 10], 99)</code> → <code>-1</code></li>
+                <li>• <code>contientDoublon([1,2,3,2])</code> → <code>true</code></li>
+                <li>• Tape <code>valider</code> après chaque fonction pour débloquer la suivante</li>
+                <li>• Tape <code>aide</code> à tout moment, ou <code>clear</code> pour nettoyer l'écran</li>
+              </ul>
+            </div>
+          </div>
+
+          </div>
+          <!-- /.lesson-main -->
+
+          <aside class="lesson-side">
+            <div class="exercise-card side-text">
+              <div class="exo-title">Objectif</div>
+              <div class="exo-desc" id="side-objective-desc">1/3 — Implémente chercherLineaire(tab, cible) : index ou -1.</div>
+              <ul class="exo-tests">
+                <li>• <code>valider</code> → lance les tests</li>
+                <li>• <code>aide</code> → revoir la consigne</li>
+                <li>• <code>clear</code> → nettoyer l'écran</li>
+              </ul>
+            </div>
+            <div class="exercise-card side-terminal">
+              <div class="exo-title">&gt;_ Terminal</div>
+              <div id="terminal-wrap">
+                <div id="terminal"></div>
+              </div>
+              <div class="term-toolbar">
+                <button type="button" class="btn btn-outline" id="btn-clear">Effacer</button>
+                <button type="button" class="btn btn-primary" id="btn-valider">Valider</button>
+              </div>
+            </div>
+          </aside>
+
+          </div>
+          <!-- /.lesson-layout -->
+
+          <div class="lock-row unlocked" id="lesson22-row">
+            <div>
+              <div class="lr-title">
+                <svg class="lock-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10" width="16" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>
+                Leçon 22 — Trier — le tri à bulles
+              </div>
+              <div class="lr-sub" id="lesson22-sub">Valide les 3 exercices ci-dessus pour débloquer cette leçon.</div>
+            </div>
+            <div style="display:flex;gap:8px;">
+              <button type="button" class="btn btn-outline" id="btn-prev-lesson">← Précédent</button>
+              <button type="button" class="btn btn-outline" id="btn-next-lesson" aria-disabled="false">Continuer</button>
+            </div>
+          </div>
+
+        </div>
+      </main>
+    </div>
+  </div>
+
+<script src="../vendor/xterm.js"></script>
+<script src="../supabase-js.min.js"></script>
+<script src="../supabase-config.js"></script>
+<script src="../script.js"></script>
+<script src="../app.js"></script>
+<script src="../partials.js"></script>
+
+<script>
+(function () {
+  const PROGRESS_KEY = 'technophile_algo_progress';
+  const globalEval = (0, eval);
+
+  function getProgress() {
+    try { return JSON.parse(localStorage.getItem(PROGRESS_KEY)) || {}; } catch { return {}; }
+  }
+  function setProgress(p) { localStorage.setItem(PROGRESS_KEY, JSON.stringify(p)); }
+
+  const term = new Terminal({
+    theme: {
+      background: '#0a0b0c',
+      foreground: '#eceff1',
+      cursor: '#3ecf8e',
+      green: '#3ecf8e',
+      red: '#ef4444'
+    },
+    fontSize: 13,
+    fontFamily: 'ui-monospace, monospace',
+    cursorBlink: true,
+    convertEol: true,
+    cols: 40,
+    rows: 20
+  });
+  term.open(document.getElementById('terminal'));
+
+  const EXERCISES = [
+    { fn: 'chercherLineaire', desc: "1/3 — Implémente chercherLineaire(tab, cible) : index ou -1.",
+      cases: [
+        {args:[[10, 25, 3, 47, 8], 47], expected:3},
+        {args:[[10, 25, 3, 47, 8], 99], expected:-1},
+        {args:[[10, 25, 3], 10], expected:0},
+        {args:[[1], 1], expected:0},
+        {args:[[], 5], expected:-1}
+      ] },
+    { fn: 'chercherBinaire', desc: "2/3 — Implémente chercherBinaire(tab, cible) : index ou -1 (tab trié).",
+      cases: [
+        {args:[[3, 8, 10, 25, 47], 25], expected:3},
+        {args:[[3, 8, 10, 25, 47], 3], expected:0},
+        {args:[[3, 8, 10, 25, 47], 47], expected:4},
+        {args:[[3, 8, 10, 25, 47], 99], expected:-1},
+        {args:[[5], 5], expected:0},
+        {args:[[], 1], expected:-1}
+      ] },
+    { fn: 'contientDoublon', desc: "3/3 — Implémente contientDoublon(tab) : true si au moins un doublon.",
+      cases: [
+        {args:[[1,2,3,2]], expected:true},
+        {args:[[1,2,3,4]], expected:false},
+        {args:[[]], expected:false},
+        {args:[[7, 7]], expected:true}
+      ] }
+  ];
+  let exerciseIndex = 0;
+  function currentExercise() { return EXERCISES[exerciseIndex] || null; }
+
+  function updateSidebarObjective() {
+    const descEl = document.getElementById('side-objective-desc');
+    if (!descEl) return;
+    const ex = currentExercise();
+    descEl.textContent = ex ? ex.desc : 'Tous les exercices sont validés. Bravo !';
+  }
+
+  let buffer = '';
+  const PROMPT = '\x1b[32malgo>\x1b[0m ';
+
+  function prompt() { term.write('\r\n' + PROMPT); }
+
+  function printHelp() {
+    const ex = currentExercise();
+    const msg = ex ? ex.desc : 'Tous les exercices sont validés.';
+    term.write('\r\n' + msg + "\r\nCommandes : 'valider' pour tester, 'clear' pour nettoyer, 'aide' pour revoir ceci.\r\n");
+  }
+
+  function runValidation() {
+    term.write('\r\n');
+    const ex = currentExercise();
+    if (!ex) {
+      term.write('\x1b[32mTout est déjà validé !\x1b[0m\r\n');
+      prompt();
+      return;
+    }
+    const fn = window[ex.fn];
+    if (typeof fn !== 'function') {
+      term.write(`\x1b[31m✗ La fonction ${ex.fn}(...) n'existe pas encore. Écris-la d'abord.\x1b[0m\r\n`);
+      prompt();
+      return;
+    }
+    let allOk = true;
+    ex.cases.forEach(c => {
+      let got, ok;
+      try {
+        got = fn(...c.args);
+        ok = got === c.expected;
+      } catch (e) {
+        got = 'erreur: ' + e.message;
+        ok = false;
+      }
+      if (!ok) allOk = false;
+      const mark = ok ? '\x1b[32m✓\x1b[0m' : '\x1b[31m✗\x1b[0m';
+      term.write(`${mark} ${ex.fn}(${c.args.map(a => JSON.stringify(a)).join(', ')}) → attendu ${JSON.stringify(c.expected)}, obtenu ${JSON.stringify(got)}\r\n`);
+    });
+
+    if (allOk) {
+      exerciseIndex++;
+      if (currentExercise()) {
+        term.write(`\r\n\x1b[32mBravo, exercice ${exerciseIndex}/${EXERCISES.length} validé !\x1b[0m\r\n`);
+        updateSidebarObjective();
+        printHelp();
+      } else {
+        term.write('\r\n\x1b[32mBravo, les 3 exercices sont validés ! La leçon 22 est débloquée.\x1b[0m\r\n');
+        const p = getProgress();
+        p.lesson21 = true;
+        setProgress(p);
+        unlockNext();
+        updateSidebarObjective();
+        if (typeof showToast === 'function') showToast('Leçon 21 validée !');
+      }
+    } else {
+      term.write('\r\n\x1b[31mPas encore bon, corrige et retape "valider".\x1b[0m\r\n');
+    }
+    prompt();
+  }
+
+  function execLine(line) {
+    const trimmed = line.trim();
+    if (trimmed === 'valider') { runValidation(); return; }
+    if (trimmed === 'clear' || trimmed === 'cls') { term.clear(); prompt(); return; }
+    if (trimmed === 'aide' || trimmed === 'help') { printHelp(); prompt(); return; }
+    if (trimmed === '') { prompt(); return; }
+
+    try {
+      const result = globalEval(trimmed);
+      if (result !== undefined) {
+        term.write('\r\n' + JSON.stringify(result));
+      }
+    } catch (e) {
+      term.write('\r\n\x1b[31m' + e.message + '\x1b[0m');
+    }
+    prompt();
+  }
+
+  term.onData(data => {
+    const code = data.charCodeAt(0);
+    if (code === 13) {
+      const line = buffer;
+      buffer = '';
+      execLine(line);
+    } else if (code === 127) {
+      if (buffer.length > 0) {
+        buffer = buffer.slice(0, -1);
+        term.write('\b \b');
+      }
+    } else if (code < 32) {
+      // ignore
+    } else {
+      buffer += data;
+      term.write(data);
+    }
+  });
+
+  term.write('\x1b[32mTerminal algo — technophile\x1b[0m\r\n');
+  printHelp();
+  prompt();
+
+  document.getElementById('btn-clear').addEventListener('click', () => { term.clear(); prompt(); term.focus(); });
+  document.getElementById('btn-valider').addEventListener('click', () => { execLine('valider'); term.focus(); });
+
+  function unlockNext() {
+    const row = document.getElementById('lesson22-row');
+    const btn = document.getElementById('btn-next-lesson');
+    const sub = document.getElementById('lesson22-sub');
+    row.classList.add('unlocked');
+    btn.setAttribute('aria-disabled', 'false');
+    sub.textContent = 'Débloquée — tu peux continuer.';
+  }
+
+  document.getElementById('btn-prev-lesson').addEventListener('click', () => {
+    location.href = 'lecon-algo-20.html';
+  });
+
+  document.getElementById('btn-next-lesson').addEventListener('click', (e) => {
+    if (e.currentTarget.getAttribute('aria-disabled') === 'true') {
+      if (typeof showToast === 'function') showToast('Valide les 3 exercices pour débloquer');
+      return;
+    }
+    if (typeof showToast === 'function') showToast('Leçon 22 en préparation');
+  });
+
+  if (getProgress().lesson21) unlockNext();
+})();
+</script>
+
+</body>
+</html>
