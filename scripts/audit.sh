@@ -64,7 +64,22 @@ HITS=$(find . -name "*.bak" -not -path "./.git/*" 2>/dev/null || true)
 if [ -z "$HITS" ]; then ok "Aucun"; else echo "$HITS"; warn "Fichiers .bak à supprimer"; fi
 
 echo ""
-echo "=== 7. Leçons verrouillées ou déverrouillées (info) ==="
+echo "=== 7. Validation HTML5 (html5validator) ==="
+if [ -x "$HOME/.local/bin/html5validator" ]; then
+  HTML_FILES=$(ls *.html logique-algo/*.html 2>/dev/null)
+  HV_OUT=$("$HOME/.local/bin/html5validator" --root . $HTML_FILES 2>&1)
+  if [ -z "$HV_OUT" ]; then
+    ok "Aucune erreur HTML5"
+  else
+    echo "$HV_OUT" | head -20
+    err "Erreurs HTML5 détectées"
+  fi
+else
+  warn "html5validator non installé — ignorer (installer avec: pip install --user --break-system-packages html5validator)"
+fi
+
+echo ""
+echo "=== 8. Leçons verrouillées ou déverrouillées (info) ==="
 LOCKED=$(grep -l 'class="lock-row unlocked"' logique-algo/*.html 2>/dev/null | wc -l)
 TOTAL=$(ls logique-algo/lecon-algo-*.html 2>/dev/null | wc -l)
 echo "  ℹ️  $LOCKED / $TOTAL leçons en mode déverrouillé"
