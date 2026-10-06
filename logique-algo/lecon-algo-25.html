@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Leçon 25 — Complexité algorithmique - technophile</title>
+  <link rel="stylesheet" href="../style.css">
+  <link rel="stylesheet" href="../vendor/xterm.css">
+  <link rel="stylesheet" href="../css/lesson.css">
+</head>
+<body>
+
+  <div class="app-layout">
+    <div class="rail"></div>
+
+    <div class="app-main">
+      <header class="app-topbar">
+        <div class="breadcrumb">
+          <span>technophile</span><span>/</span>
+          <span>Logique algorithmique</span><span>/</span>
+          <span style="color:var(--text-hi);font-weight:500;">Leçon 25</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:14px;">
+          <div class="avatar" style="cursor:pointer;" onclick="location.href='../profile.html'">R</div>
+        </div>
+      </header>
+
+      <main class="app-center">
+        <div class="page-wrap">
+
+          <div class="lesson-head">
+            <div class="eyebrow">Algorithmes classiques — Leçon 25</div>
+            <h1>Complexité algorithmique</h1>
+            <p>Pourquoi certains algorithmes sont-ils rapides et d'autres lents ? La <strong>complexité</strong> mesure comment le temps d'exécution évolue quand la taille des données augmente. C'est la boussole qui guide le choix d'un algorithme.</p>
+          </div>
+
+          <div class="lesson-layout">
+          <div class="lesson-main">
+
+          <!-- 1. Pourquoi mesurer -->
+          <div class="lesson-section">
+            <h2><span class="num">1</span>Pourquoi mesurer la complexité ?</h2>
+            <p>Un algorithme peut sembler rapide sur 10 éléments et devenir catastrophique sur 100 000. La complexité ne mesure pas le temps en secondes — elle mesure <strong>comment le nombre d'opérations augmente</strong> avec la taille des données.</p>
+            <p class="sub">Imaginez un annuaire de 1 million d'entrées. Une recherche linéaire fait jusqu'à 1 million de comparaisons. Une recherche binaire en fait 20. Sur un serveur réel, ce n'est pas la même facture.</p>
+
+            <div class="vocab-grid">
+              <div class="vocab-card">
+                <div class="term">Complexité temporelle</div>
+                <div class="def">Combien d'opérations élémentaires un algorithme fait en fonction de la taille des données (n).</div>
+              </div>
+              <div class="vocab-card">
+                <div class="term">Complexité spatiale</div>
+                <div class="def">Combien de mémoire supplémentaire l'algorithme utilise. Moins courant mais tout aussi important sur les gros volumes.</div>
+              </div>
+              <div class="vocab-card">
+                <div class="term">Notation O (grand O)</div>
+                <div class="def">Notation standard : <code>O(n)</code> se lit « de l'ordre de n ». Elle décrit le comportement pour les très grandes valeurs de n.</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 2. Croissance visuelle -->
+          <div class="lesson-section">
+            <h2><span class="num">2</span>Les courbes de croissance</h2>
+            <p>Voici comment évoluent les principales complexités. Plus la courbe monte vite, plus l'algorithme est mauvais sur de grandes données.</p>
+
+            <div class="diagram-card">
+              <svg viewBox="0 0 720 380" width="720" xmlns="http://www.w3.org/2000/svg">
+                <!-- Axes -->
+                <line x1="60" y1="330" x2="680" y2="330" stroke="#4b5563" stroke-width="1.5"/>
+                <line x1="60" y1="330" x2="60" y2="30" stroke="#4b5563" stroke-width="1.5"/>
+                <text x="660" y="355" text-anchor="end" font-family="ui-sans-serif,system-ui,sans-serif" font-size="11" fill="#9aa1a6">taille des données (n) →</text>
+                <text x="55" y="25" text-anchor="end" font-family="ui-sans-serif,system-ui,sans-serif" font-size="11" fill="#9aa1a6">temps →</text>
+
+                <!-- Grille -->
+                <line x1="60" y1="80" x2="680" y2="80" stroke="#2a2d30" stroke-dasharray="3 3"/>
+                <line x1="60" y1="155" x2="680" y2="155" stroke="#2a2d30" stroke-dasharray="3 3"/>
+                <line x1="60" y1="230" x2="680" y2="230" stroke="#2a2d30" stroke-dasharray="3 3"/>
+                <line x1="60" y1="305" x2="680" y2="305" stroke="#2a2d30" stroke-dasharray="3 3"/>
+
+                <!-- O(1) — ligne horizontale -->
+                <line x1="60" y1="315" x2="680" y2="315" stroke="#3ecf8e" stroke-width="2.5"/>
+                <text x="690" y="318" font-family="ui-sans-serif,system-ui,sans-serif" font-size="11" fill="#3ecf8e">O(1)</text>
+
+                <!-- O(log n) — courbe douce -->
+                <path d="M 60 310 Q 200 250 680 200" stroke="#3b82f6" stroke-width="2.5" fill="none"/>
+                <text x="690" y="203" font-family="ui-sans-serif,system-ui,sans-serif" font-size="11" fill="#3b82f6">O(log n)</text>
+
+                <!-- O(n) — ligne droite -->
+                <line x1="60" y1="330" x2="680" y2="100" stroke="#f0883e" stroke-width="2.5"/>
+                <text x="690" y="102" font-family="ui-sans-serif,system-ui,sans-serif" font-size="11" fill="#f0883e">O(n)</text>
+
+                <!-- O(n log n) — légèrement au-dessus -->
+                <path d="M 60 330 Q 350 180 680 55" stroke="#a855f7" stroke-width="2.5" fill="none"/>
+                <text x="690" y="57" font-family="ui-sans-serif,system-ui,sans-serif" font-size="11" fill="#a855f7">O(n log n)</text>
+
+                <!-- O(n²) — courbe raide -->
+                <path d="M 60 330 Q 250 320 400 240 T 560 60" stroke="#ef4444" stroke-width="2.5" fill="none"/>
+                <text x="600" y="45" font-family="ui-sans-serif,system-ui,sans-serif" font-size="11" fill="#ef4444">O(n²)</text>
+
+                <!-- O(2^n) — explosion -->
+                <path d="M 60 330 Q 200 325 300 290 T 400 130 T 460 30" stroke="#ec4899" stroke-width="2.5" fill="none"/>
+                <text x="475" y="25" font-family="ui-sans-serif,system-ui,sans-serif" font-size="11" fill="#ec4899">O(2ⁿ)</text>
+
+                <text x="360" y="375" text-anchor="middle" font-family="ui-sans-serif,system-ui,sans-serif" font-size="11" fill="#6b7280">plus la courbe monte raide, plus l'algorithme est lent sur de grandes entrées</text>
+              </svg>
+            </div>
+          </div>
+
+          <!-- 3. Les principales complexités -->
+          <div class="lesson-section">
+            <h2><span class="num">3</span>Les complexités à connaître</h2>
+
+            <table style="width:100%; border-collapse:collapse; font-size:12.5px; margin-top:8px;">
+              <thead>
+                <tr style="text-align:left; color:var(--text-lo);">
+                  <th style="padding:6px 8px; border-bottom:1px solid var(--border);">Notation</th>
+                  <th style="padding:6px 8px; border-bottom:1px solid var(--border);">Nom</th>
+                  <th style="padding:6px 8px; border-bottom:1px solid var(--border);">Exemple typique</th>
+                  <th style="padding:6px 8px; border-bottom:1px solid var(--border);">n = 1 000 000</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td style="padding:6px 8px; border-bottom:1px solid var(--border); color:#3ecf8e;"><code>O(1)</code></td>
+                  <td style="padding:6px 8px; border-bottom:1px solid var(--border);">Constant</td>
+                  <td style="padding:6px 8px; border-bottom:1px solid var(--border);">Accéder à <code>tab[i]</code></td>
+                  <td style="padding:6px 8px; border-bottom:1px solid var(--border);">1 opération</td>
+                </tr>
+                <tr>
+                  <td style="padding:6px 8px; border-bottom:1px solid var(--border); color:#3b82f6;"><code>O(log n)</code></td>
+                  <td style="padding:6px 8px; border-bottom:1px solid var(--border);">Logarithmique</td>
+                  <td style="padding:6px 8px; border-bottom:1px solid var(--border);">Recherche binaire</td>
+                  <td style="padding:6px 8px; border-bottom:1px solid var(--border);">~20 opérations</td>
+                </tr>
+                <tr>
+                  <td style="padding:6px 8px; border-bottom:1px solid var(--border); color:#f0883e;"><code>O(n)</code></td>
+                  <td style="padding:6px 8px; border-bottom:1px solid var(--border);">Linéaire</td>
+                  <td style="padding:6px 8px; border-bottom:1px solid var(--border);">Recherche linéaire, parcours simple</td>
+                  <td style="padding:6px 8px; border-bottom:1px solid var(--border);">1 000 000 opérations</td>
+                </tr>
+                <tr>
+                  <td style="padding:6px 8px; border-bottom:1px solid var(--border); color:#a855f7;"><code>O(n log n)</code></td>
+                  <td style="padding:6px 8px; border-bottom:1px solid var(--border);">Quasi-linéaire</td>
+                  <td style="padding:6px 8px; border-bottom:1px solid var(--border);">Bons algorithmes de tri</td>
+                  <td style="padding:6px 8px; border-bottom:1px solid var(--border);">~20 000 000 opérations</td>
+                </tr>
+                <tr>
+                  <td style="padding:6px 8px; border-bottom:1px solid var(--border); color:#ef4444;"><code>O(n²)</code></td>
+                  <td style="padding:6px 8px; border-bottom:1px solid var(--border);">Quadratique</td>
+                  <td style="padding:6px 8px; border-bottom:1px solid var(--border);">Tri à bulles, tri par sélection</td>
+                  <td style="padding:6px 8px; border-bottom:1px solid var(--border);">10¹² opérations (inutilisable)</td>
+                </tr>
+                <tr>
+                  <td style="padding:6px 8px; color:#ec4899;"><code>O(2ⁿ)</code></td>
+                  <td style="padding:6px 8px;">Exponentiel</td>
+                  <td style="padding:6px 8px;">Fibonacci récursif naïf</td>
+                  <td style="padding:6px 8px;">Explosion instantanée</td>
+                </tr>
+              </tbody>
+            </table>
+
+            <p class="sub">Ordre du meilleur au pire : <strong>O(1) &lt; O(log n) &lt; O(n) &lt; O(n log n) &lt; O(n²) &lt; O(2ⁿ)</strong>. Un bon algorithme reste en O(n) ou mieux.</p>
+          </div>
+
+          <!-- 4. Comment reconnaître -->
+          <div class="lesson-section">
+            <h2><span class="num">4</span>Comment reconnaître une complexité</h2>
+            <p>On peut deviner la complexité en regardant la <strong>structure du code</strong> :</p>
+
+            <div class="vocab-grid">
+              <div class="vocab-card">
+                <div class="term">Pas de boucle → O(1)</div>
+                <div class="def">Un simple accès à <code>tab[i]</code>, une addition, une comparaison. Constant, quelle que soit la taille.</div>
+              </div>
+              <div class="vocab-card">
+                <div class="term">Une boucle → O(n)</div>
+                <div class="def">Une seule boucle qui parcourt n éléments fait n opérations. C'est linéaire.</div>
+              </div>
+              <div class="vocab-card">
+                <div class="term">Deux boucles imbriquées → O(n²)</div>
+                <div class="def">Boucle externe × boucle interne = n × n = n². C'est le cas des tris naïfs.</div>
+              </div>
+              <div class="vocab-card">
+                <div class="term">Deux boucles séparées → O(n)</div>
+                <div class="def">Deux boucles <strong>l'une après l'autre</strong> restent en O(n) : n + n = 2n ≈ n.</div>
+              </div>
+              <div class="vocab-card">
+                <div class="term">Diviser par 2 à chaque étape → O(log n)</div>
+                <div class="def">Recherche binaire, ou algorithme qui réduit le problème de moitié à chaque tour.</div>
+              </div>
+              <div class="vocab-card">
+                <div class="term">Appels récursifs doubles → O(2ⁿ)</div>
+                <div class="def">Fibonacci naïf : chaque appel en produit deux autres. Croissance explosive.</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 5. Pièges -->
+          <div class="lesson-section">
+            <h2><span class="num">5</span>Pièges fréquents</h2>
+            <div class="vocab-grid">
+              <div class="vocab-card">
+                <div class="term">Confondre O(n) et O(n²)</div>
+                <div class="def">Une boucle sur n = O(n). Deux boucles imbriquées sur n = O(n²). Deux boucles <strong>séquentielles</strong> = O(n). La distinction est cruciale.</div>
+              </div>
+              <div class="vocab-card">
+                <div class="term">Ignorer les constantes</div>
+                <div class="def"><code>O(n)</code> et <code>O(2n)</code> sont la même chose en notation O — on ne garde que le terme dominant.</div>
+              </div>
+              <div class="vocab-card">
+                <div class="term">Optimiser trop tôt</div>
+                <div class="def">Sur un tableau de 100 éléments, tout est instantané. La complexité ne devient un problème que sur de grandes données. Ne pas optimiser sans mesure.</div>
+              </div>
+              <div class="vocab-card">
+                <div class="term">Mémoire aussi</div>
+                <div class="def">Un algorithme peut être rapide en temps mais coûteux en mémoire. Par exemple, créer une copie d'un tableau de 1 Go de données.</div>
+              </div>
+              <div class="vocab-card">
+                <div class="term">Pire cas vs cas moyen</div>
+                <div class="def">On mesure souvent le pire cas. Un algorithme peut être O(n) en moyenne et O(n²) dans le pire cas.</div>
+              </div>
+              <div class="vocab-card">
+                <div class="term">Croire que la récursion est magique</div>
+                <div class="def">La récursion ne rend pas les algorithmes plus rapides. Fibonacci récursif est exponentiel, alors que sa version itérative est en O(n).</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 6. Exercice -->
+          <div class="lesson-section">
+            <h2><span class="num">6</span>À toi de jouer</h2>
+            <p class="sub">Trois fonctions qui mesurent des opérations pour observer concrètement la croissance.</p>
+
+            <div class="exercise-card">
+              <div class="exo-title">Exercice — 3 mini-défis</div>
+              <div class="exo-desc">Enchaîne ces 3 fonctions dans le terminal, dans l'ordre :</div>
+              <ul class="exo-tests">
+                <li>• <code>compteOpsLineaire(n)</code> — renvoie le nombre d'itérations d'une boucle simple de 0 à n-1</li>
+                <li>• <code>compteOpsQuadratique(n)</code> — renvoie n² (le nombre d'itérations d'une double boucle)</li>
+                <li>• <code>compteOpsLog(n)</code> — renvoie le nombre de divisions par 2 nécessaires pour ramener n à 1 (≈ log₂ n)</li>
+              </ul>
+              <ul class="exo-tests">
+                <li>• Indices : boucle <code>for</code>, <code>n * n</code>, boucle <code>while (n &gt; 1) { n = Math.floor(n / 2); c++ }</code></li>
+                <li>• <code>compteOpsLineaire(5)</code> → <code>5</code>, <code>compteOpsQuadratique(5)</code> → <code>25</code></li>
+                <li>• <code>compteOpsLog(8)</code> → <code>3</code>, <code>compteOpsLog(1000)</code> → <code>10</code></li>
+                <li>• Tape <code>valider</code> après chaque fonction pour débloquer la suivante</li>
+                <li>• Tape <code>aide</code> à tout moment, ou <code>clear</code> pour nettoyer l'écran</li>
+              </ul>
+            </div>
+          </div>
+
+          </div>
+          <!-- /.lesson-main -->
+
+          <aside class="lesson-side">
+            <div class="exercise-card side-text">
+              <div class="exo-title">Objectif</div>
+              <div class="exo-desc" id="side-objective-desc">1/3 — Implémente compteOpsLineaire(n) : nombre d'itérations d'une boucle simple.</div>
+              <ul class="exo-tests">
+                <li>• <code>valider</code> → lance les tests</li>
+                <li>• <code>aide</code> → revoir la consigne</li>
+                <li>• <code>clear</code> → nettoyer l'écran</li>
+              </ul>
+            </div>
+            <div class="exercise-card side-terminal">
+              <div class="exo-title">&gt;_ Terminal</div>
+              <div id="terminal-wrap">
+                <div id="terminal"></div>
+              </div>
+              <div class="term-toolbar">
+                <button type="button" class="btn btn-outline" id="btn-clear">Effacer</button>
+                <button type="button" class="btn btn-primary" id="btn-valider">Valider</button>
+              </div>
+            </div>
+          </aside>
+
+          </div>
+          <!-- /.lesson-layout -->
+
+          <div class="lock-row unlocked" id="lesson26-row">
+            <div>
+              <div class="lr-title">
+                <svg class="lock-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10" width="16" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>
+                Leçon 26 — Exercices récapitulatifs (Module 4)
+              </div>
+              <div class="lr-sub" id="lesson26-sub">Valide les 3 exercices ci-dessus pour débloquer cette leçon.</div>
+            </div>
+            <div style="display:flex;gap:8px;">
+              <button type="button" class="btn btn-outline" id="btn-prev-lesson">← Précédent</button>
+              <button type="button" class="btn btn-outline" id="btn-next-lesson" aria-disabled="false">Continuer</button>
+            </div>
+          </div>
+
+        </div>
+      </main>
+    </div>
+  </div>
+
+<script src="../vendor/xterm.js"></script>
+<script src="../supabase-js.min.js"></script>
+<script src="../supabase-config.js"></script>
+<script src="../script.js"></script>
+<script src="../app.js"></script>
+<script src="../partials.js"></script>
+
+<script>
+(function () {
+  const PROGRESS_KEY = 'technophile_algo_progress';
+  const globalEval = (0, eval);
+
+  function getProgress() {
+    try { return JSON.parse(localStorage.getItem(PROGRESS_KEY)) || {}; } catch { return {}; }
+  }
+  function setProgress(p) { localStorage.setItem(PROGRESS_KEY, JSON.stringify(p)); }
+
+  const term = new Terminal({
+    theme: {
+      background: '#0a0b0c',
+      foreground: '#eceff1',
+      cursor: '#3ecf8e',
+      green: '#3ecf8e',
+      red: '#ef4444'
+    },
+    fontSize: 13,
+    fontFamily: 'ui-monospace, monospace',
+    cursorBlink: true,
+    convertEol: true,
+    cols: 40,
+    rows: 20
+  });
+  term.open(document.getElementById('terminal'));
+
+  const EXERCISES = [
+    { fn: 'compteOpsLineaire', desc: "1/3 — Implémente compteOpsLineaire(n) : nombre d'itérations.",
+      cases: [
+        {args:[0], expected:0},
+        {args:[1], expected:1},
+        {args:[5], expected:5},
+        {args:[100], expected:100}
+      ] },
+    { fn: 'compteOpsQuadratique', desc: "2/3 — Implémente compteOpsQuadratique(n) : n².",
+      cases: [
+        {args:[0], expected:0},
+        {args:[3], expected:9},
+        {args:[5], expected:25},
+        {args:[10], expected:100}
+      ] },
+    { fn: 'compteOpsLog', desc: "3/3 — Implémente compteOpsLog(n) : nombre de divisions par 2 pour ramener à 1.",
+      cases: [
+        {args:[1], expected:0},
+        {args:[2], expected:1},
+        {args:[8], expected:3},
+        {args:[1000], expected:10},
+        {args:[1024], expected:10}
+      ] }
+  ];
+  let exerciseIndex = 0;
+  function currentExercise() { return EXERCISES[exerciseIndex] || null; }
+
+  function updateSidebarObjective() {
+    const descEl = document.getElementById('side-objective-desc');
+    if (!descEl) return;
+    const ex = currentExercise();
+    descEl.textContent = ex ? ex.desc : 'Tous les exercices sont validés. Bravo !';
+  }
+
+  let buffer = '';
+  const PROMPT = '\x1b[32malgo>\x1b[0m ';
+
+  function prompt() { term.write('\r\n' + PROMPT); }
+
+  function printHelp() {
+    const ex = currentExercise();
+    const msg = ex ? ex.desc : 'Tous les exercices sont validés.';
+    term.write('\r\n' + msg + "\r\nCommandes : 'valider' pour tester, 'clear' pour nettoyer, 'aide' pour revoir ceci.\r\n");
+  }
+
+  function runValidation() {
+    term.write('\r\n');
+    const ex = currentExercise();
+    if (!ex) {
+      term.write('\x1b[32mTout est déjà validé !\x1b[0m\r\n');
+      prompt();
+      return;
+    }
+    const fn = window[ex.fn];
+    if (typeof fn !== 'function') {
+      term.write(`\x1b[31m✗ La fonction ${ex.fn}(...) n'existe pas encore. Écris-la d'abord.\x1b[0m\r\n`);
+      prompt();
+      return;
+    }
+    let allOk = true;
+    ex.cases.forEach(c => {
+      let got, ok;
+      try {
+        got = fn(...c.args);
+        ok = got === c.expected;
+      } catch (e) {
+        got = 'erreur: ' + e.message;
+        ok = false;
+      }
+      if (!ok) allOk = false;
+      const mark = ok ? '\x1b[32m✓\x1b[0m' : '\x1b[31m✗\x1b[0m';
+      term.write(`${mark} ${ex.fn}(${c.args.map(a => JSON.stringify(a)).join(', ')}) → attendu ${JSON.stringify(c.expected)}, obtenu ${JSON.stringify(got)}\r\n`);
+    });
+
+    if (allOk) {
+      exerciseIndex++;
+      if (currentExercise()) {
+        term.write(`\r\n\x1b[32mBravo, exercice ${exerciseIndex}/${EXERCISES.length} validé !\x1b[0m\r\n`);
+        updateSidebarObjective();
+        printHelp();
+      } else {
+        term.write('\r\n\x1b[32mBravo, les 3 exercices sont validés ! La leçon 26 est débloquée.\x1b[0m\r\n');
+        const p = getProgress();
+        p.lesson25 = true;
+        setProgress(p);
+        unlockNext();
+        updateSidebarObjective();
+        if (typeof showToast === 'function') showToast('Leçon 25 validée !');
+      }
+    } else {
+      term.write('\r\n\x1b[31mPas encore bon, corrige et retape "valider".\x1b[0m\r\n');
+    }
+    prompt();
+  }
+
+  function execLine(line) {
+    const trimmed = line.trim();
+    if (trimmed === 'valider') { runValidation(); return; }
+    if (trimmed === 'clear' || trimmed === 'cls') { term.clear(); prompt(); return; }
+    if (trimmed === 'aide' || trimmed === 'help') { printHelp(); prompt(); return; }
+    if (trimmed === '') { prompt(); return; }
+
+    try {
+      const result = globalEval(trimmed);
+      if (result !== undefined) {
+        term.write('\r\n' + JSON.stringify(result));
+      }
+    } catch (e) {
+      term.write('\r\n\x1b[31m' + e.message + '\x1b[0m');
+    }
+    prompt();
+  }
+
+  term.onData(data => {
+    const code = data.charCodeAt(0);
+    if (code === 13) {
+      const line = buffer;
+      buffer = '';
+      execLine(line);
+    } else if (code === 127) {
+      if (buffer.length > 0) {
+        buffer = buffer.slice(0, -1);
+        term.write('\b \b');
+      }
+    } else if (code < 32) {
+      // ignore
+    } else {
+      buffer += data;
+      term.write(data);
+    }
+  });
+
+  term.write('\x1b[32mTerminal algo — technophile\x1b[0m\r\n');
+  printHelp();
+  prompt();
+
+  document.getElementById('btn-clear').addEventListener('click', () => { term.clear(); prompt(); term.focus(); });
+  document.getElementById('btn-valider').addEventListener('click', () => { execLine('valider'); term.focus(); });
+
+  function unlockNext() {
+    const row = document.getElementById('lesson26-row');
+    const btn = document.getElementById('btn-next-lesson');
+    const sub = document.getElementById('lesson26-sub');
+    row.classList.add('unlocked');
+    btn.setAttribute('aria-disabled', 'false');
+    sub.textContent = 'Débloquée — tu peux continuer.';
+  }
+
+  document.getElementById('btn-prev-lesson').addEventListener('click', () => {
+    location.href = 'lecon-algo-24.html';
+  });
+
+  document.getElementById('btn-next-lesson').addEventListener('click', (e) => {
+    if (e.currentTarget.getAttribute('aria-disabled') === 'true') {
+      if (typeof showToast === 'function') showToast('Valide les 3 exercices pour débloquer');
+      return;
+    }
+    location.href = 'lecon-algo-26.html';
+  });
+
+  if (getProgress().lesson25) unlockNext();
+})();
+</script>
+
+</body>
+</html>

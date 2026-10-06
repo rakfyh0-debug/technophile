@@ -126,6 +126,42 @@
             "titre": "Exercices récapitulatifs (Module 3)",
             "fichier": "lecon-algo-20.html",
             "cle": "lesson20"
+          },
+          {
+            "numero": 21,
+            "titre": "Rechercher dans un tableau",
+            "fichier": "lecon-algo-21.html",
+            "cle": "lesson21"
+          },
+          {
+            "numero": 22,
+            "titre": "Trier — le tri à bulles",
+            "fichier": "lecon-algo-22.html",
+            "cle": "lesson22"
+          },
+          {
+            "numero": 23,
+            "titre": "Trier — tri par sélection et insertion",
+            "fichier": "lecon-algo-23.html",
+            "cle": "lesson23"
+          },
+          {
+            "numero": 24,
+            "titre": "La récursivité (introduction)",
+            "fichier": "lecon-algo-24.html",
+            "cle": "lesson24"
+          },
+          {
+            "numero": 25,
+            "titre": "Complexité algorithmique",
+            "fichier": "lecon-algo-25.html",
+            "cle": "lesson25"
+          },
+          {
+            "numero": 26,
+            "titre": "Exercices récapitulatifs (Module 4)",
+            "fichier": "lecon-algo-26.html",
+            "cle": "lesson26"
           }
         ]
       }

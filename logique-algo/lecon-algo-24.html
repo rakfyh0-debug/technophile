@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Leçon 24 — La récursivité (introduction) - technophile</title>
+  <link rel="stylesheet" href="../style.css">
+  <link rel="stylesheet" href="../vendor/xterm.css">
+  <link rel="stylesheet" href="../css/lesson.css">
+</head>
+<body>
+
+  <div class="app-layout">
+    <div class="rail"></div>
+
+    <div class="app-main">
+      <header class="app-topbar">
+        <div class="breadcrumb">
+          <span>technophile</span><span>/</span>
+          <span>Logique algorithmique</span><span>/</span>
+          <span style="color:var(--text-hi);font-weight:500;">Leçon 24</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:14px;">
+          <div class="avatar" style="cursor:pointer;" onclick="location.href='../profile.html'">R</div>
+        </div>
+      </header>
+
+      <main class="app-center">
+        <div class="page-wrap">
+
+          <div class="lesson-head">
+            <div class="eyebrow">Algorithmes classiques — Leçon 24</div>
+            <h1>La récursivité (introduction)</h1>
+            <p>Une <strong>fonction récursive</strong> s'appelle elle-même pour résoudre un problème en le découpant en sous-problèmes plus petits. C'est une technique élégante qui résout naturellement des problèmes complexes — à condition de bien poser le <strong>cas de base</strong>.</p>
+          </div>
+
+          <div class="lesson-layout">
+          <div class="lesson-main">
+
+          <!-- 1. Le principe -->
+          <div class="lesson-section">
+            <h2><span class="num">1</span>Qu'est-ce que la récursivité ?</h2>
+            <p>Une fonction récursive s'appelle elle-même à l'intérieur de son propre corps. Elle résout un grand problème en le réduisant à un problème plus petit du même type, jusqu'à atteindre un cas trivial qu'on sait résoudre directement.</p>
+            <p class="sub">L'exemple le plus classique : calculer la factorielle. <code>5! = 5 × 4!</code>, <code>4! = 4 × 3!</code>, …, <code>1! = 1</code>. Chaque étape réduit le problème d'un cran, jusqu'à <code>1!</code> qui est connu.</p>
+
+            <div class="vocab-grid">
+              <div class="vocab-card">
+                <div class="term">Cas de base</div>
+                <div class="def">La situation simple, connue d'avance, qui arrête la récursion. Sans lui, la fonction s'appelle indéfiniment.</div>
+              </div>
+              <div class="vocab-card">
+                <div class="term">Cas récursif</div>
+                <div class="def">Le cas complexe qui se ramène à un appel plus petit. Doit toujours <strong>progresser</strong> vers le cas de base.</div>
+              </div>
+              <div class="vocab-card">
+                <div class="term">Pile d'appels</div>
+                <div class="def">Chaque appel récursif empile un contexte. Si on dépasse la taille maximale de la pile, on obtient une erreur <code>Stack overflow</code>.</div>
+              </div>
+              <div class="vocab-card">
+                <div class="term">Décomposition</div>
+                <div class="def">Découper un problème en sous-problèmes plus petits, de même nature. C'est la philosophie de la récursion.</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 2. Exemple factorielle -->
+          <div class="lesson-section">
+            <h2><span class="num">2</span>Exemple : la factorielle</h2>
+            <p><code>5!</code> = 5 × 4 × 3 × 2 × 1 = 120. En récursif, ça s'écrit très simplement :</p>
+
+            <div class="exemple-box">  <span class="kw">fonction</span> factorielle(n)
+      <span class="cmt">// Cas de base</span>
+      <span class="kw">Si</span> n &lt;= 1 <span class="kw">alors</span>
+          <span class="kw">Retourner</span> 1
+      <span class="kw">Fin Si</span>
+
+      <span class="cmt">// Cas récursif</span>
+      <span class="kw">Retourner</span> n * factorielle(n - 1)
+  <span class="kw">Fin fonction</span>
+
+  factorielle(5)
+  <span class="cmt">// = 5 × factorielle(4)</span>
+  <span class="cmt">// = 5 × 4 × factorielle(3)</span>
+  <span class="cmt">// = 5 × 4 × 3 × factorielle(2)</span>
+  <span class="cmt">// = 5 × 4 × 3 × 2 × factorielle(1)</span>
+  <span class="cmt">// = 5 × 4 × 3 × 2 × 1  = 120</span></div>
+
+            <div class="diagram-card">
+              <svg viewBox="0 0 720 340" width="720" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                  <marker id="arrowRec" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+                    <path d="M0,0 L8,4 L0,8 Z" fill="#3ecf8e"/>
+                  </marker>
+                  <marker id="arrowRecUp" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+                    <path d="M0,0 L8,4 L0,8 Z" fill="#3b82f6"/>
+                  </marker>
+                </defs>
+                <g font-family="ui-sans-serif,system-ui,sans-serif" font-size="11" fill="#eceff1">
+                  <text x="360" y="20" text-anchor="middle" font-size="11" fill="#9aa1a6">la pile d'appels monte, puis les résultats redescendent</text>
+
+                  <!-- Appels descendants -->
+                  <rect x="280" y="45" width="160" height="34" rx="6" fill="#0d2818" stroke="#3ecf8e" stroke-width="2"/>
+                  <text x="360" y="67" text-anchor="middle" fill="#3ecf8e" font-weight="700">factorielle(5)</text>
+
+                  <line x1="360" y1="79" x2="360" y2="99" stroke="#3ecf8e" stroke-width="1.5" marker-end="url(#arrowRec)"/>
+
+                  <rect x="280" y="104" width="160" height="34" rx="6" fill="#0d2818" stroke="#3ecf8e" stroke-width="2"/>
+                  <text x="360" y="126" text-anchor="middle" fill="#3ecf8e" font-weight="700">factorielle(4)</text>
+
+                  <line x1="360" y1="138" x2="360" y2="158" stroke="#3ecf8e" stroke-width="1.5" marker-end="url(#arrowRec)"/>
+
+                  <rect x="280" y="163" width="160" height="34" rx="6" fill="#0d2818" stroke="#3ecf8e" stroke-width="2"/>
+                  <text x="360" y="185" text-anchor="middle" fill="#3ecf8e" font-weight="700">factorielle(3)</text>
+
+                  <line x1="360" y1="197" x2="360" y2="217" stroke="#3ecf8e" stroke-width="1.5" marker-end="url(#arrowRec)"/>
+
+                  <rect x="280" y="222" width="160" height="34" rx="6" fill="#0d2818" stroke="#3ecf8e" stroke-width="2"/>
+                  <text x="360" y="244" text-anchor="middle" fill="#3ecf8e" font-weight="700">factorielle(2)</text>
+
+                  <line x1="360" y1="256" x2="360" y2="276" stroke="#3ecf8e" stroke-width="1.5" marker-end="url(#arrowRec)"/>
+
+                  <rect x="280" y="281" width="160" height="34" rx="6" fill="#3b82f6" stroke="#3b82f6" stroke-width="2"/>
+                  <text x="360" y="303" text-anchor="middle" fill="#fff" font-weight="700">factorielle(1) = 1</text>
+
+                  <!-- Retours -->
+                  <path d="M 470 298 L 500 298 L 500 185 L 470 185" stroke="#3b82f6" stroke-width="1.5" fill="none" marker-end="url(#arrowRecUp)"/>
+                  <text x="520" y="185" font-size="10" fill="#3b82f6">= 3 × 2 = 6</text>
+
+                  <text x="520" y="125" font-size="10" fill="#3b82f6">= 4 × 6 = 24</text>
+
+                  <text x="520" y="67" font-size="10" fill="#3b82f6">= 5 × 24 = 120</text>
+
+                  <text x="100" y="67" text-anchor="middle" font-size="10" fill="#3ecf8e">descend</text>
+                  <text x="100" y="185" text-anchor="middle" font-size="10" fill="#3b82f6">remonte</text>
+                </g>
+              </svg>
+            </div>
+
+            <p class="sub">Chaque appel empile un contexte sur la pile. Quand <code>factorielle(1)</code> renvoie 1, les appels se déroulent un par un en remontant et multiplient leur valeur par le résultat reçu.</p>
+          </div>
+
+          <!-- 3. Exemples supplémentaires -->
+          <div class="lesson-section">
+            <h2><span class="num">3</span>Deux autres exemples</h2>
+
+            <h3 style="font-size:13.5px;font-weight:600;margin:16px 0 8px;color:var(--accent);">Exemple — Somme d'un tableau</h3>
+            <p class="sub">La somme d'un tableau, c'est le premier élément + la somme du reste.</p>
+            <div class="exemple-box">  <span class="kw">fonction</span> sommeRec(tab)
+      <span class="kw">Si</span> longueur(tab) == 0 <span class="kw">alors</span>
+          <span class="kw">Retourner</span> 0          <span class="cmt">// cas de base</span>
+      <span class="kw">Fin Si</span>
+      <span class="kw">Retourner</span> tab[0] + sommeRec(tab.sousTableau(1))
+  <span class="kw">Fin fonction</span>
+
+  sommeRec([1, 2, 3, 4])
+  <span class="cmt">// = 1 + sommeRec([2, 3, 4])</span>
+  <span class="cmt">// = 1 + 2 + sommeRec([3, 4])</span>
+  <span class="cmt">// = 1 + 2 + 3 + sommeRec([4])</span>
+  <span class="cmt">// = 1 + 2 + 3 + 4 + sommeRec([])</span>
+  <span class="cmt">// = 1 + 2 + 3 + 4 + 0  = 10</span></div>
+
+            <h3 style="font-size:13.5px;font-weight:600;margin:16px 0 8px;color:var(--accent);">Exemple — Fibonacci</h3>
+            <p class="sub">Chaque nombre est la somme des deux précédents : 1, 1, 2, 3, 5, 8, 13…</p>
+            <div class="exemple-box">  <span class="kw">fonction</span> fibonacci(n)
+      <span class="kw">Si</span> n &lt;= 1 <span class="kw">alors</span>
+          <span class="kw">Retourner</span> n
+      <span class="kw">Fin Si</span>
+      <span class="kw">Retourner</span> fibonacci(n - 1) + fibonacci(n - 2)
+  <span class="kw">Fin fonction</span>
+
+  fibonacci(6)   <span class="cmt">// 8</span></div>
+            <p class="sub">Fibonacci est un cas classique mais <strong>inefficace</strong> en récursif pur : beaucoup d'appels sont répétés. On verra pourquoi dans la leçon suivante (complexité).</p>
+          </div>
+
+          <!-- 4. Règles à respecter -->
+          <div class="lesson-section">
+            <h2><span class="num">4</span>Règles d'or de la récursivité</h2>
+
+            <div class="vocab-grid">
+              <div class="vocab-card">
+                <div class="term">1. Toujours un cas de base</div>
+                <div class="def">Sans lui, la récursion ne s'arrête jamais → <code>Stack overflow</code> au bout de quelques milliers d'appels.</div>
+              </div>
+              <div class="vocab-card">
+                <div class="term">2. Progresser vers le cas de base</div>
+                <div class="def">Chaque appel doit se rapprocher du cas de base. <code>factorielle(n - 1)</code> réduit n de 1. <code>factorielle(n)</code> sans modification = infini.</div>
+              </div>
+              <div class="vocab-card">
+                <div class="term">3. Le cas de base doit couvrir tous les cas d'arrêt</div>
+                <div class="def">Pour factorielle, il faut <code>n &lt;= 1</code> (pas juste <code>n == 1</code>) pour gérer <code>n = 0</code> et les négatifs.</div>
+              </div>
+              <div class="vocab-card">
+                <div class="term">4. La profondeur est limitée</div>
+                <div class="def">Chaque moteur JS limite la profondeur de la pile (souvent ~10 000 appels). Pour de grands n, passer en itératif.</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 5. Pièges -->
+          <div class="lesson-section">
+            <h2><span class="num">5</span>Pièges fréquents</h2>
+            <div class="vocab-grid">
+              <div class="vocab-card">
+                <div class="term">Oublier le cas de base</div>
+                <div class="def">La fonction s'appelle indéfiniment. Erreur <code>RangeError: Maximum call stack size exceeded</code> dans la console.</div>
+              </div>
+              <div class="vocab-card">
+                <div class="term">Ne pas progresser</div>
+                <div class="def">Appeler <code>factorielle(n)</code> au lieu de <code>factorielle(n - 1)</code> → même problème que l'absence de cas de base.</div>
+              </div>
+              <div class="vocab-card">
+                <div class="term">Confondre cas de base et cas récursif</div>
+                <div class="def">Le cas de base <strong>ne rappelle pas</strong> la fonction. Le cas récursif <strong>rappelle</strong> la fonction. Si les deux se ressemblent, il y a un bug.</div>
+              </div>
+              <div class="vocab-card">
+                <div class="term">Trop de profondeur</div>
+                <div class="def"><code>factorielle(100000)</code> va faire exploser la pile. Pour ces cas, l'itératif est obligatoire.</div>
+              </div>
+              <div class="vocab-card">
+                <div class="term">Récursion inefficace (Fibonacci)</div>
+                <div class="def">Fibonacci récursif naïf recalcule les mêmes valeurs des milliers de fois. Complexité exponentielle O(2ⁿ). À éviter.</div>
+              </div>
+              <div class="vocab-card">
+                <div class="term">Toute récursion peut devenir itérative</div>
+                <div class="def">Toute fonction récursive peut s'écrire avec une boucle. La récursion est souvent plus lisible, mais pas plus puissante.</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 6. Exercice -->
+          <div class="lesson-section">
+            <h2><span class="num">6</span>À toi de jouer</h2>
+            <p class="sub">Trois fonctions récursives à écrire toi-même. Attention : si tu oublies le cas de base, le terminal plantera.</p>
+
+            <div class="exercise-card">
+              <div class="exo-title">Exercice — 3 mini-défis</div>
+              <div class="exo-desc">Enchaîne ces 3 fonctions dans le terminal, dans l'ordre :</div>
+              <ul class="exo-tests">
+                <li>• <code>factorielleRec(n)</code> — renvoie n! en récursif</li>
+                <li>• <code>sommeRec(tab)</code> — renvoie la somme des éléments en récursif</li>
+                <li>• <code>compteARebours(n)</code> — renvoie un tableau <code>[n, n-1, …, 1, 0]</code> en récursif</li>
+              </ul>
+              <ul class="exo-tests">
+                <li>• Indices : <code>if (n &lt;= 1) return 1;</code> pour le cas de base</li>
+                <li>• <code>factorielleRec(5)</code> → <code>120</code>, <code>sommeRec([1,2,3])</code> → <code>6</code></li>
+                <li>• <code>compteARebours(3)</code> → <code>[3,2,1,0]</code></li>
+                <li>• Tape <code>valider</code> après chaque fonction pour débloquer la suivante</li>
+                <li>• Tape <code>aide</code> à tout moment, ou <code>clear</code> pour nettoyer l'écran</li>
+              </ul>
+            </div>
+          </div>
+
+          </div>
+          <!-- /.lesson-main -->
+
+          <aside class="lesson-side">
+            <div class="exercise-card side-text">
+              <div class="exo-title">Objectif</div>
+              <div class="exo-desc" id="side-objective-desc">1/3 — Implémente factorielleRec(n) : n! en récursif.</div>
+              <ul class="exo-tests">
+                <li>• <code>valider</code> → lance les tests</li>
+                <li>• <code>aide</code> → revoir la consigne</li>
+                <li>• <code>clear</code> → nettoyer l'écran</li>
+              </ul>
+            </div>
+            <div class="exercise-card side-terminal">
+              <div class="exo-title">&gt;_ Terminal</div>
+              <div id="terminal-wrap">
+                <div id="terminal"></div>
+              </div>
+              <div class="term-toolbar">
+                <button type="button" class="btn btn-outline" id="btn-clear">Effacer</button>
+                <button type="button" class="btn btn-primary" id="btn-valider">Valider</button>
+              </div>
+            </div>
+          </aside>
+
+          </div>
+          <!-- /.lesson-layout -->
+
+          <div class="lock-row unlocked" id="lesson25-row">
+            <div>
+              <div class="lr-title">
+                <svg class="lock-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10" width="16" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>
+                Leçon 25 — Complexité algorithmique
+              </div>
+              <div class="lr-sub" id="lesson25-sub">Valide les 3 exercices ci-dessus pour débloquer cette leçon.</div>
+            </div>
+            <div style="display:flex;gap:8px;">
+              <button type="button" class="btn btn-outline" id="btn-prev-lesson">← Précédent</button>
+              <button type="button" class="btn btn-outline" id="btn-next-lesson" aria-disabled="false">Continuer</button>
+            </div>
+          </div>
+
+        </div>
+      </main>
+    </div>
+  </div>
+
+<script src="../vendor/xterm.js"></script>
+<script src="../supabase-js.min.js"></script>
+<script src="../supabase-config.js"></script>
+<script src="../script.js"></script>
+<script src="../app.js"></script>
+<script src="../partials.js"></script>
+
+<script>
+(function () {
+  const PROGRESS_KEY = 'technophile_algo_progress';
+  const globalEval = (0, eval);
+
+  function getProgress() {
+    try { return JSON.parse(localStorage.getItem(PROGRESS_KEY)) || {}; } catch { return {}; }
+  }
+  function setProgress(p) { localStorage.setItem(PROGRESS_KEY, JSON.stringify(p)); }
+
+  const term = new Terminal({
+    theme: {
+      background: '#0a0b0c',
+      foreground: '#eceff1',
+      cursor: '#3ecf8e',
+      green: '#3ecf8e',
+      red: '#ef4444'
+    },
+    fontSize: 13,
+    fontFamily: 'ui-monospace, monospace',
+    cursorBlink: true,
+    convertEol: true,
+    cols: 40,
+    rows: 20
+  });
+  term.open(document.getElementById('terminal'));
+
+  const EXERCISES = [
+    { fn: 'factorielleRec', desc: "1/3 — Implémente factorielleRec(n) : n! en récursif.",
+      cases: [
+        {args:[0], expected:1},
+        {args:[1], expected:1},
+        {args:[3], expected:6},
+        {args:[5], expected:120},
+        {args:[6], expected:720}
+      ] },
+    { fn: 'sommeRec', desc: "2/3 — Implémente sommeRec(tab) : somme récursive.",
+      cases: [
+        {args:[[1,2,3]], expected:6},
+        {args:[[10]], expected:10},
+        {args:[[]], expected:0},
+        {args:[[-1, 1, 5]], expected:5}
+      ] },
+    { fn: 'compteARebours', desc: "3/3 — Implémente compteARebours(n) : tableau [n, n-1, …, 0].",
+      cases: [
+        {args:[3], expected:[3,2,1,0]},
+        {args:[0], expected:[0]},
+        {args:[5], expected:[5,4,3,2,1,0]}
+      ] }
+  ];
+  let exerciseIndex = 0;
+  function currentExercise() { return EXERCISES[exerciseIndex] || null; }
+
+  function updateSidebarObjective() {
+    const descEl = document.getElementById('side-objective-desc');
+    if (!descEl) return;
+    const ex = currentExercise();
+    descEl.textContent = ex ? ex.desc : 'Tous les exercices sont validés. Bravo !';
+  }
+
+  let buffer = '';
+  const PROMPT = '\x1b[32malgo>\x1b[0m ';
+
+  function prompt() { term.write('\r\n' + PROMPT); }
+
+  function printHelp() {
+    const ex = currentExercise();
+    const msg = ex ? ex.desc : 'Tous les exercices sont validés.';
+    term.write('\r\n' + msg + "\r\nCommandes : 'valider' pour tester, 'clear' pour nettoyer, 'aide' pour revoir ceci.\r\n");
+  }
+
+  function arraysEqual(a, b) {
+    if (!Array.isArray(a) || !Array.isArray(b)) return false;
+    if (a.length !== b.length) return false;
+    for (let i = 0; i < a.length; i++) if (a[i] !== b[i]) return false;
+    return true;
+  }
+
+  function runValidation() {
+    term.write('\r\n');
+    const ex = currentExercise();
+    if (!ex) {
+      term.write('\x1b[32mTout est déjà validé !\x1b[0m\r\n');
+      prompt();
+      return;
+    }
+    const fn = window[ex.fn];
+    if (typeof fn !== 'function') {
+      term.write(`\x1b[31m✗ La fonction ${ex.fn}(...) n'existe pas encore. Écris-la d'abord.\x1b[0m\r\n`);
+      prompt();
+      return;
+    }
+    let allOk = true;
+    ex.cases.forEach(c => {
+      let got, ok;
+      try {
+        got = fn(...c.args);
+        ok = Array.isArray(c.expected) ? arraysEqual(got, c.expected) : got === c.expected;
+      } catch (e) {
+        got = 'erreur: ' + e.message;
+        ok = false;
+      }
+      if (!ok) allOk = false;
+      const mark = ok ? '\x1b[32m✓\x1b[0m' : '\x1b[31m✗\x1b[0m';
+      term.write(`${mark} ${ex.fn}(${c.args.map(a => JSON.stringify(a)).join(', ')}) → attendu ${JSON.stringify(c.expected)}, obtenu ${JSON.stringify(got)}\r\n`);
+    });
+
+    if (allOk) {
+      exerciseIndex++;
+      if (currentExercise()) {
+        term.write(`\r\n\x1b[32mBravo, exercice ${exerciseIndex}/${EXERCISES.length} validé !\x1b[0m\r\n`);
+        updateSidebarObjective();
+        printHelp();
+      } else {
+        term.write('\r\n\x1b[32mBravo, les 3 exercices sont validés ! La leçon 25 est débloquée.\x1b[0m\r\n');
+        const p = getProgress();
+        p.lesson24 = true;
+        setProgress(p);
+        unlockNext();
+        updateSidebarObjective();
+        if (typeof showToast === 'function') showToast('Leçon 24 validée !');
+      }
+    } else {
+      term.write('\r\n\x1b[31mPas encore bon, corrige et retape "valider".\x1b[0m\r\n');
+    }
+    prompt();
+  }
+
+  function execLine(line) {
+    const trimmed = line.trim();
+    if (trimmed === 'valider') { runValidation(); return; }
+    if (trimmed === 'clear' || trimmed === 'cls') { term.clear(); prompt(); return; }
+    if (trimmed === 'aide' || trimmed === 'help') { printHelp(); prompt(); return; }
+    if (trimmed === '') { prompt(); return; }
+
+    try {
+      const result = globalEval(trimmed);
+      if (result !== undefined) {
+        term.write('\r\n' + JSON.stringify(result));
+      }
+    } catch (e) {
+      term.write('\r\n\x1b[31m' + e.message + '\x1b[0m');
+    }
+    prompt();
+  }
+
+  term.onData(data => {
+    const code = data.charCodeAt(0);
+    if (code === 13) {
+      const line = buffer;
+      buffer = '';
+      execLine(line);
+    } else if (code === 127) {
+      if (buffer.length > 0) {
+        buffer = buffer.slice(0, -1);
+        term.write('\b \b');
+      }
+    } else if (code < 32) {
+      // ignore
+    } else {
+      buffer += data;
+      term.write(data);
+    }
+  });
+
+  term.write('\x1b[32mTerminal algo — technophile\x1b[0m\r\n');
+  printHelp();
+  prompt();
+
+  document.getElementById('btn-clear').addEventListener('click', () => { term.clear(); prompt(); term.focus(); });
+  document.getElementById('btn-valider').addEventListener('click', () => { execLine('valider'); term.focus(); });
+
+  function unlockNext() {
+    const row = document.getElementById('lesson25-row');
+    const btn = document.getElementById('btn-next-lesson');
+    const sub = document.getElementById('lesson25-sub');
+    row.classList.add('unlocked');
+    btn.setAttribute('aria-disabled', 'false');
+    sub.textContent = 'Débloquée — tu peux continuer.';
+  }
+
+  document.getElementById('btn-prev-lesson').addEventListener('click', () => {
+    location.href = 'lecon-algo-23.html';
+  });
+
+  document.getElementById('btn-next-lesson').addEventListener('click', (e) => {
+    if (e.currentTarget.getAttribute('aria-disabled') === 'true') {
+      if (typeof showToast === 'function') showToast('Valide les 3 exercices pour débloquer');
+      return;
+    }
+    location.href = 'lecon-algo-25.html';
+  });
+
+  if (getProgress().lesson24) unlockNext();
+})();
+</script>
+
+</body>
+</html>
